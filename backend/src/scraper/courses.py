@@ -2,9 +2,8 @@
 
 import logging
 
-import httpx
+import curl_cffi
 from bs4 import BeautifulSoup, Tag
-import cloudscraper
 
 from scraper.models import Course, CourseLevel, CourseOffering
 
@@ -71,12 +70,19 @@ def parse_courses(html: str) -> list[Course]:
     return [parse_course(li) for li in container.select("ul.listing > li")]
 
 
-def scrape_all_courses() -> list[Course]:
-    scraper = cloudscraper.create_scraper()
+async def fetch_courses(session: curl_cffi.AsyncSession) -> list[Course]:
+    """Fetches all of the course info."""
     try:
-        response = scraper.get(COURSES_URL, headers=HEADERS)
-        response.raise_for_status()
-        return parse_courses(response.text)
-    except Exception as e:
-        print(f"Error fetching courses: {e}")
+        r = await session.get(COURSES_URL)
+        r.raise_for_status()
+        return parse_courses(r.text)
+    except Exception:
+        log.exception("Error fetching courses")
         return []
+
+
+async def scrape_all_courses() -> dict:
+    """Scrapes all of the course information."""
+    async with curl_cffi.AsyncSession() as session:
+        result = await fetch_courses(session)
+        return {"courses": [r.model_dump(mode="json") for r in result]}
