@@ -12,6 +12,8 @@ from common.enums import LogLevel
 from common.logging import configure_logging
 from scraper.courses import scrape_courses
 from scraper.programs import scrape_all_programs
+from scraper.program_details import scrape_all_program_details, fetch_programs
+
 
 
 class ScrapeType(Enum):
@@ -19,6 +21,7 @@ class ScrapeType(Enum):
 
     PROGRAM = "program"
     COURSE = "course"
+    DETAILS = "details"
 
 
 def main() -> None:
@@ -52,6 +55,11 @@ def main() -> None:
         result = asyncio.run(scrape_courses())
         data = {"courses": [r.model_dump(mode="json") for r in result]}
         log.info(f"Scraped {len(data['courses'])} courses.")
+    elif args.mode == ScrapeType.DETAILS:
+        programs = fetch_programs()
+        result = scrape_all_program_details(programs)
+        data = {"program_details": [r for r in result if r is not None]}
+        log.info(f"Scraped details for {len(data['program_details'])} programs.")
     else:
         raise ValueError("Invalid scrape mode selected.")
 

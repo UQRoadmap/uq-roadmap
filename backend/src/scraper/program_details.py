@@ -45,7 +45,6 @@ def fetch_programs():
 def fetch_page(scraper, program_id: int, year: int) -> list:
     try:
         url = DETAILS_URL.format(program_id, year)
-        print(url)
         response = scraper.get(url)
         response.raise_for_status()
         return extract_details(response.text)
