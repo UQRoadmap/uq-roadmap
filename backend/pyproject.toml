@@ -5,7 +5,11 @@ description = "Backend for UQ Roadmap"
 readme = "README.md"
 requires-python = ">=3.13.4"
 dependencies = [
+<<<<<<< HEAD
     "bs4>=0.0.2",
+=======
+    "asyncpg>=0.30.0",
+>>>>>>> 3e47eb7513c625c01cc2e18c1e9f33a04fed4a68
     "fastapi[all]>=0.116.1",
     "pydantic>=2.11.7",
     "pydantic-settings>=2.10.1",

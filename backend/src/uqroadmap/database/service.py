@@ -49,6 +49,7 @@ async def initialise_database(engine: AsyncEngine) -> None:
     """Initialise database."""
     # Importing as now sqlalchemy will know about them when creating the schema
     from uqroadmap.database.base import BaseDBModel
+    from uqroadmap.degree.models import DegreeDBModel
 
     async with engine.begin() as conn:
         await conn.run_sync(BaseDBModel.metadata.create_all)
