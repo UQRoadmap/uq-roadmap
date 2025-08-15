@@ -11,20 +11,15 @@ def configure_logging(level: LogLevel) -> None:
     """Setting up the logging."""
     log_level_val = level.get_level()
 
-    logger = logging.getLogger("csse3200bot")
+    logger = logging.getLogger("uqroadmap")
     logger.setLevel(log_level_val)
 
     console_handler = logging.StreamHandler()
     console_handler.setLevel(log_level_val)
 
-    file_handler = logging.FileHandler("discord-bots.log", encoding="utf-8", mode="w")
-    file_handler.setLevel(log_level_val)
-
     # Set Formatters
     formatter = logging.Formatter(LOG_FORMAT)
     console_handler.setFormatter(formatter)
-    file_handler.setFormatter(formatter)
 
     if not logger.hasHandlers():
         logger.addHandler(console_handler)
-        logger.addHandler(file_handler)
