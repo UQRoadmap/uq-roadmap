@@ -1,0 +1,1962 @@
+ {
+    "title": "my.UQ - The University of Queensland, Australia",
+    "params": {
+        "type": "program",
+        "code": "5522",
+        "year": "2026"
+    },
+    "status": {
+        "noLongerOffered": false,
+        "alternate": null,
+        "domestic": {
+            "suspension": false,
+            "available": true
+        },
+        "international": {
+            "suspension": false,
+            "available": true
+        }
+    },
+    "programRequirements": {
+        "coPDF": {
+            "src": "https:\/\/objectstorage.ap-sydney-1.oraclecloud.com\/p\/xmAgD5VkAqpWt51OnILGRoG6vBrOD0fS3QCKo9jEraSm7XY6lliJB63raQuI0E46\/n\/ax7hzzupr0lq\/b\/UQ-PROD-STORAGE\/o\/Master-of-Computer-Science-5522-5",
+            "extraData": null
+        },
+        "code": "5522",
+        "applicablePeriod": {
+            "toYear": null,
+            "toTerm": null,
+            "fromYear": "2025",
+            "fromTerm": "Semester 1"
+        },
+        "publishInstanceID": 30660,
+        "type": "ProgramRules",
+        "orgParent": "The University of Queensland",
+        "cmsVersion": "07.06.12.09.01",
+        "authorLastName": "Norris",
+        "subtype": "Postgraduate Program",
+        "payload": {
+            "components": [
+                {
+                    "internalComponentIdentifier": 8,
+                    "componentIntegrationIdentifier": "SEPARATOR_PROGRAM_RULES",
+                    "payload": {
+                        "title": "2 - Program Requirements"
+                    },
+                    "name": "2 - Program Requirements",
+                    "type": "SEPARATOR"
+                },
+                {
+                    "internalComponentIdentifier": 1,
+                    "componentIntegrationIdentifier": "PROGRAM_RULES",
+                    "payload": {
+                        "header": {
+                            "ruleLogic": "Part A OR Part B",
+                            "auxiliaryRules": [
+                                {
+                                    "code": "AR1",
+                                    "text": "Selected courses must include at least [N] units at level [LEVEL][OR_HIGHER].",
+                                    "params": [
+                                        {
+                                            "name": "N",
+                                            "type": "NUMBER",
+                                            "value": 12
+                                        },
+                                        {
+                                            "name": "LEVEL",
+                                            "type": "LEVEL",
+                                            "value": 6
+                                        },
+                                        {
+                                            "name": "OR_HIGHER",
+                                            "type": "OR_HIGHER",
+                                            "value": "Yes"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "code": "AR1",
+                                    "text": "Selected courses must include at least [N] units at level [LEVEL][OR_HIGHER].",
+                                    "params": [
+                                        {
+                                            "name": "N",
+                                            "type": "NUMBER",
+                                            "value": 8
+                                        },
+                                        {
+                                            "name": "LEVEL",
+                                            "type": "LEVEL",
+                                            "value": 7
+                                        },
+                                        {
+                                            "name": "OR_HIGHER",
+                                            "type": "OR_HIGHER",
+                                            "value": "No"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "title": "Master of Computer Science (MCompSc)",
+                            "summaryDescription": "<p><strong>Complete 24 units for either of the following:<\/strong><\/p><ul><li class=\"ql-indent-1\"><strong>24<\/strong> units for <strong>MCompSc - 1.5 year duration<\/strong>, or<\/li><li class=\"ql-indent-1\"><strong>24<\/strong> units for <strong>MCompSc - 1 year duration (16 units of study and 8 units for prior learning)<\/strong><\/li><\/ul>"
+                        },
+                        "body": [
+                            {
+                                "header": {
+                                    "partUID": "09e296c2-ed7a-fdfc-2abe-22105c511935",
+                                    "ruleLogic": "Part A.1 AND Part A.2 AND Part A.3 AND Part A.4",
+                                    "partReference": "A",
+                                    "unitsMin": 24,
+                                    "auxiliaryRules": [],
+                                    "title": "MCompSc - 1.5 year duration",
+                                    "summaryDescription": "<p><strong>Complete 24 units comprising:<\/strong><\/p><ul><li class=\"ql-indent-1\"><strong>6<\/strong> to <strong>18<\/strong> units from <strong>MCompSc Flexible Core Courses<\/strong>, and<\/li><li class=\"ql-indent-1\"><strong>6<\/strong> to <strong>10<\/strong> units from <strong>MCompSc Research Courses<\/strong>, and<\/li><li class=\"ql-indent-1\"><strong>0<\/strong> to <strong>6<\/strong> units from <strong>MCompSc Advanced Undergraduate Elective Courses<\/strong>, and<\/li><li class=\"ql-indent-1\"><strong>0<\/strong> to <strong>8<\/strong> units from <strong>MCompSc Postgraduate Elective Courses<\/strong><\/li><\/ul>",
+                                    "partType": "SubRule",
+                                    "unitsMax": 24
+                                },
+                                "body": [
+                                    {
+                                        "header": {
+                                            "partUID": "58072547-753a-a6bb-904c-81016da2f800",
+                                            "notes": null,
+                                            "partReference": "A.1",
+                                            "auxiliaryRules": [],
+                                            "selectionRule": {
+                                                "code": "SR4",
+                                                "text": "Complete [N] to [M] units from the following:",
+                                                "params": [
+                                                    {
+                                                        "name": "N",
+                                                        "type": "NUMBER",
+                                                        "value": 6
+                                                    },
+                                                    {
+                                                        "name": "M",
+                                                        "type": "NUMBER",
+                                                        "value": 18
+                                                    }
+                                                ]
+                                            },
+                                            "title": "MCompSc Flexible Core Courses",
+                                            "partType": "SelectionList"
+                                        },
+                                        "body": [
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 1,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "COMP3820",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 1
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Digital Health Software Project",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 2,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "COMP4403",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 3,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2025",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Compilers and Interpreters",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 3,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "COMP4703",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 1,
+                                                        "minor": 2
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Natural Language Processing",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 4,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "COMP7500",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Advanced Algorithms & Data Structures",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 5,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "COMP7703",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": false,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Machine Learning",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 6,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "COMS4105",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Communication Systems",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 7,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "COMS4507",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 2,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": false,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Advanced Topics in Security",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 8,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "COMS6200",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Computer Networks II",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 9,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "CSSE4011",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 2,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": false,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Advanced Embedded Systems",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 10,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "CSSE4630",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Principles of Program Analysis",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 11,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "CSSE6400",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 2,
+                                                        "minor": 1
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": false,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Software Architecture",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 12,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "CSSE7610",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 5,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2025",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Concurrency: Theory and Practice",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 13,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "DECO6500",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 3
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Advanced Human-Computer Interaction",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 14,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "INFS7203",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Data Mining",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 15,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "INFS7205",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 3,
+                                                        "minor": 1
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": false,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Advanced Techniques for High Dimensional Data",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 16,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "INFS7410",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 5,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2025",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Information Retrieval and Web Search",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 17,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "INFS7450",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 2,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": false,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Social Media Analytics",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "header": {
+                                            "partUID": "9ccf5a7f-6896-43a3-46f8-38265633c702",
+                                            "notes": "<p>1. Code for full-time students in year long courses commencing in Semester 1. Students&nbsp;must re-enrol in the same code in Semester 2.<\/p><p>2. Code for full-time students in year long courses commencing in Semester 2. Students&nbsp;must re-enrol in the same code in Semester 1 the following year.<\/p>",
+                                            "partReference": "A.2",
+                                            "auxiliaryRules": [],
+                                            "selectionRule": {
+                                                "code": "SR4",
+                                                "text": "Complete [N] to [M] units from the following:",
+                                                "params": [
+                                                    {
+                                                        "name": "N",
+                                                        "type": "NUMBER",
+                                                        "value": 6
+                                                    },
+                                                    {
+                                                        "name": "M",
+                                                        "type": "NUMBER",
+                                                        "value": 10
+                                                    }
+                                                ]
+                                            },
+                                            "title": "MCompSc Research Courses",
+                                            "partType": "SelectionList"
+                                        },
+                                        "body": [
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 1,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "REIT6811",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 1,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2025",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Research Methods",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "EquivalenceGroup",
+                                                "equivalenceGroup": [
+                                                    {
+                                                        "orderNumber": 2,
+                                                        "notes": "(1)",
+                                                        "curriculumReference": {
+                                                            "unitsMaximum": 4,
+                                                            "code": "REIT7841",
+                                                            "orgName": "Elec Engineering & Comp Science School",
+                                                            "type": "Course",
+                                                            "version": {
+                                                                "major": 1,
+                                                                "minor": 2
+                                                            },
+                                                            "subtype": "Course",
+                                                            "fromYear": "2025",
+                                                            "latestVersion": true,
+                                                            "unitsMinimum": 4,
+                                                            "orgCode": "IT&EESCHL",
+                                                            "name": "Research and Development Methods and Practice",
+                                                            "fromTerm": "Semester 1",
+                                                            "state": "Published"
+                                                        }
+                                                    },
+                                                    {
+                                                        "orderNumber": 3,
+                                                        "notes": "(2)",
+                                                        "curriculumReference": {
+                                                            "unitsMaximum": 4,
+                                                            "code": "REIT7842",
+                                                            "orgName": "Elec Engineering & Comp Science School",
+                                                            "type": "Course",
+                                                            "version": {
+                                                                "major": 1,
+                                                                "minor": 2
+                                                            },
+                                                            "subtype": "Course",
+                                                            "fromYear": "2025",
+                                                            "latestVersion": true,
+                                                            "unitsMinimum": 4,
+                                                            "orgCode": "IT&EESCHL",
+                                                            "name": "Research and Development Methods and Practice",
+                                                            "fromTerm": "Semester 1",
+                                                            "state": "Published"
+                                                        }
+                                                    },
+                                                    {
+                                                        "orderNumber": 4,
+                                                        "notes": "(1)",
+                                                        "curriculumReference": {
+                                                            "unitsMaximum": 8,
+                                                            "code": "REIT7881",
+                                                            "orgName": "Elec Engineering & Comp Science School",
+                                                            "type": "Course",
+                                                            "version": {
+                                                                "major": 1,
+                                                                "minor": 3
+                                                            },
+                                                            "subtype": "Course",
+                                                            "fromYear": "2025",
+                                                            "latestVersion": true,
+                                                            "unitsMinimum": 8,
+                                                            "orgCode": "IT&EESCHL",
+                                                            "name": "Research and Development Methods and Practice",
+                                                            "fromTerm": "Semester 1",
+                                                            "state": "Published"
+                                                        }
+                                                    },
+                                                    {
+                                                        "orderNumber": 5,
+                                                        "notes": "(2)",
+                                                        "curriculumReference": {
+                                                            "unitsMaximum": 8,
+                                                            "code": "REIT7882",
+                                                            "orgName": "Elec Engineering & Comp Science School",
+                                                            "type": "Course",
+                                                            "version": {
+                                                                "major": 1,
+                                                                "minor": 3
+                                                            },
+                                                            "subtype": "Course",
+                                                            "fromYear": "2025",
+                                                            "latestVersion": true,
+                                                            "unitsMinimum": 8,
+                                                            "orgCode": "IT&EESCHL",
+                                                            "name": "Research and Development Methods and Practice",
+                                                            "fromTerm": "Semester 1",
+                                                            "state": "Published"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "header": {
+                                            "partUID": "4f282061-f9cf-fa05-e95e-490abf721c37",
+                                            "notes": null,
+                                            "partReference": "A.3",
+                                            "auxiliaryRules": [],
+                                            "selectionRule": {
+                                                "code": "SR4",
+                                                "text": "Complete [N] to [M] units from the following:",
+                                                "params": [
+                                                    {
+                                                        "name": "N",
+                                                        "type": "NUMBER",
+                                                        "value": 0
+                                                    },
+                                                    {
+                                                        "name": "M",
+                                                        "type": "NUMBER",
+                                                        "value": 6
+                                                    }
+                                                ]
+                                            },
+                                            "title": "MCompSc Advanced Undergraduate Elective Courses",
+                                            "partType": "SelectionList"
+                                        },
+                                        "body": [
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 1,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "COMP3301",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 1
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Operating Systems Architecture",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 2,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "COMP3506",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 1
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Algorithms & Data Structures",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 3,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "COMP3702",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 1
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Artificial Intelligence",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 4,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "COMS3200",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 2,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": false,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Computer Networks I",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 5,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "CSSE3010",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 3,
+                                                        "minor": 2
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": false,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Embedded Systems Design & Interfacing",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 6,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "CSSE3012",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 3,
+                                                        "minor": 3
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": false,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "The Software Process",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 7,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "CYBR3000",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Information Security",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 8,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "DECO3500",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 1
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Social & Mobile Computing",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 9,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "INFS3200",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 5,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2025",
+                                                    "latestVersion": false,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Advanced Database Systems",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 10,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "INFS3208",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 1
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Cloud Computing",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "header": {
+                                            "partUID": "f2ee9cb4-e6b5-41df-c8ec-384d4845f84a",
+                                            "notes": null,
+                                            "partReference": "A.4",
+                                            "auxiliaryRules": [],
+                                            "selectionRule": {
+                                                "code": "SR4",
+                                                "text": "Complete [N] to [M] units from the following:",
+                                                "params": [
+                                                    {
+                                                        "name": "N",
+                                                        "type": "NUMBER",
+                                                        "value": 0
+                                                    },
+                                                    {
+                                                        "name": "M",
+                                                        "type": "NUMBER",
+                                                        "value": 8
+                                                    }
+                                                ]
+                                            },
+                                            "title": "MCompSc Postgraduate Elective Courses",
+                                            "partType": "SelectionList"
+                                        },
+                                        "body": [
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 1,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "BISM7255",
+                                                    "orgName": "Business School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 2
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "BUSINESS",
+                                                    "name": "Business Information Systems Analysis and Design",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 2,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "COMP7110",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 2,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2025",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Introduction to Software Innovation",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 3,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "COSC7502",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "High-Performance Computing",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 4,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "CSSE7100",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 5,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2025",
+                                                    "latestVersion": false,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Reasoning about Programs",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 5,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "INFS7202",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 3,
+                                                        "minor": 1
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": false,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Web Information Systems",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "header": {
+                                    "partUID": "ac638e36-ff28-56ba-3f60-d0f1f63780f6",
+                                    "ruleLogic": "Part B.1 AND Part B.2 AND Part B.3 AND Part B.4",
+                                    "partReference": "B",
+                                    "unitsMin": 24,
+                                    "auxiliaryRules": [],
+                                    "title": "MCompSc - 1 year duration (16 units of study and 8 units for prior learning)",
+                                    "summaryDescription": "<p><strong>Complete 24 units comprising:<\/strong><\/p><ul><li class=\"ql-indent-1\"><strong>2<\/strong> to <strong>10<\/strong> units from <strong>MCompSc Flexible Core Courses<\/strong>, and<\/li><li class=\"ql-indent-1\"><strong>6<\/strong> to <strong>10<\/strong> units from <strong>MCompSc Research Courses<\/strong>, and<\/li><li class=\"ql-indent-1\"><strong>0<\/strong> to <strong>4<\/strong> units from <strong>MCompSc Postgraduate Elective Courses<\/strong>, and<\/li><li class=\"ql-indent-1\"><strong>8<\/strong> units from <strong>Approved recognised prior study and\/or work experience<\/strong><\/li><\/ul>",
+                                    "partType": "SubRule",
+                                    "unitsMax": 24
+                                },
+                                "body": [
+                                    {
+                                        "header": {
+                                            "partUID": "119b0fb7-dac5-7685-a072-c3d9878d4995",
+                                            "notes": null,
+                                            "partReference": "B.1",
+                                            "auxiliaryRules": [],
+                                            "selectionRule": {
+                                                "code": "SR4",
+                                                "text": "Complete [N] to [M] units from the following:",
+                                                "params": [
+                                                    {
+                                                        "name": "N",
+                                                        "type": "NUMBER",
+                                                        "value": 2
+                                                    },
+                                                    {
+                                                        "name": "M",
+                                                        "type": "NUMBER",
+                                                        "value": 10
+                                                    }
+                                                ]
+                                            },
+                                            "title": "MCompSc Flexible Core Courses",
+                                            "partType": "SelectionList"
+                                        },
+                                        "body": [
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 1,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "COMP3820",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 1
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Digital Health Software Project",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 2,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "COMP4403",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 3,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2025",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Compilers and Interpreters",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 3,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "COMP4703",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 1,
+                                                        "minor": 2
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Natural Language Processing",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 4,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "COMP7500",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Advanced Algorithms & Data Structures",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 5,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "COMP7703",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": false,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Machine Learning",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 6,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "COMS4105",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Communication Systems",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 7,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "COMS4507",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 2,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": false,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Advanced Topics in Security",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 8,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "COMS6200",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Computer Networks II",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 9,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "CSSE4011",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 2,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": false,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Advanced Embedded Systems",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 10,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "CSSE4630",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Principles of Program Analysis",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 11,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "CSSE6400",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 2,
+                                                        "minor": 1
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": false,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Software Architecture",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 12,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "CSSE7610",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 5,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2025",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Concurrency: Theory and Practice",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 13,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "DECO6500",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 3
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Advanced Human-Computer Interaction",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 14,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "INFS7203",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Data Mining",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 15,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "INFS7205",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 3,
+                                                        "minor": 1
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": false,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Advanced Techniques for High Dimensional Data",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 16,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "INFS7410",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 5,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2025",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Information Retrieval and Web Search",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 17,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "INFS7450",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 2,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": false,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Social Media Analytics",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "header": {
+                                            "partUID": "c2b6c954-f503-47fe-7c4e-ea2f610de552",
+                                            "notes": "<p>1. Code for full-time students in year long courses commencing in Semester 1. Students&nbsp;must re-enrol in the same code in Semester 2.<\/p><p>2. Code for full-time students in year long courses commencing in Semester 2. Students&nbsp;must re-enrol in the same code in Semester 1 the following year.<\/p>",
+                                            "partReference": "B.2",
+                                            "auxiliaryRules": [],
+                                            "selectionRule": {
+                                                "code": "SR4",
+                                                "text": "Complete [N] to [M] units from the following:",
+                                                "params": [
+                                                    {
+                                                        "name": "N",
+                                                        "type": "NUMBER",
+                                                        "value": 6
+                                                    },
+                                                    {
+                                                        "name": "M",
+                                                        "type": "NUMBER",
+                                                        "value": 10
+                                                    }
+                                                ]
+                                            },
+                                            "title": "MCompSc Research Courses",
+                                            "partType": "SelectionList"
+                                        },
+                                        "body": [
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 1,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "REIT6811",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 1,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2025",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Research Methods",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "EquivalenceGroup",
+                                                "equivalenceGroup": [
+                                                    {
+                                                        "orderNumber": 2,
+                                                        "notes": "(1)",
+                                                        "curriculumReference": {
+                                                            "unitsMaximum": 4,
+                                                            "code": "REIT7841",
+                                                            "orgName": "Elec Engineering & Comp Science School",
+                                                            "type": "Course",
+                                                            "version": {
+                                                                "major": 1,
+                                                                "minor": 2
+                                                            },
+                                                            "subtype": "Course",
+                                                            "fromYear": "2025",
+                                                            "latestVersion": true,
+                                                            "unitsMinimum": 4,
+                                                            "orgCode": "IT&EESCHL",
+                                                            "name": "Research and Development Methods and Practice",
+                                                            "fromTerm": "Semester 1",
+                                                            "state": "Published"
+                                                        }
+                                                    },
+                                                    {
+                                                        "orderNumber": 3,
+                                                        "notes": "(2)",
+                                                        "curriculumReference": {
+                                                            "unitsMaximum": 4,
+                                                            "code": "REIT7842",
+                                                            "orgName": "Elec Engineering & Comp Science School",
+                                                            "type": "Course",
+                                                            "version": {
+                                                                "major": 1,
+                                                                "minor": 2
+                                                            },
+                                                            "subtype": "Course",
+                                                            "fromYear": "2025",
+                                                            "latestVersion": true,
+                                                            "unitsMinimum": 4,
+                                                            "orgCode": "IT&EESCHL",
+                                                            "name": "Research and Development Methods and Practice",
+                                                            "fromTerm": "Semester 1",
+                                                            "state": "Published"
+                                                        }
+                                                    },
+                                                    {
+                                                        "orderNumber": 4,
+                                                        "notes": "(1)",
+                                                        "curriculumReference": {
+                                                            "unitsMaximum": 8,
+                                                            "code": "REIT7881",
+                                                            "orgName": "Elec Engineering & Comp Science School",
+                                                            "type": "Course",
+                                                            "version": {
+                                                                "major": 1,
+                                                                "minor": 3
+                                                            },
+                                                            "subtype": "Course",
+                                                            "fromYear": "2025",
+                                                            "latestVersion": true,
+                                                            "unitsMinimum": 8,
+                                                            "orgCode": "IT&EESCHL",
+                                                            "name": "Research and Development Methods and Practice",
+                                                            "fromTerm": "Semester 1",
+                                                            "state": "Published"
+                                                        }
+                                                    },
+                                                    {
+                                                        "orderNumber": 5,
+                                                        "notes": "(2)",
+                                                        "curriculumReference": {
+                                                            "unitsMaximum": 8,
+                                                            "code": "REIT7882",
+                                                            "orgName": "Elec Engineering & Comp Science School",
+                                                            "type": "Course",
+                                                            "version": {
+                                                                "major": 1,
+                                                                "minor": 3
+                                                            },
+                                                            "subtype": "Course",
+                                                            "fromYear": "2025",
+                                                            "latestVersion": true,
+                                                            "unitsMinimum": 8,
+                                                            "orgCode": "IT&EESCHL",
+                                                            "name": "Research and Development Methods and Practice",
+                                                            "fromTerm": "Semester 1",
+                                                            "state": "Published"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "header": {
+                                            "partUID": "fc4fb0b5-43be-98c7-1719-5c92994eddf8",
+                                            "notes": null,
+                                            "partReference": "B.3",
+                                            "auxiliaryRules": [],
+                                            "selectionRule": {
+                                                "code": "SR4",
+                                                "text": "Complete [N] to [M] units from the following:",
+                                                "params": [
+                                                    {
+                                                        "name": "N",
+                                                        "type": "NUMBER",
+                                                        "value": 0
+                                                    },
+                                                    {
+                                                        "name": "M",
+                                                        "type": "NUMBER",
+                                                        "value": 4
+                                                    }
+                                                ]
+                                            },
+                                            "title": "MCompSc Postgraduate Elective Courses",
+                                            "partType": "SelectionList"
+                                        },
+                                        "body": [
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 1,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "BISM7255",
+                                                    "orgName": "Business School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 2
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "BUSINESS",
+                                                    "name": "Business Information Systems Analysis and Design",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 2,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "COMP7110",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 2,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2025",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Introduction to Software Innovation",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 3,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "COSC7502",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "High-Performance Computing",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 4,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "CSSE7100",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 5,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2025",
+                                                    "latestVersion": false,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Reasoning about Programs",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 5,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "INFS7202",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 3,
+                                                        "minor": 1
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": false,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Web Information Systems",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "header": {
+                                            "partUID": "96a28bc8-96e6-c4cc-0269-82d2fe541a3c",
+                                            "notes": null,
+                                            "partReference": "B.4",
+                                            "auxiliaryRules": [],
+                                            "selectionRule": {
+                                                "code": "SR5",
+                                                "text": "Complete exactly [N] units from the following:",
+                                                "params": [
+                                                    {
+                                                        "name": "N",
+                                                        "type": "NUMBER",
+                                                        "value": 8
+                                                    }
+                                                ]
+                                            },
+                                            "title": "Approved recognised prior study and\/or work experience",
+                                            "partType": "SelectionList"
+                                        },
+                                        "body": [
+                                            {
+                                                "rowType": "CurriculumReference",
+                                                "orderNumber": 1,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 8,
+                                                    "code": "RPDCR7008",
+                                                    "orgName": "The University of Queensland",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 1,
+                                                        "minor": 1
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2023",
+                                                    "latestVersion": false,
+                                                    "unitsMinimum": 8,
+                                                    "orgCode": "UQUNI",
+                                                    "name": "Prior Learning (8)",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "name": "Rules",
+                    "type": "PROGRAM_RULE"
+                },
+                {
+                    "internalComponentIdentifier": 34,
+                    "componentIntegrationIdentifier": "SEPARATOR_SPECIAL_RULES",
+                    "payload": {
+                        "title": "3 - Special Rules"
+                    },
+                    "name": "3 - Special Rules",
+                    "type": "SEPARATOR"
+                },
+                {
+                    "internalComponentIdentifier": 35,
+                    "componentIntegrationIdentifier": "DESCRIPTION_SPECIAL_RULES",
+                    "payload": {
+                        "value": null
+                    },
+                    "name": "Detail any special rules which are to be applied:",
+                    "type": "MULTI_LINE_TEXT"
+                },
+                {
+                    "internalComponentIdentifier": 38,
+                    "componentIntegrationIdentifier": "Program-Requirements.Overlap-Rule",
+                    "payload": {
+                        "valueIntegrationIdentifiers": [],
+                        "values": []
+                    },
+                    "name": "Course Overlap Rules Options",
+                    "type": "CHECK_BOX"
+                }
+            ]
+        },
+        "orgCode": "EAIT",
+        "externalSystemIdentifiers": [
+            {
+                "systemCode": "TRIM",
+                "id": "159530290"
+            }
+        ],
+        "state": "PublishRequest",
+        "unitsMaximum": 24,
+        "orgName": "Eng, Archi & Info Tech Fac",
+        "baseVersion": {
+            "major": 5,
+            "minor": 0
+        },
+        "workflowName": "Prog Req - Simple Amendment",
+        "version": {
+            "major": 5,
+            "minor": 1
+        },
+        "editDate": "2024-12-17T00:29:37Z",
+        "previousState": "Approved",
+        "swaggerVersion": {
+            "major": 1,
+            "minor": 33
+        },
+        "templateName": "Program Requirements",
+        "unitsMinimum": 24,
+        "templateIntegrationIdentifier": "ProgReq,ProgReq",
+        "yearApplied": "2025",
+        "authorGivenName": "Bridget",
+        "name": "Master of Computer Science",
+        "templateVersion": 3
+    },
+    "yearOptions": [
+        "2026",
+        "2025",
+        "2024",
+        "2023",
+        "2022",
+        "2021",
+        "2020",
+        "2019",
+        "2018",
+        "2017",
+        "2016",
+        "2015",
+        "2014",
+        "2013",
+        "2012",
+        "2011"
+    ],
+    "routes": {
+        "jac": {
+            "program": {
+                "list": "\/requirements\/program\/{code}\/{year}"
+            },
+            "plan": {
+                "list": "\/requirements\/plan\/{code}\/{year}"
+            },
+            "redirect": "\/requirements\/redirect?type={type}&code={code}&year={year}"
+        },
+        "sinet": {
+            "home": "\/index.html",
+            "program": {
+                "detail": "\/program.html?acad_prog={code}&year={year}",
+                "list": "\/program_list.html?acad_prog={code}&year={year}"
+            },
+            "plan": {
+                "detail": "\/plan.html?acad_plan={code}&year={year}",
+                "list": "\/plan_display.html?acad_plan={code}&year={year}"
+            },
+            "course": {
+                "detail": "\/course.html?course_code={code}"
+            },
+            "search": "\/search.html?keywords={keywords}&searchType=coursecode&year={year}",
+            "wildsearch": "\/index.html?searchType=coursecode"
+        }
+    }
+}

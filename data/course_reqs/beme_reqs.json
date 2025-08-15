@@ -1,0 +1,1591 @@
+{
+    "title": "my.UQ - The University of Queensland, Australia",
+    "params": {
+        "type": "program",
+        "code": "2350",
+        "year": "2026"
+    },
+    "status": {
+        "noLongerOffered": false,
+        "alternate": null,
+        "domestic": {
+            "suspension": false,
+            "available": true
+        },
+        "international": {
+            "suspension": false,
+            "available": true
+        }
+    },
+    "programRequirements": {
+        "coPDF": {
+            "src": "https://objectstorage.ap-sydney-1.oraclecloud.com/p/vgi-ICT3FFRudoL86GgCLciCReeF-J52PIuFlFcIlzMEG6ROjcq1JU1LCjfZIAJ4/n/ax7hzzupr0lq/b/UQ-PROD-STORAGE/o/Bachelor-of-Engineering--Honours--and-Master-of-Engineering-2350-6",
+            "extraData": null
+        },
+        "code": "2350",
+        "applicablePeriod": {
+            "toYear": null,
+            "toTerm": null,
+            "fromYear": "2025",
+            "fromTerm": "Semester 1"
+        },
+        "publishInstanceID": 38584,
+        "type": "ProgramRules",
+        "orgParent": "The University of Queensland",
+        "cmsVersion": "07.06.12.09.01",
+        "authorLastName": "Norris",
+        "subtype": "Undergraduate Program",
+        "payload": {
+            "components": [
+                {
+                    "internalComponentIdentifier": 8,
+                    "componentIntegrationIdentifier": "SEPARATOR_PROGRAM_RULES",
+                    "payload": {
+                        "title": "2 - Program Requirements"
+                    },
+                    "name": "2 - Program Requirements",
+                    "type": "SEPARATOR"
+                },
+                {
+                    "internalComponentIdentifier": 1,
+                    "componentIntegrationIdentifier": "PROGRAM_RULES",
+                    "payload": {
+                        "header": {
+                            "ruleLogic": "Part A and Part B and Part C and Part D and Part E and Part F",
+                            "auxiliaryRules": [
+                                {
+                                    "code": "AR9",
+                                    "text": "No credit will be given for [COURSE_LIST].",
+                                    "params": [
+                                        {
+                                            "name": "COURSE_LIST",
+                                            "type": "COURSE_LIST_OR",
+                                            "value": [
+                                                {
+                                                    "unitsMaximum": 2,
+                                                    "code": "ECON1050",
+                                                    "orgName": "Economics School",
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "ECONOMICS",
+                                                    "name": "Tools of Economic Analysis",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 2,
+                                                        "minor": 0
+                                                    }
+                                                },
+                                                {
+                                                    "unitsMaximum": 2,
+                                                    "code": "ECON1310",
+                                                    "orgName": "Economics School",
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "ECONOMICS",
+                                                    "name": "Introductory Statistics for Social Sciences",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 2,
+                                                        "minor": 2
+                                                    }
+                                                },
+                                                {
+                                                    "unitsMaximum": 2,
+                                                    "code": "MATH1040",
+                                                    "orgName": "Mathematics & Physics School",
+                                                    "subtype": "Course",
+                                                    "fromYear": "2025",
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "MATHSPHYS",
+                                                    "name": "Mathematical Foundations I",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 2
+                                                    }
+                                                },
+                                                {
+                                                    "unitsMaximum": 2,
+                                                    "code": "SCIE1000",
+                                                    "orgName": "Mathematics & Physics School",
+                                                    "subtype": "Course",
+                                                    "fromYear": "2025",
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "MATHSPHYS",
+                                                    "name": "Theory & Practice in Science",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 8,
+                                                        "minor": 1
+                                                    }
+                                                },
+                                                {
+                                                    "unitsMaximum": 2,
+                                                    "code": "SCIE1100",
+                                                    "orgName": "Mathematics & Physics School",
+                                                    "subtype": "Course",
+                                                    "fromYear": "2025",
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "MATHSPHYS",
+                                                    "name": "Advanced Theory & Practice in Science",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 1
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "code": "AR10",
+                                    "text": "No credit will be given for [COURSE_LIST] for a student completing the [PLAN_LIST].",
+                                    "params": [
+                                        {
+                                            "name": "COURSE_LIST",
+                                            "type": "COURSE_LIST_OR",
+                                            "value": [
+                                                {
+                                                    "unitsMaximum": 2,
+                                                    "code": "STAT1201",
+                                                    "orgName": "Mathematics & Physics School",
+                                                    "subtype": "Course",
+                                                    "fromYear": "2025",
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "MATHSPHYS",
+                                                    "name": "Analysis of Scientific Data",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 6,
+                                                        "minor": 2
+                                                    }
+                                                },
+                                                {
+                                                    "unitsMaximum": 2,
+                                                    "code": "STAT1301",
+                                                    "orgName": "Mathematics & Physics School",
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "MATHSPHYS",
+                                                    "name": "Advanced Analysis of Scientific Data",
+                                                    "fromTerm": "Semester 2",
+                                                    "state": "Published",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 0
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "name": "PLAN_LIST",
+                                            "type": "PLAN_WITH_PARENT_LIST",
+                                            "value": [
+                                                {
+                                                    "parentProgram": {
+                                                        "unitsMaximum": 80,
+                                                        "code": "2350",
+                                                        "orgName": "Eng, Archi & Info Tech Fac",
+                                                        "type": "Program Rqt",
+                                                        "abbreviation": "BE(Hon)\/ME",
+                                                        "version": {
+                                                            "major": 6,
+                                                            "minor": 5
+                                                        },
+                                                        "subtype": "Undergraduate Program",
+                                                        "fromYear": "2025",
+                                                        "unitsMinimum": 80,
+                                                        "orgCode": "EAIT",
+                                                        "name": "Bachelor of Engineering (Honours) and Master of Engineering",
+                                                        "fromTerm": "Semester 1",
+                                                        "state": "PublishRequest"
+                                                    },
+                                                    "plan": {
+                                                        "unitsMaximum": 66,
+                                                        "code": "CHEMIX2350",
+                                                        "orgName": "Chemical Engineering School",
+                                                        "subtype": "Field of Study",
+                                                        "fromYear": "2025",
+                                                        "unitsMinimum": 66,
+                                                        "orgCode": "CHEMICAL",
+                                                        "name": "Chemical Engineering",
+                                                        "fromTerm": "Semester 1",
+                                                        "state": "Published",
+                                                        "type": "Program Rqt",
+                                                        "version": {
+                                                            "major": 5,
+                                                            "minor": 0
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "parentProgram": {
+                                                        "unitsMaximum": 80,
+                                                        "code": "2350",
+                                                        "orgName": "Eng, Archi & Info Tech Fac",
+                                                        "type": "Program Rqt",
+                                                        "abbreviation": "BE(Hon)\/ME",
+                                                        "version": {
+                                                            "major": 6,
+                                                            "minor": 5
+                                                        },
+                                                        "subtype": "Undergraduate Program",
+                                                        "fromYear": "2025",
+                                                        "unitsMinimum": 80,
+                                                        "orgCode": "EAIT",
+                                                        "name": "Bachelor of Engineering (Honours) and Master of Engineering",
+                                                        "fromTerm": "Semester 1",
+                                                        "state": "PublishRequest"
+                                                    },
+                                                    "plan": {
+                                                        "unitsMaximum": 66,
+                                                        "code": "CBIOMX2350",
+                                                        "orgName": "Chemical Engineering School",
+                                                        "subtype": "Field of Study",
+                                                        "fromYear": "2025",
+                                                        "unitsMinimum": 66,
+                                                        "orgCode": "CHEMICAL",
+                                                        "name": "Chemical and Biomedical Engineering",
+                                                        "fromTerm": "Semester 1",
+                                                        "state": "Published",
+                                                        "type": "Program Rqt",
+                                                        "version": {
+                                                            "major": 5,
+                                                            "minor": 1
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "parentProgram": {
+                                                        "unitsMaximum": 80,
+                                                        "code": "2350",
+                                                        "orgName": "Eng, Archi & Info Tech Fac",
+                                                        "type": "Program Rqt",
+                                                        "abbreviation": "BE(Hon)\/ME",
+                                                        "version": {
+                                                            "major": 6,
+                                                            "minor": 5
+                                                        },
+                                                        "subtype": "Undergraduate Program",
+                                                        "fromYear": "2025",
+                                                        "unitsMinimum": 80,
+                                                        "orgCode": "EAIT",
+                                                        "name": "Bachelor of Engineering (Honours) and Master of Engineering",
+                                                        "fromTerm": "Semester 1",
+                                                        "state": "PublishRequest"
+                                                    },
+                                                    "plan": {
+                                                        "unitsMaximum": 66,
+                                                        "code": "CBIOPX2350",
+                                                        "orgName": "Chemical Engineering School",
+                                                        "subtype": "Field of Study",
+                                                        "fromYear": "2025",
+                                                        "unitsMinimum": 66,
+                                                        "orgCode": "CHEMICAL",
+                                                        "name": "Chemical and Bioprocess Engineering",
+                                                        "fromTerm": "Semester 1",
+                                                        "state": "Published",
+                                                        "type": "Program Rqt",
+                                                        "version": {
+                                                            "major": 5,
+                                                            "minor": 0
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "parentProgram": {
+                                                        "unitsMaximum": 80,
+                                                        "code": "2350",
+                                                        "orgName": "Eng, Archi & Info Tech Fac",
+                                                        "type": "Program Rqt",
+                                                        "abbreviation": "BE(Hon)\/ME",
+                                                        "version": {
+                                                            "major": 6,
+                                                            "minor": 5
+                                                        },
+                                                        "subtype": "Undergraduate Program",
+                                                        "fromYear": "2025",
+                                                        "unitsMinimum": 80,
+                                                        "orgCode": "EAIT",
+                                                        "name": "Bachelor of Engineering (Honours) and Master of Engineering",
+                                                        "fromTerm": "Semester 1",
+                                                        "state": "PublishRequest"
+                                                    },
+                                                    "plan": {
+                                                        "unitsMaximum": 66,
+                                                        "code": "CHENVX2350",
+                                                        "orgName": "Chemical Engineering School",
+                                                        "subtype": "Field of Study",
+                                                        "fromYear": "2025",
+                                                        "unitsMinimum": 66,
+                                                        "orgCode": "CHEMICAL",
+                                                        "name": "Chemical and Environmental Engineering",
+                                                        "fromTerm": "Semester 1",
+                                                        "state": "Published",
+                                                        "type": "Program Rqt",
+                                                        "version": {
+                                                            "major": 5,
+                                                            "minor": 0
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "parentProgram": {
+                                                        "unitsMaximum": 80,
+                                                        "code": "2350",
+                                                        "orgName": "Eng, Archi & Info Tech Fac",
+                                                        "type": "Program Rqt",
+                                                        "abbreviation": "BE(Hon)\/ME",
+                                                        "version": {
+                                                            "major": 6,
+                                                            "minor": 5
+                                                        },
+                                                        "subtype": "Undergraduate Program",
+                                                        "fromYear": "2025",
+                                                        "unitsMinimum": 80,
+                                                        "orgCode": "EAIT",
+                                                        "name": "Bachelor of Engineering (Honours) and Master of Engineering",
+                                                        "fromTerm": "Semester 1",
+                                                        "state": "PublishRequest"
+                                                    },
+                                                    "plan": {
+                                                        "unitsMaximum": 66,
+                                                        "code": "CHMETX2350",
+                                                        "orgName": "Chemical Engineering School",
+                                                        "subtype": "Field of Study",
+                                                        "fromYear": "2025",
+                                                        "unitsMinimum": 66,
+                                                        "orgCode": "CHEMICAL",
+                                                        "name": "Chemical and Metallurgical Engineering",
+                                                        "fromTerm": "Semester 1",
+                                                        "state": "Published",
+                                                        "type": "Program Rqt",
+                                                        "version": {
+                                                            "major": 5,
+                                                            "minor": 0
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "parentProgram": {
+                                                        "unitsMaximum": 80,
+                                                        "code": "2350",
+                                                        "orgName": "Eng, Archi & Info Tech Fac",
+                                                        "type": "Program Rqt",
+                                                        "abbreviation": "BE(Hon)\/ME",
+                                                        "version": {
+                                                            "major": 6,
+                                                            "minor": 5
+                                                        },
+                                                        "subtype": "Undergraduate Program",
+                                                        "fromYear": "2025",
+                                                        "unitsMinimum": 80,
+                                                        "orgCode": "EAIT",
+                                                        "name": "Bachelor of Engineering (Honours) and Master of Engineering",
+                                                        "fromTerm": "Semester 1",
+                                                        "state": "PublishRequest"
+                                                    },
+                                                    "plan": {
+                                                        "unitsMaximum": 66,
+                                                        "code": "CIVENX2350",
+                                                        "orgName": "Civil Engineering School",
+                                                        "subtype": "Field of Study",
+                                                        "fromYear": "2025",
+                                                        "unitsMinimum": 66,
+                                                        "orgCode": "CIVIL",
+                                                        "name": "Civil Engineering",
+                                                        "fromTerm": "Semester 1",
+                                                        "state": "Published",
+                                                        "type": "Program Rqt",
+                                                        "version": {
+                                                            "major": 5,
+                                                            "minor": 0
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "parentProgram": {
+                                                        "unitsMaximum": 80,
+                                                        "code": "2350",
+                                                        "orgName": "Eng, Archi & Info Tech Fac",
+                                                        "type": "Program Rqt",
+                                                        "abbreviation": "BE(Hon)\/ME",
+                                                        "version": {
+                                                            "major": 6,
+                                                            "minor": 5
+                                                        },
+                                                        "subtype": "Undergraduate Program",
+                                                        "fromYear": "2025",
+                                                        "unitsMinimum": 80,
+                                                        "orgCode": "EAIT",
+                                                        "name": "Bachelor of Engineering (Honours) and Master of Engineering",
+                                                        "fromTerm": "Semester 1",
+                                                        "state": "PublishRequest"
+                                                    },
+                                                    "plan": {
+                                                        "unitsMaximum": 66,
+                                                        "code": "CIENVX2350",
+                                                        "orgName": "Civil Engineering School",
+                                                        "subtype": "Field of Study",
+                                                        "fromYear": "2025",
+                                                        "unitsMinimum": 66,
+                                                        "orgCode": "CIVIL",
+                                                        "name": "Civil and Environmental Engineering",
+                                                        "fromTerm": "Semester 1",
+                                                        "state": "Published",
+                                                        "type": "Program Rqt",
+                                                        "version": {
+                                                            "major": 5,
+                                                            "minor": 0
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "parentProgram": {
+                                                        "unitsMaximum": 80,
+                                                        "code": "2350",
+                                                        "orgName": "Eng, Archi & Info Tech Fac",
+                                                        "type": "Program Rqt",
+                                                        "abbreviation": "BE(Hon)\/ME",
+                                                        "version": {
+                                                            "major": 6,
+                                                            "minor": 5
+                                                        },
+                                                        "subtype": "Undergraduate Program",
+                                                        "fromYear": "2025",
+                                                        "unitsMinimum": 80,
+                                                        "orgCode": "EAIT",
+                                                        "name": "Bachelor of Engineering (Honours) and Master of Engineering",
+                                                        "fromTerm": "Semester 1",
+                                                        "state": "PublishRequest"
+                                                    },
+                                                    "plan": {
+                                                        "unitsMaximum": 66,
+                                                        "code": "SOFTEX2350",
+                                                        "orgName": "Elec Engineering & Comp Science School",
+                                                        "subtype": "Field of Study",
+                                                        "fromYear": "2025",
+                                                        "unitsMinimum": 66,
+                                                        "orgCode": "IT&EESCHL",
+                                                        "name": "Software Engineering",
+                                                        "fromTerm": "Semester 1",
+                                                        "state": "Published",
+                                                        "type": "Program Rqt",
+                                                        "version": {
+                                                            "major": 5,
+                                                            "minor": 0
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "parentProgram": {
+                                                        "unitsMaximum": 80,
+                                                        "code": "2350",
+                                                        "orgName": "Eng, Archi & Info Tech Fac",
+                                                        "type": "Program Rqt",
+                                                        "abbreviation": "BE(Hon)\/ME",
+                                                        "version": {
+                                                            "major": 6,
+                                                            "minor": 5
+                                                        },
+                                                        "subtype": "Undergraduate Program",
+                                                        "fromYear": "2025",
+                                                        "unitsMinimum": 80,
+                                                        "orgCode": "EAIT",
+                                                        "name": "Bachelor of Engineering (Honours) and Master of Engineering",
+                                                        "fromTerm": "Semester 1",
+                                                        "state": "PublishRequest"
+                                                    },
+                                                    "plan": {
+                                                        "unitsMaximum": 66,
+                                                        "code": "MECTRX2350",
+                                                        "orgName": "Mech & Mine Engineering School",
+                                                        "subtype": "Field of Study",
+                                                        "fromYear": "2025",
+                                                        "unitsMinimum": 66,
+                                                        "orgCode": "MECHMINE",
+                                                        "name": "Mechatronic Engineering",
+                                                        "fromTerm": "Semester 1",
+                                                        "state": "Published",
+                                                        "type": "Program Rqt",
+                                                        "version": {
+                                                            "major": 5,
+                                                            "minor": 0
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ],
+                            "title": "B. Engineering (Honours) and M. Engineering ",
+                            "summaryDescription": "<p><strong>Complete 80 units comprising:<\/strong><\/p><ul><li class=\"ql-indent-1\"><strong>8<\/strong> units for all <strong>BE(Hons)\/ME Core Courses<\/strong>, and<\/li><li class=\"ql-indent-1\"><strong>66<\/strong> units for one <strong>Field of Study<\/strong> from <strong>BE(Hons)\/ME Field of Study Options<\/strong>, and<\/li><li class=\"ql-indent-1\"><strong>0<\/strong> to <strong>4<\/strong> units from <strong>Preparatory Science and Mathematics Courses<\/strong>, and<\/li><li class=\"ql-indent-1\"><strong>0<\/strong> to <strong>4<\/strong> units from <strong>BE(Hons)\/ME First Year Engineering Elective Courses<\/strong>, and<\/li><li class=\"ql-indent-1\"><strong>0<\/strong> to <strong>6<\/strong> units from <strong>BE(Hons)\/ME Program Elective Courses<\/strong>, and<\/li><li class=\"ql-indent-1\"><strong>0<\/strong> to <strong>6<\/strong> units from <strong>General Elective Courses<\/strong><\/li><\/ul>"
+                        },
+                        "body": [
+                            {
+                                "header": {
+                                    "partUID": "ec66711d-b525-3acc-f82c-5f6f5d92edac",
+                                    "notes": "<p>During the first year of study students can choose to commence in their chosen specialisation or undertake the flexible first year. The flexible first year allows students to keep their options open as to which specialisation they chose to pursue in second year.&nbsp;<\/p><p>Students wishing to follow a flexible first year enrolment must refer to EAIT Faculty resources for guidance in choosing First Year Engineering Courses. Find more information <a href=\"https:\/\/www.eait.uq.edu.au\/current-students\/information-new-students\/undergraduate-information-new-students\/get-started-engineering\" rel=\"noopener noreferrer\" target=\"_blank\" style=\"background-color: yellow;\">here<\/a>.<\/p><p>Students will be required to choose their program specialisation by the commencement of second year.&nbsp;<\/p>",
+                                    "partReference": "A",
+                                    "auxiliaryRules": [],
+                                    "selectionRule": {
+                                        "code": "SR1",
+                                        "text": "Complete [N] units for ALL of the following:",
+                                        "params": [
+                                            {
+                                                "name": "N",
+                                                "type": "NUMBER",
+                                                "value": 8
+                                            }
+                                        ]
+                                    },
+                                    "title": "BE(Hons)\/ME Core Courses",
+                                    "partType": "SelectionList"
+                                },
+                                "body": [
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 1,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "ENGG1100",
+                                            "orgName": "Civil Engineering School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 5,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "CIVIL",
+                                            "name": "Professional Engineering",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "EquivalenceGroup",
+                                        "equivalenceGroup": [
+                                            {
+                                                "orderNumber": 2,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "ENGG1001",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 5,
+                                                        "minor": 2
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2025",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Programming for Engineers",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "orderNumber": 3,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "CSSE1001",
+                                                    "orgName": "Elec Engineering & Comp Science School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 5,
+                                                        "minor": 1
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2025",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "IT&EESCHL",
+                                                    "name": "Introduction to Software Engineering",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "rowType": "EquivalenceGroup",
+                                        "equivalenceGroup": [
+                                            {
+                                                "orderNumber": 4,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "MATH1051",
+                                                    "orgName": "Mathematics & Physics School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 6,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2025",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "MATHSPHYS",
+                                                    "name": "Calculus & Linear Algebra I",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "orderNumber": 5,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "MATH1071",
+                                                    "orgName": "Mathematics & Physics School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 6,
+                                                        "minor": 1
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2025",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "MATHSPHYS",
+                                                    "name": "Advanced Calculus & Linear Algebra I",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "rowType": "EquivalenceGroup",
+                                        "equivalenceGroup": [
+                                            {
+                                                "orderNumber": 6,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "MATH1052",
+                                                    "orgName": "Mathematics & Physics School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 9,
+                                                        "minor": 1
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2025",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "MATHSPHYS",
+                                                    "name": "Multivariate Calculus & Ordinary Differential Equations",
+                                                    "fromTerm": "Semester 1",
+                                                    "state": "Published"
+                                                }
+                                            },
+                                            {
+                                                "orderNumber": 7,
+                                                "notes": null,
+                                                "curriculumReference": {
+                                                    "unitsMaximum": 2,
+                                                    "code": "MATH1072",
+                                                    "orgName": "Mathematics & Physics School",
+                                                    "type": "Course",
+                                                    "version": {
+                                                        "major": 4,
+                                                        "minor": 0
+                                                    },
+                                                    "subtype": "Course",
+                                                    "fromYear": "2024",
+                                                    "latestVersion": true,
+                                                    "unitsMinimum": 2,
+                                                    "orgCode": "MATHSPHYS",
+                                                    "name": "Advanced Multivariate Calculus & Ordinary Differential Equations",
+                                                    "fromTerm": "Semester 2",
+                                                    "state": "Published"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "header": {
+                                    "partUID": "d1c8a293-db0b-abbf-29d3-b4e688cb551e",
+                                    "notes": null,
+                                    "partReference": "B",
+                                    "auxiliaryRules": [],
+                                    "selectionRule": {
+                                        "code": "SR6",
+                                        "text": "Complete one [PLANTYPE] from the following:",
+                                        "params": [
+                                            {
+                                                "name": "PLANTYPE",
+                                                "type": "PLANTYPE_SINGULAR",
+                                                "value": "Field of Study"
+                                            }
+                                        ]
+                                    },
+                                    "title": "BE(Hons)\/ME Field of Study Options",
+                                    "partType": "SelectionList"
+                                },
+                                "body": [
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 1,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 66,
+                                            "code": "CHEMIX2350",
+                                            "orgName": "Chemical Engineering School",
+                                            "type": "Program Rqt",
+                                            "version": {
+                                                "major": 5,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Field of Study",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 66,
+                                            "orgCode": "CHEMICAL",
+                                            "name": "Chemical Engineering",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 2,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 66,
+                                            "code": "CBIOMX2350",
+                                            "orgName": "Chemical Engineering School",
+                                            "type": "Program Rqt",
+                                            "version": {
+                                                "major": 5,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Field of Study",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 66,
+                                            "orgCode": "CHEMICAL",
+                                            "name": "Chemical and Biomedical Engineering",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 3,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 66,
+                                            "code": "CBIOPX2350",
+                                            "orgName": "Chemical Engineering School",
+                                            "type": "Program Rqt",
+                                            "version": {
+                                                "major": 5,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Field of Study",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 66,
+                                            "orgCode": "CHEMICAL",
+                                            "name": "Chemical and Bioprocess Engineering",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 4,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 66,
+                                            "code": "CHENVX2350",
+                                            "orgName": "Chemical Engineering School",
+                                            "type": "Program Rqt",
+                                            "version": {
+                                                "major": 5,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Field of Study",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 66,
+                                            "orgCode": "CHEMICAL",
+                                            "name": "Chemical and Environmental Engineering",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 5,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 66,
+                                            "code": "CHMETX2350",
+                                            "orgName": "Chemical Engineering School",
+                                            "type": "Program Rqt",
+                                            "version": {
+                                                "major": 5,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Field of Study",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 66,
+                                            "orgCode": "CHEMICAL",
+                                            "name": "Chemical and Metallurgical Engineering",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 6,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 66,
+                                            "code": "CIVENX2350",
+                                            "orgName": "Civil Engineering School",
+                                            "type": "Program Rqt",
+                                            "version": {
+                                                "major": 5,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Field of Study",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 66,
+                                            "orgCode": "CIVIL",
+                                            "name": "Civil Engineering",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 7,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 66,
+                                            "code": "CIENVX2350",
+                                            "orgName": "Civil Engineering School",
+                                            "type": "Program Rqt",
+                                            "version": {
+                                                "major": 5,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Field of Study",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 66,
+                                            "orgCode": "CIVIL",
+                                            "name": "Civil and Environmental Engineering",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 8,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 66,
+                                            "code": "ELENGX2350",
+                                            "orgName": "Elec Engineering & Comp Science School",
+                                            "type": "Program Rqt",
+                                            "version": {
+                                                "major": 5,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Field of Study",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 66,
+                                            "orgCode": "IT&EESCHL",
+                                            "name": "Electrical Engineering",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 9,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 66,
+                                            "code": "ELEBEX2350",
+                                            "orgName": "Elec Engineering & Comp Science School",
+                                            "type": "Program Rqt",
+                                            "version": {
+                                                "major": 5,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Field of Study",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 66,
+                                            "orgCode": "IT&EESCHL",
+                                            "name": "Electrical and Biomedical Engineering",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 10,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 66,
+                                            "code": "ELECEX2350",
+                                            "orgName": "Elec Engineering & Comp Science School",
+                                            "type": "Program Rqt",
+                                            "version": {
+                                                "major": 5,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Field of Study",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 66,
+                                            "orgCode": "IT&EESCHL",
+                                            "name": "Electrical and Computer Engineering",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 11,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 66,
+                                            "code": "MECENX2350",
+                                            "orgName": "Mech & Mine Engineering School",
+                                            "type": "Program Rqt",
+                                            "version": {
+                                                "major": 5,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Field of Study",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 66,
+                                            "orgCode": "MECHMINE",
+                                            "name": "Mechanical Engineering",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 12,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 66,
+                                            "code": "MECAEX2350",
+                                            "orgName": "Mech & Mine Engineering School",
+                                            "type": "Program Rqt",
+                                            "version": {
+                                                "major": 5,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Field of Study",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 66,
+                                            "orgCode": "MECHMINE",
+                                            "name": "Mechanical and Aerospace Engineering",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 13,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 66,
+                                            "code": "MECMEX2350",
+                                            "orgName": "Mech & Mine Engineering School",
+                                            "type": "Program Rqt",
+                                            "version": {
+                                                "major": 5,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Field of Study",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 66,
+                                            "orgCode": "MECHMINE",
+                                            "name": "Mechanical and Materials Engineering",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 14,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 66,
+                                            "code": "MECTRX2350",
+                                            "orgName": "Mech & Mine Engineering School",
+                                            "type": "Program Rqt",
+                                            "version": {
+                                                "major": 5,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Field of Study",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 66,
+                                            "orgCode": "MECHMINE",
+                                            "name": "Mechatronic Engineering",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 15,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 66,
+                                            "code": "SOFTEX2350",
+                                            "orgName": "Elec Engineering & Comp Science School",
+                                            "type": "Program Rqt",
+                                            "version": {
+                                                "major": 5,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Field of Study",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 66,
+                                            "orgCode": "IT&EESCHL",
+                                            "name": "Software Engineering",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "header": {
+                                    "partUID": "c9078a19-bcc4-0765-6723-6545db1bee60",
+                                    "notes": "<p>Preparatory Science and Mathematics Courses are only permitted to be taken if the high school equivalent has not been successfully completed with a grade of B (HA) or higher.<\/p>",
+                                    "partReference": "C",
+                                    "auxiliaryRules": [],
+                                    "selectionRule": {
+                                        "code": "SR4",
+                                        "text": "Complete [N] to [M] units from the following:",
+                                        "params": [
+                                            {
+                                                "name": "N",
+                                                "type": "NUMBER",
+                                                "value": 0
+                                            },
+                                            {
+                                                "name": "M",
+                                                "type": "NUMBER",
+                                                "value": 4
+                                            }
+                                        ]
+                                    },
+                                    "title": "Preparatory Science and Mathematics Courses",
+                                    "partType": "SelectionList"
+                                },
+                                "body": [
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 1,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "CHEM1090",
+                                            "orgName": "Chemistry & Molec Biosciences",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "CHEMOLBIO",
+                                            "name": "Introductory Chemistry",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 2,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "PHYS1171",
+                                            "orgName": "Mathematics & Physics School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 5,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "MATHSPHYS",
+                                            "name": "Physical Basis of Biological Systems",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 3,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "MATH1050",
+                                            "orgName": "Mathematics & Physics School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 4,
+                                                "minor": 3
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "MATHSPHYS",
+                                            "name": "Mathematical Foundations II",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "header": {
+                                    "partUID": "db3dcbae-fa10-57f7-0930-32ffc2145be4",
+                                    "notes": null,
+                                    "partReference": "D",
+                                    "auxiliaryRules": [],
+                                    "selectionRule": {
+                                        "code": "SR4",
+                                        "text": "Complete [N] to [M] units from the following:",
+                                        "params": [
+                                            {
+                                                "name": "N",
+                                                "type": "NUMBER",
+                                                "value": 0
+                                            },
+                                            {
+                                                "name": "M",
+                                                "type": "NUMBER",
+                                                "value": 4
+                                            }
+                                        ]
+                                    },
+                                    "title": "BE(Hons)\/ME First Year Engineering Elective Courses",
+                                    "partType": "SelectionList"
+                                },
+                                "body": [
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 1,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "BIOE1001",
+                                            "orgName": "Chemical Engineering School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 4,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "CHEMICAL",
+                                            "name": "Principles of Biomedical & Bioprocess Engineering",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 2,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "BIOL1040",
+                                            "orgName": "Biomedical Sciences School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 6,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "BIOMEDICAL",
+                                            "name": "Cells to Organisms",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 3,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "CHEM1100",
+                                            "orgName": "Chemistry & Molec Biosciences",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "CHEMOLBIO",
+                                            "name": "Chemistry 1",
+                                            "fromTerm": "Semester 2",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 4,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "DSGN1500",
+                                            "orgName": "Architecture, Design and Planning School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 4,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "ARCHIT",
+                                            "name": "Design for a Better World",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 5,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "ERTH1501",
+                                            "orgName": "The Environment School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 2,
+                                                "minor": 2
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2023",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "SENV",
+                                            "name": "Earth Processes & Geological Materials for Engineers",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 6,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "ENGG2000",
+                                            "orgName": "Chemical Engineering School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 2,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "CHEMICAL",
+                                            "name": "Humanitarian Engineering",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 7,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "PHYS1002",
+                                            "orgName": "Mathematics & Physics School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "MATHSPHYS",
+                                            "name": "Electromagnetism & Modern Physics",
+                                            "fromTerm": "Semester 2",
+                                            "state": "Published"
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "header": {
+                                    "partUID": "5576c33e-0aae-55cf-a3e7-ccc545e64813",
+                                    "notes": "<p><strong><em>program elective courses <\/em><\/strong>means any courses on the BE(Hons)\/ME course list excluding Preparatory Science and Mathematics Courses<\/p>",
+                                    "partReference": "E",
+                                    "auxiliaryRules": [],
+                                    "selectionRule": {
+                                        "code": "SR4",
+                                        "text": "Complete [N] to [M] units from the following:",
+                                        "params": [
+                                            {
+                                                "name": "N",
+                                                "type": "NUMBER",
+                                                "value": 0
+                                            },
+                                            {
+                                                "name": "M",
+                                                "type": "NUMBER",
+                                                "value": 6
+                                            }
+                                        ]
+                                    },
+                                    "title": "BE(Hons)\/ME Program Elective Courses",
+                                    "partType": "SelectionList"
+                                },
+                                "body": [
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 1,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 80,
+                                            "code": "2350",
+                                            "orgName": "Eng, Archi & Info Tech Fac",
+                                            "type": "Program Rqt",
+                                            "version": {
+                                                "major": 6,
+                                                "minor": 5
+                                            },
+                                            "subtype": "Undergraduate Program",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 80,
+                                            "orgCode": "EAIT",
+                                            "name": "Bachelor of Engineering (Honours) and Master of Engineering",
+                                            "fromTerm": "Semester 1",
+                                            "state": "PublishRequest"
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "header": {
+                                    "partUID": "ed0ec267-6df5-8ade-447a-ae11bdd9d71a",
+                                    "notes": "<p><strong><em>general elective courses <\/em><\/strong>means courses which are chosen from any other undergraduate program course list at the university.<\/p>",
+                                    "partReference": "F",
+                                    "auxiliaryRules": [],
+                                    "selectionRule": {
+                                        "code": "SR4",
+                                        "text": "Complete [N] to [M] units from the following:",
+                                        "params": [
+                                            {
+                                                "name": "N",
+                                                "type": "NUMBER",
+                                                "value": 0
+                                            },
+                                            {
+                                                "name": "M",
+                                                "type": "NUMBER",
+                                                "value": 6
+                                            }
+                                        ]
+                                    },
+                                    "title": "General Elective Courses",
+                                    "partType": "SelectionList"
+                                },
+                                "body": [
+                                    {
+                                        "rowType": "WildCardItem",
+                                        "orderNumber": 1,
+                                        "notes": null,
+                                        "wildCardItem": {
+                                            "code": "********",
+                                            "orgName": null,
+                                            "orgCode": null,
+                                            "includeChildOrgs": true,
+                                            "type": "Course"
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "name": "Rules",
+                    "type": "PROGRAM_RULE"
+                },
+                {
+                    "internalComponentIdentifier": 34,
+                    "componentIntegrationIdentifier": "SEPARATOR_SPECIAL_RULES",
+                    "payload": {
+                        "title": "3 - Special Rules"
+                    },
+                    "name": "3 - Special Rules",
+                    "type": "SEPARATOR"
+                },
+                {
+                    "internalComponentIdentifier": 35,
+                    "componentIntegrationIdentifier": "DESCRIPTION_SPECIAL_RULES",
+                    "payload": {
+                        "value": "<p><strong>1. Hurdle requirements<\/strong><\/p><p>You must complete the following program-level hurdle requirement\/s:<\/p><p><strong>Professional practice<\/strong><\/p><ul><li>Successful completion of 430 hours of professional practice including all assessment relating to that professional practice.<\/li><\/ul><p><strong>2. Progression intervention<\/strong><\/p><p>Academic standing in this program is subject to the following requirements in addition to the requirements in the <a href=\"https:\/\/ppl.app.uq.edu.au\/content\/3.50.14-academic-progression\" rel=\"noopener noreferrer\" target=\"_blank\">Academic Progression Procedure<\/a>:<\/p><ul><li>If you fail any course in a study review period and you have not completed 48 units towards the program requirements, you will receive a progression alert.<\/li><li>If you fail any course in a study review period; and you have not completed 48 units towards the program requirements; and you have received a progression alert in a prior study review period within the program, you will be issued with a progression intervention notice.<\/li><li>If you have been issued with a progression intervention notice under subrule 2(2), you will be required to provide the Associate Dean (Academic) with a progression improvement plan demonstrating why you should be permitted to remain enrolled.<\/li><\/ul><p>You will not be permitted to remain enrolled in the program if:<\/p><ul><li>You do not submit a progression improvement plan by the due date, or<\/li><li>Your progression improvement plan is refused, or<\/li><li>You do not meet the conditions set on your enrolment by the Associate Dean (Academic).<\/li><\/ul><p>Withdrawal without academic penalty does not count as failure to pass a course.<\/p><p>If you are not permitted to remain enrolled in the program under subrule 2(4):<\/p><ul><li>You will be permitted to enrol in the Bachelor of Engineering (Honours), and<\/li><li>You may apply for readmission into the BE(Hons)\/ME in a subsequent semester provided you meet the admission requirements.<\/li><\/ul><p><strong>3. Recognition of prior learning<\/strong><\/p><p>This program is subject to the following credit limits in conjunction with <a href=\"https:\/\/policies.uq.edu.au\/document\/view-current.php?id=144\" rel=\"noopener noreferrer\" target=\"_blank\">Recognition of Prior Learning Policy <\/a>and <a href=\"https:\/\/policies.uq.edu.au\/document\/view-current.php?id=217\" rel=\"noopener noreferrer\" target=\"_blank\">Procedure<\/a>:<\/p><ul><li>You must complete a minimum of 2 years of study, in an Engineers Australia accredited degree program, at an Australian University.<\/li><\/ul><p><strong>4. Class of honours<\/strong><\/p><p>The grade point average for determining your class of honours is calculated based on: the <em>weighted cumulative grade point average<\/em>.<\/p><ul><li><strong><em>weighted cumulative grade point average<\/em><\/strong> means the average grade over all attempts at contributing courses where each course grade is weighted by the unit value of the course and the <em>course level<\/em>.<\/li><li><strong><em>contributing courses <\/em><\/strong>means all courses undertaken at the university which count towards the BE(Hons), BE(Hons)\/ME or which would have counted if passed but excludes courses where the student was awarded a final grade of \u2018P\u2019;<\/li><li><strong><em>course grade <\/em><\/strong>means the final grade for that course if that grade is numeric, or, it means \u20182\u2019 if the final grade is \u2018N\u2019 or otherwise it means \u20180\u2019;<\/li><li><strong><em>course level means<\/em><\/strong><em> <\/em>\u2014<\/li><\/ul><p class=\"ql-indent-2\">(a) the fifth character of the course code where that character is 1,2,3, or 4,or<\/p><p class=\"ql-indent-2\">(b) 4 when the fifth character of the course code is a 5 or 6, or<\/p><p class=\"ql-indent-2\">(c) 5 when the fifth character of the course code is a 7 or higher<\/p><p>Refer to <a href=\"https:\/\/ppl.app.uq.edu.au\/content\/3.50.12-bachelor-honours-degrees\" rel=\"noopener noreferrer\" target=\"_blank\">Bachelor Honours Degree Procedure<\/a> for more information.<\/p><p><strong>5. Exit awards<\/strong><\/p><p>If you withdraw from this program after completing 48 units you may be apply to be awarded the Bachelor of Applied Technology with an undeclared major, subject to you:<\/p><p class=\"ql-indent-1\">(a) gaining credit for at least 42 units from the BE(Hons) and\/or BE(Hons)\/ME course lists, including 8 units for core courses, and<\/p><p class=\"ql-indent-1\">(b) gaining credit for at least 8 units of courses at level 3 or higher and no more than 24 units of courses at level 1.<\/p><p>Note see<em>&nbsp;<\/em><a href=\"https:\/\/ppl.app.uq.edu.au\/content\/program-design-procedure\" rel=\"noopener noreferrer\" target=\"_blank\">Program Design Procedure<\/a> for further information.<\/p>"
+                    },
+                    "name": "Detail any special rules which are to be applied:",
+                    "type": "MULTI_LINE_TEXT"
+                },
+                {
+                    "internalComponentIdentifier": 38,
+                    "componentIntegrationIdentifier": "Program-Requirements.Overlap-Rule",
+                    "payload": {
+                        "valueIntegrationIdentifiers": [],
+                        "values": []
+                    },
+                    "name": "Course Overlap Rules Options",
+                    "type": "CHECK_BOX"
+                }
+            ]
+        },
+        "orgCode": "EAIT",
+        "externalSystemIdentifiers": [
+            {
+                "systemCode": "TRIM",
+                "id": "159680836"
+            }
+        ],
+        "state": "PublishRequest",
+        "unitsMaximum": 80,
+        "orgName": "Eng, Archi & Info Tech Fac",
+        "baseVersion": {
+            "major": 6,
+            "minor": 4
+        },
+        "workflowName": "Prog Req - Simple Amendment",
+        "version": {
+            "major": 6,
+            "minor": 5
+        },
+        "editDate": "2025-03-26T05:44:30Z",
+        "previousState": "Approved",
+        "swaggerVersion": {
+            "major": 1,
+            "minor": 33
+        },
+        "templateName": "Program Requirements",
+        "unitsMinimum": 80,
+        "templateIntegrationIdentifier": "ProgReq,ProgReq",
+        "yearApplied": "2025",
+        "authorGivenName": "Bridget",
+        "name": "Bachelor of Engineering (Honours) and Master of Engineering",
+        "templateVersion": 3
+    },
+    "yearOptions": [
+        "2026",
+        "2025",
+        "2024",
+        "2023",
+        "2022",
+        "2021",
+        "2020",
+        "2019",
+        "2018",
+        "2017",
+        "2016",
+        "2015",
+        "2014"
+    ],
+    "routes": {
+        "jac": {
+            "program": {
+                "list": "\/requirements\/program\/{code}\/{year}"
+            },
+            "plan": {
+                "list": "\/requirements\/plan\/{code}\/{year}"
+            },
+            "redirect": "\/requirements\/redirect?type={type}&code={code}&year={year}"
+        },
+        "sinet": {
+            "home": "\/index.html",
+            "program": {
+                "detail": "\/program.html?acad_prog={code}&year={year}",
+                "list": "\/program_list.html?acad_prog={code}&year={year}"
+            },
+            "plan": {
+                "detail": "\/plan.html?acad_plan={code}&year={year}",
+                "list": "\/plan_display.html?acad_plan={code}&year={year}"
+            },
+            "course": {
+                "detail": "\/course.html?course_code={code}"
+            },
+            "search": "\/search.html?keywords={keywords}&searchType=coursecode&year={year}",
+            "wildsearch": "\/index.html?searchType=coursecode"
+        }
+    }
+}

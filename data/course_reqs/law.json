@@ -1,0 +1,1934 @@
+{
+    "title": "my.UQ - The University of Queensland, Australia",
+    "params": {
+        "type": "program",
+        "code": "2471",
+        "year": "2026"
+    },
+    "status": {
+        "noLongerOffered": false,
+        "alternate": null,
+        "domestic": {
+            "suspension": false,
+            "available": true
+        },
+        "international": {
+            "suspension": false,
+            "available": true
+        }
+    },
+    "programRequirements": {
+        "coPDF": {
+            "src": "https:\/\/objectstorage.ap-sydney-1.oraclecloud.com\/p\/YuYflmlZ-D_2LoS7_YTRD88No9NHNi6qLODSQplhHe3Szpr6BD22nDG2OGv2Kofv\/n\/ax7hzzupr0lq\/b\/UQ-PROD-STORAGE\/o\/Bachelor-of-Laws--Honours--2471-5",
+            "extraData": null
+        },
+        "code": "2471",
+        "applicablePeriod": {
+            "toYear": null,
+            "toTerm": null,
+            "fromYear": "2025",
+            "fromTerm": "Semester 1"
+        },
+        "publishInstanceID": 32982,
+        "type": "ProgramRules",
+        "orgParent": "The University of Queensland",
+        "cmsVersion": "07.06.12.09.01",
+        "authorLastName": "Davidson",
+        "subtype": "Undergraduate Program",
+        "payload": {
+            "components": [
+                {
+                    "internalComponentIdentifier": 8,
+                    "componentIntegrationIdentifier": "SEPARATOR_PROGRAM_RULES",
+                    "payload": {
+                        "title": "2 - Program Requirements"
+                    },
+                    "name": "2 - Program Requirements",
+                    "type": "SEPARATOR"
+                },
+                {
+                    "internalComponentIdentifier": 1,
+                    "componentIntegrationIdentifier": "PROGRAM_RULES",
+                    "payload": {
+                        "header": {
+                            "ruleLogic": "Part A and Part B and Part C ",
+                            "auxiliaryRules": [],
+                            "title": "LLB(Hons) Program Requirements",
+                            "summaryDescription": "<p><strong>Complete 64 units comprising:<\/strong><\/p><ul><li class=\"ql-indent-1\"><strong>36<\/strong> units for all <strong>LLB(Hons) Core Courses<\/strong>, and<\/li><li class=\"ql-indent-1\"><strong>8<\/strong> to <strong>16<\/strong> units from <strong>General Elective Courses<\/strong>, and<\/li><li class=\"ql-indent-1\"><strong>12<\/strong> to <strong>20<\/strong> units from <strong>LLB(Hons) Flexible Core Courses<\/strong><\/li><\/ul>"
+                        },
+                        "body": [
+                            {
+                                "header": {
+                                    "partUID": "df063c4e-77f6-e03d-f278-dbae6f7171ba",
+                                    "notes": null,
+                                    "partReference": "A",
+                                    "auxiliaryRules": [],
+                                    "selectionRule": {
+                                        "code": "SR1",
+                                        "text": "Complete [N] units for ALL of the following:",
+                                        "params": [
+                                            {
+                                                "name": "N",
+                                                "type": "NUMBER",
+                                                "value": 36
+                                            }
+                                        ]
+                                    },
+                                    "title": "LLB(Hons) Core Courses",
+                                    "partType": "SelectionList"
+                                },
+                                "body": [
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 1,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS1700",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Foundations of Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 2,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS1701",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 4,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Law of Contract I: Principles of Contractual Agreement",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 3,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS1702",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Law of Contract II: Principles of Contractual Liability",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 4,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS1703",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 2
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Principles of Public Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 5,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS2702",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 2,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Law of Torts I",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 6,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS2703",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 2,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Law of Torts II",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 7,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS2706",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 4,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Foundations of Property Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 8,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS2707",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 4,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Interests in Property",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 9,
+                                        "notes": "This course must be studied at UQ.",
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS2708",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Criminal Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 10,
+                                        "notes": "This course must be studied at UQ.",
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS2709",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 2,
+                                                "minor": 2
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Trusts and Equity",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 11,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS3700",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 2,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Constitutional Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 12,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS3701",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 2,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Administrative Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 13,
+                                        "notes": "This course must be studied at UQ.",
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS3702",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Corporate Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 14,
+                                        "notes": "This course must be studied at UQ.",
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS3703",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Ethics and the Legal Profession",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 15,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS3704",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 2,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Jurisprudence",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 16,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS3705",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 2,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Public International Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 17,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS4700",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 2,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Law of Evidence",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 18,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS4701",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 2,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Civil Dispute Resolution",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "header": {
+                                    "partUID": "7184c624-5bc5-1b8e-0116-eb541603453f",
+                                    "notes": "<p>General Elective Courses means <a href=\"https:\/\/my.uq.edu.au\/programs-courses\/course.html?course_code=PBEL3000\" rel=\"noopener noreferrer\" target=\"_blank\">PBEL3000<\/a> Learning by Doing in a Disruptive World and\/or non-LAWS-coded courses from any undergraduate course list.<\/p><p>If wanting to undertake a <a href=\"https:\/\/employability.uq.edu.au\/global-experiences\" rel=\"noopener noreferrer\" target=\"_blank\">Global Experience<\/a>, you are strongly advised to retain your General Electives for exchange, or contact your Faculty for advice about taking LLB(Hons) Flexible Core Courses on exchange.<\/p>",
+                                    "partReference": "B",
+                                    "auxiliaryRules": [],
+                                    "selectionRule": {
+                                        "code": "SR4",
+                                        "text": "Complete [N] to [M] units from the following:",
+                                        "params": [
+                                            {
+                                                "name": "N",
+                                                "type": "NUMBER",
+                                                "value": 8
+                                            },
+                                            {
+                                                "name": "M",
+                                                "type": "NUMBER",
+                                                "value": 16
+                                            }
+                                        ]
+                                    },
+                                    "title": "General Elective Courses",
+                                    "partType": "SelectionList"
+                                },
+                                "body": [
+                                    {
+                                        "rowType": "WildCardItem",
+                                        "orderNumber": 1,
+                                        "notes": null,
+                                        "wildCardItem": {
+                                            "code": "********",
+                                            "orgName": null,
+                                            "orgCode": null,
+                                            "includeChildOrgs": true,
+                                            "type": "Course"
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "header": {
+                                    "partUID": "9a74021b-3e84-56b1-6113-684f612cc30b",
+                                    "notes": "<p><strong><u>Please note<\/u> <\/strong>- not all courses are offered every year. For a list of elective courses offered for the current year, see the<strong> <\/strong><a href=\"https:\/\/law.uq.edu.au\/current-students\/course-information\" rel=\"noopener noreferrer\" target=\"_blank\">Elective Course List<\/a><strong>.<\/strong><\/p>",
+                                    "partReference": "C",
+                                    "auxiliaryRules": [],
+                                    "selectionRule": {
+                                        "code": "SR4",
+                                        "text": "Complete [N] to [M] units from the following:",
+                                        "params": [
+                                            {
+                                                "name": "N",
+                                                "type": "NUMBER",
+                                                "value": 12
+                                            },
+                                            {
+                                                "name": "M",
+                                                "type": "NUMBER",
+                                                "value": 20
+                                            }
+                                        ]
+                                    },
+                                    "title": "LLB(Hons) Flexible Core Courses",
+                                    "partType": "SelectionList"
+                                },
+                                "body": [
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 1,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5100",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 1,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Comparative Constitutional Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 2,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5101",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 1,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "The Law of Estate Planning and Wealth Management",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 3,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5103",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 1,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "International Human Rights Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 4,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5104",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 1,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Law, Justice, and the State",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 5,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5105",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 1,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "AI and the Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 6,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5106",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 1,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Animal Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 7,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5107",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 1,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Climate Change Law in Australia",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 8,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5108",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 1,
+                                                "minor": 2
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Corporate Governance and Regulation",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 9,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5109",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 1,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Elder Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 10,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5110",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 1,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Intellectual Property Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 11,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5111",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 1,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "International Law-making in a Global World",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 12,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5112",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 1,
+                                                "minor": 2
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Law and Society",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 13,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5113",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 1,
+                                                "minor": 3
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Legal Design and Innovation",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 14,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5114",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 1,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Legal Internships",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 15,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5115",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 1,
+                                                "minor": 3
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "National Security Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 16,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5121",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 5,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Family Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 17,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5122",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Labour Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 18,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5124",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 4,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Human Rights Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 19,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5125",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Unjust Enrichment",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 20,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5126",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Medical Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 21,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5127",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Media Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 22,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5130",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Succession Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 23,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5131",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Planning and Development Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 24,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5134",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Environmental Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 25,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5135",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 2,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Law and Indigenous Peoples",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 26,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5136",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 4,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Commercial Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 27,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5138",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 4,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Competition Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 28,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5139",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 2,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Insurance Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 29,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5142",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Consumer Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 30,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5144",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Introduction to Taxation Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 31,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5151",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Law and Technology",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 32,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5153",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 2
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Conflict of Laws",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 33,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5156",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 2,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "International Humanitarian & Criminal Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 34,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5160",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Maritime Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 35,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5163",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 4,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "International Trade Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 36,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5165",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2023",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Jessup International Law Moot",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 37,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5171",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Advanced Crime and Criminology",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 38,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5180",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 4,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Clinical Legal Education",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 39,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5181",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 4,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Law Journals",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 40,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5182",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 2,
+                                                "minor": 4
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Special Topic A",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 41,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5183",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 4,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Research Project A",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 42,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5202",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Immigration and Refugee Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 43,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5206",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 2
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Copyright Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 44,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5208",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 4,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Law Moot A",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 45,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5209",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Law Moot B",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 46,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5212",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 0
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Alternative Dispute Resolution",
+                                            "fromTerm": "Semester 3",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 47,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5220",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Personal and Corporate Insolvency",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 48,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5221",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 1,
+                                                "minor": 2
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2023",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Tort Claims Against Government - Private Remedies for Public Wrongs",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 49,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5224",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 2,
+                                                "minor": 2
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Special Topic B",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 50,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5225",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 2,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Special Topic C",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 51,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5227",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 2
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2023",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Law of Political Institutions",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 52,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5228",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 4,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Privacy Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 53,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5229",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 2,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2024",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Special Topic D",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 54,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5231",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 2
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2023",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Transnational Organised Crime Working Group",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    },
+                                    {
+                                        "rowType": "CurriculumReference",
+                                        "orderNumber": 55,
+                                        "notes": null,
+                                        "curriculumReference": {
+                                            "unitsMaximum": 2,
+                                            "code": "LAWS5233",
+                                            "orgName": "Law School",
+                                            "type": "Course",
+                                            "version": {
+                                                "major": 3,
+                                                "minor": 1
+                                            },
+                                            "subtype": "Course",
+                                            "fromYear": "2025",
+                                            "latestVersion": true,
+                                            "unitsMinimum": 2,
+                                            "orgCode": "LAWSCHOOL",
+                                            "name": "Transnational Perspectives in Law",
+                                            "fromTerm": "Semester 1",
+                                            "state": "Published"
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "name": "Rules",
+                    "type": "PROGRAM_RULE"
+                },
+                {
+                    "internalComponentIdentifier": 34,
+                    "componentIntegrationIdentifier": "SEPARATOR_SPECIAL_RULES",
+                    "payload": {
+                        "title": "3 - Special Rules"
+                    },
+                    "name": "3 - Special Rules",
+                    "type": "SEPARATOR"
+                },
+                {
+                    "internalComponentIdentifier": 35,
+                    "componentIntegrationIdentifier": "DESCRIPTION_SPECIAL_RULES",
+                    "payload": {
+                        "value": "<p><strong>1. Class of honours<\/strong><\/p><p>Specific requirements apply to the awarding of honours in this program:<\/p><ol><li class=\"ql-indent-1\">The class of honours is calculated on the basis of the grade point average of the grades obtained by you in the first attempt at all LAWS courses at level 2 or higher that contribute to the program.<\/li><li class=\"ql-indent-1\">Refer to the <a href=\"https:\/\/policies.uq.edu.au\/document\/view-current.php?id=192\" rel=\"noopener noreferrer\" target=\"_blank\">Bachelor Honours Degree Procedure<\/a> for more information.<\/li><\/ol>"
+                    },
+                    "name": "Detail any special rules which are to be applied:",
+                    "type": "MULTI_LINE_TEXT"
+                },
+                {
+                    "internalComponentIdentifier": 38,
+                    "componentIntegrationIdentifier": "Program-Requirements.Overlap-Rule",
+                    "payload": {
+                        "valueIntegrationIdentifiers": [],
+                        "values": []
+                    },
+                    "name": "Course Overlap Rules Options",
+                    "type": "CHECK_BOX"
+                }
+            ]
+        },
+        "orgCode": "BEL",
+        "externalSystemIdentifiers": [
+            {
+                "systemCode": "TRIM",
+                "id": "159321414"
+            }
+        ],
+        "state": "PublishRequest",
+        "unitsMaximum": 64,
+        "orgName": "Business, Economics & Law Fac",
+        "baseVersion": {
+            "major": 5,
+            "minor": 1
+        },
+        "workflowName": "Prog Req - Simple Amendment",
+        "version": {
+            "major": 5,
+            "minor": 2
+        },
+        "editDate": "2025-01-24T06:01:26Z",
+        "previousState": "Approved",
+        "swaggerVersion": {
+            "major": 1,
+            "minor": 33
+        },
+        "templateName": "Program Requirements",
+        "unitsMinimum": 64,
+        "templateIntegrationIdentifier": "ProgReq,ProgReq",
+        "yearApplied": "2025",
+        "authorGivenName": "Sarah",
+        "name": "Bachelor of Laws (Honours)",
+        "templateVersion": 3
+    },
+    "yearOptions": [
+        "2026",
+        "2025",
+        "2024",
+        "2023",
+        "2022",
+        "2021",
+        "2020"
+    ],
+    "routes": {
+        "jac": {
+            "program": {
+                "list": "\/requirements\/program\/{code}\/{year}"
+            },
+            "plan": {
+                "list": "\/requirements\/plan\/{code}\/{year}"
+            },
+            "redirect": "\/requirements\/redirect?type={type}&code={code}&year={year}"
+        },
+        "sinet": {
+            "home": "\/index.html",
+            "program": {
+                "detail": "\/program.html?acad_prog={code}&year={year}",
+                "list": "\/program_list.html?acad_prog={code}&year={year}"
+            },
+            "plan": {
+                "detail": "\/plan.html?acad_plan={code}&year={year}",
+                "list": "\/plan_display.html?acad_plan={code}&year={year}"
+            },
+            "course": {
+                "detail": "\/course.html?course_code={code}"
+            },
+            "search": "\/search.html?keywords={keywords}&searchType=coursecode&year={year}",
+            "wildsearch": "\/index.html?searchType=coursecode"
+        }
+    }
+}
