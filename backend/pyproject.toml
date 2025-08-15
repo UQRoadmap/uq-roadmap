@@ -12,6 +12,7 @@ dependencies = [
     "pydantic-settings>=2.10.1",
     "pyserde>=0.24.0",
     "sqlalchemy[asyncio]>=2.0.43",
+    "cloudscraper>=1.2.71",
 ]
 
 [dependency-groups]

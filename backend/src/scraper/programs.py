@@ -5,6 +5,8 @@ import asyncio
 import httpx
 from bs4 import BeautifulSoup
 
+import cloudscraper
+
 from scraper.models import Program
 
 HEADERS = {"User-Agent": "Mozilla/5.0"}
@@ -40,10 +42,10 @@ def extract_programs(html: str) -> list[Program]:
 
     return programs
 
-
-async def fetch_page(client: httpx.AsyncClient, page: int) -> list[Program]:
+def fetch_page(page: int) -> list[Program]:
+    scraper = cloudscraper.create_scraper()
     try:
-        response = await client.get(PROGRAMS_URL, params={"page": page})
+        response = scraper.get(PROGRAMS_URL, params={"page": page}, headers=HEADERS)
         response.raise_for_status()
         return extract_programs(response.text)
     except Exception as e:
@@ -51,10 +53,9 @@ async def fetch_page(client: httpx.AsyncClient, page: int) -> list[Program]:
         return []
 
 
-async def scrape_all_programs() -> list[Program]:
-    async with httpx.AsyncClient(headers=HEADERS, timeout=10.0) as client:
-        tasks = [fetch_page(client, page) for page in range(PROGRAMS_NUM_PAGES)]
-        all_results = await asyncio.gather(*tasks)
-
-    all_programs = [program for page_programs in all_results for program in page_programs]
+def scrape_all_programs() -> list[Program]:
+    all_programs = []
+    for page in range(PROGRAMS_NUM_PAGES):
+        page_programs = fetch_page(page)
+        all_programs.extend(page_programs)
     return all_programs

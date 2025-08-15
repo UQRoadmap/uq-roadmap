@@ -38,10 +38,10 @@ def main():
     data: list[UQScrapeModel] = []
 
     if args.mode == ScrapeType.PROGRAM:
-        data = asyncio.run(scrape_all_programs())
+        data = scrape_all_programs()
         log.info(f"Scraped {len(data)} programs.")
     elif args.mode == ScrapeType.COURSE:
-        data = asyncio.run(scrape_all_courses())
+        data = scrape_all_courses()
         log.info(f"Scraped {len(data)} courses.")
     else:
         raise ValueError("Invalid scrape mode selected.")

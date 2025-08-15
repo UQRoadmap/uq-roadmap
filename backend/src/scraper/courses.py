@@ -4,6 +4,7 @@ import logging
 
 import httpx
 from bs4 import BeautifulSoup, Tag
+import cloudscraper
 
 from scraper.models import Course, CourseLevel, CourseOffering
 
@@ -28,7 +29,7 @@ def parse_offerings(block_div: Tag) -> list[CourseOffering]:
     for row in data_rows:
         cols = row.find_all("td")
         if len(cols) < 3:
-            log.warning("Skipping row with insufficient columns: %s", row)
+            logger.warning("Skipping row with insufficient columns: {}", row)
             continue
 
         semester = cols[0].get_text(strip=True)
@@ -40,8 +41,7 @@ def parse_offerings(block_div: Tag) -> list[CourseOffering]:
     return offerings
 
 
-async def parse_course(li: Tag, client: httpx.AsyncClient) -> Course:
-    """Parses a couse into a Course model."""
+def parse_course(li: Tag) -> Course:
     code: str = li.find("a", class_="code").get_text(strip=True)
     name: str = li.find("a", class_="title").get_text(strip=True)
     level_text: str = li.find("span", class_="course-level").get_text(strip=True).lower()
@@ -52,9 +52,6 @@ async def parse_course(li: Tag, client: httpx.AsyncClient) -> Course:
 
     level = CourseLevel(level_text) if level_text in CourseLevel.__members__ else CourseLevel.OTHER
 
-    ecp_response = await client.get(ECP_URL.format(code))
-    ecp_response.raise_for_status()
-
     return Course(
         code=code,
         name=name,
@@ -64,18 +61,22 @@ async def parse_course(li: Tag, client: httpx.AsyncClient) -> Course:
     )
 
 
-async def parse_courses(html: str, client: httpx.AsyncClient) -> list[Course]:
+def parse_courses(html: str) -> list[Course]:
     soup = BeautifulSoup(html, "html.parser")
     container = soup.find("div", id="courses-container")
     if not container:
         log.warning("No courses found")
         return []
 
-    return [await parse_course(li, client) for li in container.select("ul.listing > li")]
+    return [parse_course(li) for li in container.select("ul.listing > li")]
 
 
-async def scrape_all_courses() -> list[Course]:
-    async with httpx.AsyncClient(headers=HEADERS, timeout=10.0) as client:
-        response = await client.get(COURSES_URL)
+def scrape_all_courses() -> list[Course]:
+    scraper = cloudscraper.create_scraper()
+    try:
+        response = scraper.get(COURSES_URL, headers=HEADERS)
         response.raise_for_status()
-    return await parse_courses(response.text, client)
+        return parse_courses(response.text)
+    except Exception as e:
+        print(f"Error fetching courses: {e}")
+        return []
