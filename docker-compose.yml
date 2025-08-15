@@ -1,0 +1,34 @@
+services:
+  database:
+    image: postgres
+    container_name: database
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d expense_db"]
+      interval: 5s
+      retries: 5
+      start_period: 20s
+      timeout: 10s
+    volumes:
+      - db-data:/var/lib/postgresql/data/pgdata
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=admin
+      - POSTGRES_DB=expense_db
+    ports:
+      - 5432:5432
+
+  backend:
+    build: api
+    ports:
+      - 8080:8080
+    environment:
+      - DB_URL=postgresql+asyncpg://admin:password@database:5432/expense_db
+    depends_on:
+      database:
+        condition: service_healthy
+        restart: true
+
+volumes:
+  db-data:
