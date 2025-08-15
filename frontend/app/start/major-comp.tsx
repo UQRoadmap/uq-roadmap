@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Field, Label } from '@/components/fieldset'
 import { Select } from '@/components/select'
 
-export default function MajorSelect({name, options, disabled}) {
+export default function MajorSelect({name, options, disabled}: {name: string, options: string[], disabled?: boolean}) {
   return (
     <Field disabled={disabled}>
         <Label>{name}</Label>
