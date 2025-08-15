@@ -1,6 +1,15 @@
-def main():
-    print("Hello from uqroadmap!")
+"""Main module."""
+
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
 
 
-if __name__ == "__main__":
-    main()
+@asynccontextmanager
+async def lifespan(_: FastAPI) -> AsyncGenerator:
+    """Lifespan event handler."""
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
