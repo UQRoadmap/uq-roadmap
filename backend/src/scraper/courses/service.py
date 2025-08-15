@@ -56,7 +56,17 @@ def parse_course(li: Tag) -> Course:
     )
 
 
-def parse_courses(html: str) -> list[Course]:
+def parse_course_names(html: str) -> list[str]:
+    """Parses the list of courses page and grabs the name from each.
+
+    https://programs-courses.uq.edu.au/search.html?keywords=*&searchType=all&archived=true#courses
+
+    Args:
+        html (str): html from https://programs-courses.uq.edu.au/search.html?keywords=*&searchType=all&archived=true#courses
+
+    Returns:
+        list[str]: list of course codes
+    """
     soup = BeautifulSoup(html, "html.parser")
     container = soup.find("div", id="courses-container")
     if not container:
@@ -72,7 +82,7 @@ async def scrape_courses() -> list[Course]:
         try:
             r = await session.get(COURSES_URL)
             r.raise_for_status()
-            return parse_courses(r.text)
+            return parse_course_names(r.text)
         except Exception:
             log.exception("Error fetching courses")
             raise
