@@ -2,7 +2,7 @@
 
 from enum import Enum
 
-from pydantic import HttpUrl, computed_field
+from pydantic import computed_field
 
 from scraper.models import UQScrapeModel
 
@@ -24,7 +24,7 @@ class CourseOffering(UQScrapeModel):
     semester: str
     location: str
     mode: str
-    profile_url: HttpUrl | None
+    profile_url: str | None
 
 
 class CourseSecatInfo(UQScrapeModel):
@@ -49,7 +49,7 @@ class Course(UQScrapeModel):
 
     # Misc Info
     faculty: str
-    faculty_url: HttpUrl | None
+    faculty_url: str | None
     school: str
     duration: int
     attendance_mode: str

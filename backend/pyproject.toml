@@ -14,6 +14,7 @@ dependencies = [
     "sqlalchemy[asyncio]>=2.0.43",
     "cloudscraper>=1.2.71",
     "curl-cffi>=0.13.0",
+    "playwright>=1.54.0",
 ]
 
 [dependency-groups]
@@ -32,7 +33,7 @@ line-length = 120
 
 [tool.ruff.lint]
 select = ["ALL"]
-ignore = ["D203", "D213", "COM812", "RET503", "EM101", "TRY003", "G004"]
+ignore = ["D203", "D213", "COM812", "RET503", "EM101", "TRY003", "G004", "EM102"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

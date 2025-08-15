@@ -2,21 +2,20 @@
 
 import asyncio
 import logging
-import random
+from collections.abc import AsyncGenerator
 from typing import NoReturn
 
 import bs4
 import curl_cffi
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
-from pydantic import HttpUrl
 
 from scraper.courses.models import Course, CourseLevel, CourseOffering, CourseSecatInfo
 
 log = logging.getLogger(__name__)
 
 # Requests things
-MAX_CONCURRENT_REQUESTS = 10
+MAX_CONCURRENT_REQUESTS = 30
 RETRY_COUNT = 3
 TIMEOUT_SECONDS = 60
 
@@ -29,15 +28,12 @@ SECAT_URL = "https://www.pbi.uq.edu.au/clientservices/SECaT/embedChart.aspx"
 semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
 
 
-async def get_secat_info() -> dict[str, CourseSecatInfo]:
+async def iter_secat_info() -> AsyncGenerator[tuple[str, CourseSecatInfo]]:
     """Extracts course info from the secat, mapping a course code to the secat info."""
-    results: dict[str, CourseSecatInfo] = {}
-
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
         page = await browser.new_page()
         await page.goto(SECAT_URL)
-        await page.wait_for_selector(".rtsLevel1 .rtsLink .rtsTxt")
 
         letters = page.locator(".rtsLevel1 .rtsLink .rtsTxt")
 
@@ -48,52 +44,52 @@ async def get_secat_info() -> dict[str, CourseSecatInfo]:
             log.info(f"[Level 1] Clicking letter: {letter_text}")
 
             await letter_elem.click()
-            await asyncio.sleep(random.uniform(0.5, 2))  # noqa: S311
 
-            # this is then getting ABTS, ACCT, ADVT, etc.
-            await page.wait_for_selector(".rtsLevel2 .rtsLink .rtsTxt")
+            await page.wait_for_selector(".rtsLevel3 .rtsLink .rtsTxt")
+            courses_lvl3_texts = await page.locator(".rtsLevel3 .rtsLink .rtsTxt").all_inner_texts()
+            log.info(f"Letter {letter_text} has {len(courses_lvl3_texts)} Level 3 courses")
+
+            current_prefix = None
             courses_lvl2 = page.locator(".rtsLevel2 .rtsLink .rtsTxt")
 
-            for j in range(await courses_lvl2.count()):
-                course_lvl2_elem = courses_lvl2.nth(j)
-                course_text = await course_lvl2_elem.inner_text()
-                log.info(f"[Level 2] Clicking course: {course_text}")
+            for full_course_code in courses_lvl3_texts:
+                prefix = "".join([c for c in full_course_code if not c.isdigit()])  # e.g., 'ABTS'
 
-                await course_lvl2_elem.click()
-                await asyncio.sleep(random.uniform(0.5, 2))  # noqa: S311
+                if prefix != current_prefix:
+                    # find and click the matching Level 2 element
+                    lvl2_elem = courses_lvl2.filter(has_text=prefix)
+                    log.info(f"Switching Level 2 to {prefix}")
+                    await lvl2_elem.click()
+                    current_prefix = prefix
 
-                # this is then getting AGRC1010, AGRC1012, etc.
-                await page.wait_for_selector(".rtsLevel3 .rtsLink .rtsTxt")
+                # re-locate the Level 3 element to avoid stale element
+                course_elem = page.locator(".rtsLevel3 .rtsLink .rtsTxt", has_text=full_course_code)
+                log.info(f"[Level 3] Clicking full course: {full_course_code}")
+                await course_elem.scroll_into_view_if_needed()
+                await course_elem.click()
 
-                courses_lvl3_texts = await page.locator(".rtsLevel3 .rtsLink .rtsTxt").all_inner_texts()
+                await page.wait_for_selector("#lblNoEnrolled")
+                enrolled = int(await page.locator("#lblNoEnrolled").inner_text())
+                responses = int(await page.locator("#lblNoResponses").inner_text())
+                rate = float((await page.locator("#lblRespRate").inner_text()).replace("%", ""))
 
-                log.info(f"Category {course_text} has {len(courses_lvl3_texts)} courses")
-
-                for full_course_code in courses_lvl3_texts:
-                    # re-locate the element each iteration to avoid stale reference
-                    course_elem = page.locator(".rtsLevel3 .rtsLink .rtsTxt", has_text=full_course_code)
-
-                    log.info(f"[Level 3] Clicking full course: {full_course_code}")
-                    await course_lvl2_elem.click()  # expand parent
-                    await course_elem.click()
-
-                    await page.wait_for_selector("#lblNoEnrolled")
-                    enrolled = int(await page.locator("#lblNoEnrolled").inner_text())
-                    responses = int(await page.locator("#lblNoResponses").inner_text())
-                    rate = float((await page.locator("#lblRespRate").inner_text()).replace("%", ""))
-
-                    results[full_course_code] = CourseSecatInfo(
-                        num_enrolled=enrolled, num_responses=responses, response_rate=rate
-                    )
+                yield (
+                    full_course_code,
+                    CourseSecatInfo(num_enrolled=enrolled, num_responses=responses, response_rate=rate),
+                )
 
         await browser.close()
 
-    return results
 
-
-def _extract_course_html(html: str, course_code: str) -> Course | None:
+def _extract_course_html(html: str, course_code: str) -> Course | None:  # noqa: C901, PLR0915
     """Parses the ECP html into a course."""
     soup = BeautifulSoup(html, "html.parser")
+
+    not_found_tag = soup.select_one("#course-notfound")
+
+    if not_found_tag:
+        log.warning(f"Course '{course_code}' not found.")
+        return None
 
     description_div = soup.find("div", id="description")
     if description_div and "not currently offered" in description_div.get_text():
@@ -193,11 +189,14 @@ def _extract_course_html(html: str, course_code: str) -> Course | None:
                 _throw_parse_error("mode")
             mode = mode_tag.text.strip()
 
-            profile_tag = row.select_one(".course-offering-profile a")
-            if not profile_tag:
-                _throw_parse_error("profile")
+            profile_link_tag = row.select_one(".course-offering-profile a")
 
-            profile_url: HttpUrl | None = profile_tag.get("href") if profile_tag else None
+            profile_url = None
+            if profile_link_tag:
+                profile_url = str(profile_link_tag.get("href"))
+            else:
+                log.warning(f"{course_code} profile unavailable for {sem_tag.text.strip()} ({table_id})")
+
             offerings.append(CourseOffering(semester=sem, location=loc, mode=mode, profile_url=profile_url))
         return offerings
 
@@ -215,7 +214,7 @@ def _extract_course_html(html: str, course_code: str) -> Course | None:
         prerequisite=prerequisite,
         # Misc info
         faculty=faculty,
-        faculty_url=None if not faculty_url else HttpUrl(faculty_url),
+        faculty_url=str(faculty_url) if faculty_url else None,
         school=school,
         duration=duration,
         attendance_mode=attendance_mode,
@@ -295,6 +294,8 @@ async def scrape_courses() -> list[Course]:
                     skipped.append(course)
                 else:
                     courses.append(course)
+
+            log.error(f"Couldn't get data for the following courses: '{', '.join(skipped)}'")
 
         except Exception:
             log.exception("Error fetching courses")
