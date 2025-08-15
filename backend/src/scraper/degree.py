@@ -6,7 +6,7 @@ from serde.json import to_json, from_json
 
 def main():
     print("HI THERE!")
-    with open("../data/course_reqs/law.json") as f:
+    with open("../data/course_reqs/beme_reqs.json") as f:
         lines = f.read()
         out = from_json(Degree, lines)
         pprint(out)
