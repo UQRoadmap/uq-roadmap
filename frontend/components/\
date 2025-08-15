@@ -1,6 +1,7 @@
 import { EllipsisVerticalIcon, StarIcon, PlusIcon } from "@heroicons/react/20/solid";
 import Droppable from "@/components/droppable"
 import Draggable from "@/components/draggable"
+import {DragOverlay} from '@dnd-kit/core';
 import { Badge } from '@/components/badge'
 
 export default function CourseCard({name, id, units, degreeReq}: {name: string, id: string, units: number, degreeReq: string}) {
