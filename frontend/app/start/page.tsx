@@ -2,14 +2,15 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { Description, Field, FieldGroup, Fieldset, Label, Legend } from '@/components/fieldset'
+import { Field, FieldGroup, Fieldset, Label } from '@/components/fieldset'
 import { Combobox, ComboboxLabel, ComboboxOption } from '@/components/combobox'
-import { Select } from '@/components/select'
 import { Button } from '@/components/button'
 
 import MajorSelect from './major-comp'
 
-const degrees = [
+type Degree = { name: string; majors: string[]; minors?: string[]; offerings: string[] };
+
+const degrees: Degree[] = [
     {
         name: "Bachelor of Software Engineering",
         majors: [
@@ -47,7 +48,7 @@ const degrees = [
 ];
 
 export default function Home() {
-  const [selectedDegree, setSelectedDegree] = useState(null);
+  const [selectedDegree, setSelectedDegree] = useState<Degree | null>(null);
   const router = useRouter();
 
   const handleClick = () => {
@@ -81,17 +82,17 @@ export default function Home() {
                 </Field>
                 <MajorSelect
                     name="Offerings"
-                    options={selectedDegree?.offerings}
+                    options={selectedDegree?.offerings ?? []}
                     disabled={!selectedDegree}
                 />
                 <MajorSelect
                     name="Majors"
-                    options={selectedDegree?.majors}
+                    options={selectedDegree?.majors ?? []}
                     disabled={!selectedDegree || !selectedDegree.majors}
                 />
                 <MajorSelect
                     name="Minors"
-                    options={selectedDegree?.minors}
+                    options={selectedDegree?.minors ?? []}
                     disabled={!selectedDegree || !selectedDegree.minors}
                 />
             </FieldGroup>
