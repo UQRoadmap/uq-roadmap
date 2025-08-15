@@ -6,10 +6,11 @@ import json
 import logging
 from enum import Enum
 from pathlib import Path
+from typing import Any
 
 from common.enums import LogLevel
 from common.logging import configure_logging
-from scraper.courses import scrape_all_courses
+from scraper.courses import scrape_courses
 from scraper.programs import scrape_all_programs
 
 
@@ -41,14 +42,16 @@ def main() -> None:
     args = parser.parse_args()
 
     data: dict = {}
+    result: list[Any] = []
 
     if args.mode == ScrapeType.PROGRAM:
         result = scrape_all_programs()
         data = {"programs": [r.model_dump(mode="json") for r in result]}
-        log.info(f"Scraped {len(data)} programs.")
+        log.info(f"Scraped {len(data['programs'])} programs.")
     elif args.mode == ScrapeType.COURSE:
-        data = asyncio.run(scrape_all_courses())
-        log.info(f"Scraped {len(data)} courses.")
+        result = asyncio.run(scrape_courses())
+        data = {"courses": [r.model_dump(mode="json") for r in result]}
+        log.info(f"Scraped {len(data['courses'])} courses.")
     else:
         raise ValueError("Invalid scrape mode selected.")
 

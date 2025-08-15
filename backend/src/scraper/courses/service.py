@@ -1,16 +1,12 @@
-"""Scraper models."""
+"""Courses scrape service."""
 
 import logging
 
 import curl_cffi
 from bs4 import BeautifulSoup, Tag
 
+from scraper.courses.constants import COURSES_URL
 from scraper.models import Course, CourseLevel, CourseOffering
-
-COURSES_URL = "https://programs-courses.uq.edu.au/search.html?keywords=*&searchType=all&archived=true#courses"
-ECP_URL = "https://programs-courses.uq.edu.au/course.html?course_code={}"
-
-HEADERS = {"User-Agent": "Mozilla/5.0"}
 
 log = logging.getLogger(__name__)
 
@@ -28,7 +24,7 @@ def parse_offerings(block_div: Tag) -> list[CourseOffering]:
     for row in data_rows:
         cols = row.find_all("td")
         if len(cols) < 3:
-            logger.warning("Skipping row with insufficient columns: {}", row)
+            log.warning(f"Skipping row with insufficient columns: {row}")
             continue
 
         semester = cols[0].get_text(strip=True)
@@ -70,19 +66,13 @@ def parse_courses(html: str) -> list[Course]:
     return [parse_course(li) for li in container.select("ul.listing > li")]
 
 
-async def fetch_courses(session: curl_cffi.AsyncSession) -> list[Course]:
+async def scrape_courses() -> list[Course]:
     """Fetches all of the course info."""
-    try:
-        r = await session.get(COURSES_URL)
-        r.raise_for_status()
-        return parse_courses(r.text)
-    except Exception:
-        log.exception("Error fetching courses")
-        return []
-
-
-async def scrape_all_courses() -> dict:
-    """Scrapes all of the course information."""
     async with curl_cffi.AsyncSession() as session:
-        result = await fetch_courses(session)
-        return {"courses": [r.model_dump(mode="json") for r in result]}
+        try:
+            r = await session.get(COURSES_URL)
+            r.raise_for_status()
+            return parse_courses(r.text)
+        except Exception:
+            log.exception("Error fetching courses")
+            raise
