@@ -30,6 +30,10 @@ class CourseOffering(UQScrapeModel):
 class CourseSecatInfo(UQScrapeModel):
     """Secat information for a course."""
 
+    num_enrolled: int
+    num_responses: int
+    response_rate: float
+
 
 class Course(UQScrapeModel):
     """Course data model."""
@@ -55,9 +59,6 @@ class Course(UQScrapeModel):
     # Offerings
     current_offerings: list[CourseOffering]
     archived_offerings: list[CourseOffering]
-
-    # Secats
-    secat: CourseSecatInfo | None
 
     @property
     @computed_field

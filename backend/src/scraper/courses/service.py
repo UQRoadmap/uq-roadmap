@@ -2,56 +2,96 @@
 
 import asyncio
 import logging
+import random
 from typing import NoReturn
 
 import bs4
 import curl_cffi
 from bs4 import BeautifulSoup
+from playwright.async_api import async_playwright
 from pydantic import HttpUrl
 
-from scraper.courses.constants import COURSES_URL, ECP_URL
 from scraper.courses.models import Course, CourseLevel, CourseOffering, CourseSecatInfo
 
 log = logging.getLogger(__name__)
 
+# Requests things
 MAX_CONCURRENT_REQUESTS = 10
 RETRY_COUNT = 3
 TIMEOUT_SECONDS = 60
 
+# Urls
+COURSES_URL = "https://programs-courses.uq.edu.au/search.html?keywords=*&searchType=all&archived=true#courses"
+ECP_URL = "https://programs-courses.uq.edu.au/course.html?course_code={}"
+SECAT_URL = "https://www.pbi.uq.edu.au/clientservices/SECaT/embedChart.aspx"
+
+
 semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
 
 
-async def get_secat_info(session: curl_cffi.AsyncSession) -> dict[str, CourseSecatInfo]:
+async def get_secat_info() -> dict[str, CourseSecatInfo]:
     """Extracts course info from the secat, mapping a course code to the secat info."""
-    return {}
+    results: dict[str, CourseSecatInfo] = {}
+
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        page = await browser.new_page()
+        await page.goto(SECAT_URL)
+        await page.wait_for_selector(".rtsLevel1 .rtsLink .rtsTxt")
+
+        letters = page.locator(".rtsLevel1 .rtsLink .rtsTxt")
+
+        # this is getting A, B, C, etc.
+        for i in range(await letters.count()):
+            letter_elem = letters.nth(i)
+            letter_text = await letter_elem.inner_text()
+            log.info(f"[Level 1] Clicking letter: {letter_text}")
+
+            await letter_elem.click()
+            await asyncio.sleep(random.uniform(0.5, 2))  # noqa: S311
+
+            # this is then getting ABTS, ACCT, ADVT, etc.
+            await page.wait_for_selector(".rtsLevel2 .rtsLink .rtsTxt")
+            courses_lvl2 = page.locator(".rtsLevel2 .rtsLink .rtsTxt")
+
+            for j in range(await courses_lvl2.count()):
+                course_lvl2_elem = courses_lvl2.nth(j)
+                course_text = await course_lvl2_elem.inner_text()
+                log.info(f"[Level 2] Clicking course: {course_text}")
+
+                await course_lvl2_elem.click()
+                await asyncio.sleep(random.uniform(0.5, 2))  # noqa: S311
+
+                # this is then getting AGRC1010, AGRC1012, etc.
+                await page.wait_for_selector(".rtsLevel3 .rtsLink .rtsTxt")
+
+                courses_lvl3_texts = await page.locator(".rtsLevel3 .rtsLink .rtsTxt").all_inner_texts()
+
+                log.info(f"Category {course_text} has {len(courses_lvl3_texts)} courses")
+
+                for full_course_code in courses_lvl3_texts:
+                    # re-locate the element each iteration to avoid stale reference
+                    course_elem = page.locator(".rtsLevel3 .rtsLink .rtsTxt", has_text=full_course_code)
+
+                    log.info(f"[Level 3] Clicking full course: {full_course_code}")
+                    await course_lvl2_elem.click()  # expand parent
+                    await course_elem.click()
+
+                    await page.wait_for_selector("#lblNoEnrolled")
+                    enrolled = int(await page.locator("#lblNoEnrolled").inner_text())
+                    responses = int(await page.locator("#lblNoResponses").inner_text())
+                    rate = float((await page.locator("#lblRespRate").inner_text()).replace("%", ""))
+
+                    results[full_course_code] = CourseSecatInfo(
+                        num_enrolled=enrolled, num_responses=responses, response_rate=rate
+                    )
+
+        await browser.close()
+
+    return results
 
 
-"""
-<div id="coursedetails" align="center">
-					<table border="0" style="font: 12px Arial, Helvetica, sans-serif;color:GrayText">
-						<tr>
-							<td align="center">Number<br/>Enrolled</td>
-							<td width="15px"></td>
-							<td align="center">Number of<br/>Responses</td>
-							<td width="15px"></td>
-							<td align="center">Response<br/>Rate</td>
-						</tr>
-						<tr>
-							<td><span id="lblNoEnrolled" class="rightAlignTextBox" style="display:inline-block;">72</span>
-							</td>
-							<td width="15px"></td>
-							<td><span id="lblNoResponses" class="rightAlignTextBox" style="display:inline-block;">23</span>
-							</td>
-							<td width="15px"></td>
-							<td><span id="lblRespRate" class="rightAlignTextBox" style="display:inline-block;">31.94%</span>
-							</td>
-						</tr>
-					</table>
-				</div>
-"""
-
-
-def extract_course_html(html: str, course_code: str) -> Course | None:
+def _extract_course_html(html: str, course_code: str) -> Course | None:
     """Parses the ECP html into a course."""
     soup = BeautifulSoup(html, "html.parser")
 
@@ -135,7 +175,7 @@ def extract_course_html(html: str, course_code: str) -> Course | None:
     course_enquiries = course_enquiries_tag.text.strip() if course_enquiries_tag else None
 
     # Offerings
-    def parse_offerings(table_id: str) -> list[CourseOffering]:
+    def _parse_offerings(table_id: str) -> list[CourseOffering]:
         offerings = []
         for row in soup.select(f"#{table_id} tbody tr"):
             sem_tag = row.select_one("a.course-offering-year")
@@ -161,8 +201,8 @@ def extract_course_html(html: str, course_code: str) -> Course | None:
             offerings.append(CourseOffering(semester=sem, location=loc, mode=mode, profile_url=profile_url))
         return offerings
 
-    current_offerings = parse_offerings("course-current-offerings")
-    archived_offerings = parse_offerings("course-archived-offerings")
+    current_offerings = _parse_offerings("course-current-offerings")
+    archived_offerings = _parse_offerings("course-archived-offerings")
 
     return Course(
         # General info
@@ -184,12 +224,10 @@ def extract_course_html(html: str, course_code: str) -> Course | None:
         # Offerings
         current_offerings=current_offerings,
         archived_offerings=archived_offerings,
-        # Secats
-        secat=None,
     )
 
 
-async def extract_course_info_ecp(session: curl_cffi.AsyncSession, course_code: str) -> Course | None:
+async def _extract_course_info_ecp(session: curl_cffi.AsyncSession, course_code: str) -> Course | str:
     """Extracts the course info from the ecp."""
     log.debug(f"Fetching ecp info for course '{course_code}'")
 
@@ -197,23 +235,24 @@ async def extract_course_info_ecp(session: curl_cffi.AsyncSession, course_code: 
         try:
             r = await session.get(ECP_URL.format(course_code), timeout=TIMEOUT_SECONDS)
             r.raise_for_status()
-            return extract_course_html(r.text, course_code)
+            result = _extract_course_html(r.text, course_code)
+            return result or course_code  # noqa: TRY300
         except curl_cffi.requests.exceptions.Timeout:
             log.warning(f"Timeout fetching course '{course_code}' (attempt {attempt}/{RETRY_COUNT})")
         except Exception:
             log.exception(f"Error fetching course '{course_code}' (attempt {attempt}/{RETRY_COUNT})")
         await asyncio.sleep(1)  # small delay before retry
     log.error(f"Failed to fetch course '{course_code}' after {RETRY_COUNT} attempts")
-    return None
+    return course_code
 
 
-async def extract_course_info_with_limit(session: curl_cffi.AsyncSession, course_code: str) -> Course | None:
+async def _extract_course_info_with_limit(session: curl_cffi.AsyncSession, course_code: str) -> Course | str:
     """Wrap extraction with semaphore to limit concurrency."""
     async with semaphore:
-        return await extract_course_info_ecp(session, course_code)
+        return await _extract_course_info_ecp(session, course_code)
 
 
-def parse_course_codes(html: str) -> list[str]:
+def _parse_course_codes(html: str) -> list[str]:
     """Parses the list of courses page and grabs the name from each.
 
     https://programs-courses.uq.edu.au/search.html?keywords=*&searchType=all&archived=true#courses
@@ -241,27 +280,21 @@ async def scrape_courses() -> list[Course]:
         try:
             r = await session.get(COURSES_URL)
             r.raise_for_status()
-            course_codes = parse_course_codes(r.text)
+            course_codes = _parse_course_codes(r.text)
 
             # Get info from ecp
             courses: list[Course] = []
+            skipped: list[str] = []
 
-            tasks = [extract_course_info_with_limit(session, code) for code in course_codes]
+            tasks = [_extract_course_info_with_limit(session, code) for code in course_codes]
             course_results = await asyncio.gather(*tasks)
 
             for course in course_results:
-                if course is None:
-                    log.warning("Unable to get ECP for course '{}'")
-                    continue
-                courses.append(course)
-
-            # inject secat info
-            secat_map = await get_secat_info(session)
-
-            for course in courses:
-                course.secat = secat_map.get(course.code)
-                if not course.secat:
-                    log.warning(f"No secat info found for {course.code}")
+                if isinstance(course, str):
+                    log.error(f"Unable to get ECP for course '{course}'")
+                    skipped.append(course)
+                else:
+                    courses.append(course)
 
         except Exception:
             log.exception("Error fetching courses")
