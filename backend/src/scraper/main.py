@@ -1,13 +1,14 @@
 import argparse
 import asyncio
 import json
+import logging
 from enum import Enum
 
-# from loguru import logger
-
-from uqscraper.courses import scrape_all_courses
-from uqscraper.models import UQScrapeModel
-from uqscraper.programs import scrape_all_programs
+from common.enums import LogLevel
+from common.logging import configure_logging
+from scraper.courses import scrape_all_courses
+from scraper.models import UQScrapeModel
+from scraper.programs import scrape_all_programs
 
 
 class ScrapeType(Enum):
@@ -16,6 +17,10 @@ class ScrapeType(Enum):
 
 
 def main():
+    configure_logging(LogLevel.debug)
+
+    log = logging.getLogger(__name__)
+
     parser = argparse.ArgumentParser(description="UQ Scraper CLI")
     parser.add_argument(
         "mode",
@@ -34,10 +39,10 @@ def main():
 
     if args.mode == ScrapeType.PROGRAM:
         data = asyncio.run(scrape_all_programs())
-        # logger.info("Scraped {} programs.", len(data))
+        log.info(f"Scraped {len(data)} programs.")
     elif args.mode == ScrapeType.COURSE:
         data = asyncio.run(scrape_all_courses())
-        # logger.info("Scraped {} courses.", len(data))
+        log.info(f"Scraped {len(data)} courses.")
     else:
         raise ValueError("Invalid scrape mode selected.")
 

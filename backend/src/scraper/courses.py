@@ -1,13 +1,18 @@
+"""Scraper models."""
+
+import logging
+
 import httpx
 from bs4 import BeautifulSoup, Tag
-# from loguru import logger
 
-from uqscraper.models import Course, CourseLevel, CourseOffering
+from scraper.models import Course, CourseLevel, CourseOffering
 
 COURSES_URL = "https://programs-courses.uq.edu.au/search.html?keywords=*&searchType=all&archived=true#courses"
 ECP_URL = "https://programs-courses.uq.edu.au/course.html?course_code={}"
 
 HEADERS = {"User-Agent": "Mozilla/5.0"}
+
+log = logging.getLogger(__name__)
 
 
 def parse_offerings(block_div: Tag) -> list[CourseOffering]:
@@ -23,7 +28,7 @@ def parse_offerings(block_div: Tag) -> list[CourseOffering]:
     for row in data_rows:
         cols = row.find_all("td")
         if len(cols) < 3:
-            logger.warning("Skipping row with insufficient columns: {}", row)
+            log.warning("Skipping row with insufficient columns: %s", row)
             continue
 
         semester = cols[0].get_text(strip=True)
@@ -36,6 +41,7 @@ def parse_offerings(block_div: Tag) -> list[CourseOffering]:
 
 
 async def parse_course(li: Tag, client: httpx.AsyncClient) -> Course:
+    """Parses a couse into a Course model."""
     code: str = li.find("a", class_="code").get_text(strip=True)
     name: str = li.find("a", class_="title").get_text(strip=True)
     level_text: str = li.find("span", class_="course-level").get_text(strip=True).lower()
@@ -62,7 +68,7 @@ async def parse_courses(html: str, client: httpx.AsyncClient) -> list[Course]:
     soup = BeautifulSoup(html, "html.parser")
     container = soup.find("div", id="courses-container")
     if not container:
-        logger.warning("No courses found")
+        log.warning("No courses found")
         return []
 
     return [await parse_course(li, client) for li in container.select("ul.listing > li")]

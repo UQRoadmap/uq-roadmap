@@ -1,9 +1,11 @@
+"""Programs scraping."""
+
 import asyncio
 
 import httpx
 from bs4 import BeautifulSoup
 
-from uqscraper.models import Program
+from scraper.models import Program
 
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 PROGRAMS_URL = "https://study.uq.edu.au/study-options/programs"
