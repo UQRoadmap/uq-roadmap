@@ -1,17 +1,12 @@
-"""Scraper models."""
+"""Courses scrape service."""
 
 import logging
 
-import httpx
+import curl_cffi
 from bs4 import BeautifulSoup, Tag
-import cloudscraper
 
+from scraper.courses.constants import COURSES_URL
 from scraper.models import Course, CourseLevel, CourseOffering
-
-COURSES_URL = "https://programs-courses.uq.edu.au/search.html?keywords=*&searchType=all&archived=true#courses"
-ECP_URL = "https://programs-courses.uq.edu.au/course.html?course_code={}"
-
-HEADERS = {"User-Agent": "Mozilla/5.0"}
 
 log = logging.getLogger(__name__)
 
@@ -29,7 +24,7 @@ def parse_offerings(block_div: Tag) -> list[CourseOffering]:
     for row in data_rows:
         cols = row.find_all("td")
         if len(cols) < 3:
-            logger.warning("Skipping row with insufficient columns: {}", row)
+            log.warning(f"Skipping row with insufficient columns: {row}")
             continue
 
         semester = cols[0].get_text(strip=True)
@@ -61,7 +56,17 @@ def parse_course(li: Tag) -> Course:
     )
 
 
-def parse_courses(html: str) -> list[Course]:
+def parse_course_names(html: str) -> list[str]:
+    """Parses the list of courses page and grabs the name from each.
+
+    https://programs-courses.uq.edu.au/search.html?keywords=*&searchType=all&archived=true#courses
+
+    Args:
+        html (str): html from https://programs-courses.uq.edu.au/search.html?keywords=*&searchType=all&archived=true#courses
+
+    Returns:
+        list[str]: list of course codes
+    """
     soup = BeautifulSoup(html, "html.parser")
     container = soup.find("div", id="courses-container")
     if not container:
@@ -71,12 +76,13 @@ def parse_courses(html: str) -> list[Course]:
     return [parse_course(li) for li in container.select("ul.listing > li")]
 
 
-def scrape_all_courses() -> list[Course]:
-    scraper = cloudscraper.create_scraper()
-    try:
-        response = scraper.get(COURSES_URL, headers=HEADERS)
-        response.raise_for_status()
-        return parse_courses(response.text)
-    except Exception as e:
-        print(f"Error fetching courses: {e}")
-        return []
+async def scrape_courses() -> list[Course]:
+    """Fetches all of the course info."""
+    async with curl_cffi.AsyncSession() as session:
+        try:
+            r = await session.get(COURSES_URL)
+            r.raise_for_status()
+            return parse_course_names(r.text)
+        except Exception:
+            log.exception("Error fetching courses")
+            raise

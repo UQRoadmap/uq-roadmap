@@ -13,6 +13,7 @@ dependencies = [
     "pyserde>=0.24.0",
     "sqlalchemy[asyncio]>=2.0.43",
     "cloudscraper>=1.2.71",
+    "curl-cffi>=0.13.0",
 ]
 
 [dependency-groups]
