@@ -1,0 +1,7 @@
+# Compiled stuff
+__pycache__/
+
+# Other bits
+.mypy_cache
+.venv
+.ruff_cache
