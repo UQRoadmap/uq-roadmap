@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from uqroadmap.config import CONFIG
+from api.config import CONFIG
 
 log = logging.getLogger(__name__)
 
@@ -48,8 +48,7 @@ async def get_db() -> AsyncGenerator[AsyncSession]:
 async def initialise_database(engine: AsyncEngine) -> None:
     """Initialise database."""
     # Importing as now sqlalchemy will know about them when creating the schema
-    from uqroadmap.database.base import BaseDBModel
-    from uqroadmap.degree.models import DegreeDBModel
+    from api.database.base import BaseDBModel
 
     async with engine.begin() as conn:
         await conn.run_sync(BaseDBModel.metadata.create_all)

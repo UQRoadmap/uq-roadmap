@@ -1,6 +1,6 @@
 """Degree schemas."""
 
-from uqroadmap.schemas import UQRoadmapBase
+from api.schemas import UQRoadmapBase
 
 
 class DegreeRead(UQRoadmapBase):

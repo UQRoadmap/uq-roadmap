@@ -2,7 +2,7 @@
 
 from sqlalchemy.orm import Mapped, mapped_column
 
-from uqroadmap.database.base import BaseDBModel
+from api.database.base import BaseDBModel
 
 
 class DegreeDBModel(BaseDBModel):

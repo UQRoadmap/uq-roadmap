@@ -2,10 +2,10 @@
 
 from fastapi import APIRouter, HTTPException, status
 
-from uqroadmap.database.deps import DbSession
-from uqroadmap.degree.models import DegreeDBModel
-from uqroadmap.degree.schemas import DegreeCreate, DegreeRead
-from uqroadmap.degree.service import create_degree, get_all_degrees, get_degree_by_id
+from api.database.deps import DbSession
+from api.degree.models import DegreeDBModel
+from api.degree.schemas import DegreeCreate, DegreeRead
+from api.degree.service import create_degree, get_all_degrees, get_degree_by_id
 
 r = router = APIRouter()
 

@@ -3,7 +3,7 @@
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
-from uqroadmap.enums import LogLevel
+from common.enums import LogLevel
 
 
 class GeneralSettings(BaseSettings):

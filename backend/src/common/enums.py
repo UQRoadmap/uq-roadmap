@@ -4,11 +4,7 @@ import logging
 from enum import Enum
 
 
-class RoadmapEnum(str, Enum):
-    """Base roadmap enum."""
-
-
-class LogLevel(RoadmapEnum):
+class LogLevel(str, Enum):
     """Log levels."""
 
     info = "INFO"

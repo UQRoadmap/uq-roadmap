@@ -3,8 +3,8 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from uqroadmap.degree.models import DegreeDBModel
-from uqroadmap.degree.schemas import DegreeCreate
+from api.degree.models import DegreeDBModel
+from api.degree.schemas import DegreeCreate
 
 
 async def create_degree(session: AsyncSession, degree_in: DegreeCreate) -> DegreeDBModel:

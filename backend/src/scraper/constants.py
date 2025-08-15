@@ -1,3 +1,5 @@
+"""UQ Scraper constants."""
+
 # Programs
 PROGRAMS_URL = "https://study.uq.edu.au/study-options/programs"
 PROGRAMS_PREFIX = "https://study.uq.edu.au"
