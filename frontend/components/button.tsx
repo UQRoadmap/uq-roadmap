@@ -34,7 +34,7 @@ const styles = {
   ],
   outline: [
     // Base
-    'border-white border-solid border-1 text-white data-active:bg-zinc-950/2.5 data-hover:bg-zinc-950/2.5',
+    'border-black border-solid border-1 text-black data-active:bg-zinc-950/2.5 data-hover:bg-zinc-950/2.5',
     // Icon
     '[--btn-icon:var(--color-zinc-500)] data-active:[--btn-icon:var(--color-zinc-700)] data-hover:[--btn-icon:var(--color-zinc-700)]',
   ],
@@ -49,26 +49,40 @@ const styles = {
     // Base: gentle lighten on hover
     'rounded-md bg-tertiary px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:filter hover:brightness-150',
   ],
+  icon: [
+    // Compact square button for icon-only controls
+    'inline-flex items-center justify-center rounded-lg bg-gray-200 hover:bg-gray-300',
+    // Ensure minimum touch target while keeping visual compactness
+    'px-[calc(--spacing(2)-1px)] py-[calc(--spacing(2)-1px)] sm:px-[calc(--spacing(1.5)-1px)] sm:py-[calc(--spacing(1.5)-1px)]',
+    // Icon sizing and alignment
+    '*:data-[slot=icon]:size-5 *:data-[slot=icon]:shrink-0 *:data-[slot=icon]:text-(--btn-icon) sm:*:data-[slot=icon]:size-4',
+    // Focus and disabled states
+    'focus:not-data-focus:outline-hidden data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-blue-500',
+    'data-disabled:opacity-50 data-disabled:cursor-not-allowed',
+    // Forced colors fallback
+    'forced-colors:[--btn-icon:ButtonText] forced-colors:data-hover:[--btn-icon:ButtonText]',
+  ],
 }
 
 type ButtonProps = (
-  | { outline?: never; plain?: never, accent?: never }
-  | { outline: true; plain?: never, accent?: never }
-  | { outline?: never; plain: true, accent?: never }
-  | { outline?: never, plain?: true, accent: true}
+  | { outline?: never; plain?: never, accent?: never, icon?: never }
+  | { outline: true; plain?: never, accent?: never, icon?: never }
+  | { outline?: never; plain: true, accent?: never, icon?: never }
+  | { outline?: never, plain?: true, accent: true, icon?: never }
+  | { outline?: never; plain?: never, accent?: never, icon: true }
 ) & { className?: string; children: React.ReactNode } & (
     | Omit<Headless.ButtonProps, 'as' | 'className'>
     | Omit<React.ComponentPropsWithoutRef<typeof Link>, 'className'>
   )
 
 export const Button = forwardRef(function Button(
-  { outline, plain, accent, className, children, ...props }: ButtonProps,
+  { outline, plain, accent, icon, className, children, ...props }: ButtonProps,
   ref: React.ForwardedRef<HTMLElement>
 ) {
   const classes = clsx(
     className,
     styles.base,
-    accent ? styles.accent : outline ? styles.outline : plain ? styles.plain : clsx(styles.solid)
+    icon ? styles.icon : accent ? styles.accent : outline ? styles.outline : plain ? styles.plain : clsx(styles.solid)
   )
 
   return 'href' in props ? (
