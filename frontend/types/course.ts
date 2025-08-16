@@ -5,9 +5,12 @@ export type Course = {
 
   units: number;
   sem: string;
+  sems: string[];
   secats: number,
   desc: string,
 
-  degreeReq?: string;
+  degreeReq: DegreeReq;
   completed: boolean;
 };
+
+export type DegreeReq = Record<string, string[]>;
