@@ -26,6 +26,7 @@ export type ApiCourse = {
     attendance_mode: string,
     active: boolean,
     semesters_str: string,
+    score?: number
     secat: {
       num_enrolled: number,
       num_responses: number,

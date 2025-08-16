@@ -48,6 +48,10 @@ class SecatQuestion(UQRoadmapBase):
     disagree: float
     s_disagree: float
 
+    def get_avg_score(self) -> float:
+        """Get avg score for a secat question."""
+        return 5 * self.s_agree + 4 * self.agree + 3 * self.middle + 2 * self.disagree + 1 * self.s_disagree
+
 
 class SecatInfo(UQRoadmapBase):
     """Secat information for a course."""
@@ -56,3 +60,7 @@ class SecatInfo(UQRoadmapBase):
     num_responses: int
     response_rate: float
     questions: list[SecatQuestion]
+
+    def get_avg_score(self) -> float:
+        """Get avg secat score."""
+        return sum(q.get_avg_score() for q in self.questions) / len(self.questions)
