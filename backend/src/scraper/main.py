@@ -43,10 +43,7 @@ def main() -> None:
         choices=list(ScrapeType),
         help="Choose what to scrape: degrees or courses",
     )
-    parser.add_argument(
-        "--output",
-        help="Output JSON file",
-    )
+    parser.add_argument("--output", help="Output JSON file", required=True)
     args = parser.parse_args()
     output_file = args.output
 
@@ -54,7 +51,7 @@ def main() -> None:
 
     # getting the programs/degrees
     if args.mode == ScrapeType.PROGRAM:
-        programs: list[Program] = scrape_all_programs()
+        programs: list[Program] = asyncio.run(scrape_all_programs())
         data = {"programs": [r.model_dump(mode="json") for r in programs]}
         with Path.open(output_file, "w") as f:
             json.dump(data, f, indent=2)
