@@ -146,6 +146,20 @@ class AR5(AR):
     plan_list_1: list[ProgramRef]
     plan_list_2: list[ProgramRef]
 
+    def validate(self, plan: Plan) -> ValidateResult:
+        for plan_ref in self.plan_list_1: 
+            if plan_ref.code in plan.specialisations[self.part]:
+                values = [item for sublist in plan.specialisations.values() for item in sublist]
+            if not set(self.plan_list_2) & set(values):
+                return ValidateResult(
+                    Status.ERROR,
+                    None,
+                    f"Expected {self.plan_list_1} to be with {self.plan_list_2}.",
+                    plan.specialisations[self.part],
+                )
+            else:
+                return ValidateResult(Status.OK, 100, "", [])
+
 
 @serde
 class AR6(AR):
@@ -154,6 +168,19 @@ class AR6(AR):
     plan_list_1: list[ProgramRef]
     plan_list_2: list[ProgramRef]
 
+    def validate(self, plan: Plan) -> ValidateResult:
+        for plan_ref in self.plan_list_1: 
+            if plan_ref.code in plan.specialisations[self.part]:
+                values = [item for sublist in plan.specialisations.values() for item in sublist]
+            if set(self.plan_list_2) & set(values):
+                return ValidateResult(
+                    Status.ERROR,
+                    None,
+                    f"Expected {self.plan_list_1} to NOT be with {self.plan_list_2}.",
+                    plan.specialisations[self.part],
+                )
+            else:
+                return ValidateResult(Status.OK, 100, "", [])
 
 @serde
 class AR7(AR):
