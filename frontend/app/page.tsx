@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import appImage from "@/public/app-image.jpg"
 import { Button } from '@/components/button'
+import { ArrowRightIcon } from '@heroicons/react/16/solid'
 
 export default function Example() {
 
@@ -23,8 +24,11 @@ export default function Example() {
                   >
                     Get started
                   </Button>
-                  <a href="#" className="text-sm/6 font-semibold">
-                    Learn more <span aria-hidden="true">→</span>
+                  <a href="#" className="text-sm/6 font-semibold group">
+                    Learn more{' '}
+                    <span aria-hidden="true" className="inline-block transition-transform duration-200 ease-out group-hover:translate-x-1">
+                      <ArrowRightIcon className='w-3 '/>
+                    </span>
                   </a>
                 </div>
               </div>
