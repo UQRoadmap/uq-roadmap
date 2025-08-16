@@ -11,7 +11,7 @@ class SR:
     part: str
 
     def validate(self, plan: Plan) -> ValidateResult:
-        return ValidateResult(Status.OK, None, "", [])
+        return ValidateResult(Status.ERROR, None, "Should not be seeing this - validating abstract SR", plan.courses)
 
 
 @serde

@@ -94,7 +94,7 @@ async def validate_plan(session: AsyncSession, plan_model: PlanDBModel) -> list[
     )
 
     vals = plan_model.degree.details
-    pprint(vals)
+    # pprint(vals)
     pre_sem = vals["sem"]
     sem: int
     if isinstance(pre_sem, str):
@@ -105,7 +105,8 @@ async def validate_plan(session: AsyncSession, plan_model: PlanDBModel) -> list[
         raise Exception("WHAT!!!!")
 
     vals["sem"] = sem
-    pprint(vals)
+    # pprint(vals)
     degree: Degree = from_dict(Degree, vals)
+    pprint(degree)
 
     return degree.validate(plan, _get_course_wrapper(session), _get_degree_wrapper(session))

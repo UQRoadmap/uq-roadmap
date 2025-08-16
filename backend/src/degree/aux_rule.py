@@ -12,8 +12,8 @@ class AR:
     # Part, e.g. A or A.1
     part: str
 
-    def validate(self, plan) -> ValidateResult:
-        return ValidateResult(Status.ERROR, None, "Should not be seeing this", [])
+    def validate(self, plan: Plan) -> ValidateResult:
+        return ValidateResult(Status.ERROR, None, "Should not be seeing this - validating abstract AR", plan.courses)
 
 
 @serde
