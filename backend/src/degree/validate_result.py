@@ -1,6 +1,7 @@
 from enum import Enum
+
 from serde import serde
-from serde.json import to_json, from_json
+from serde.json import from_json, to_json
 
 
 class Status(Enum):

@@ -2,14 +2,15 @@ from __future__ import annotations
 from pprint import pprint
 from serde import serde, AdjacentTagging
 from serde.json import to_json, from_json
+from serde import coerce
 from serde import from_dict
-import json
+from json import loads
 
 
 def main():
     with open("../data/course_reqs/details.json") as f:
         raw = f.read()
-        details = json.loads(raw)["program_details"]
+        details = loads(raw)["program_details"]
         components = {}
         rule_logic = set()
         ars = {}
@@ -85,15 +86,14 @@ class AuxiliaryRule:
 
 
 @serde
-class ComponentPayloadHeader:
-    title: str
-    summaryDescription: str
-    ruleLogic: str
-    auxiliaryRules: list[AuxiliaryRule]
+class SelectionRule:
+    code: str
+    text: str
+    params: list[Param]
 
 
 @serde
-class ComponentPayloadBodyHeader:
+class ComponentPayloadHeader:
     partUID: str | None
     ruleLogic: str | None
     partReference: str
@@ -103,23 +103,8 @@ class ComponentPayloadBodyHeader:
     summaryDescription: str | None
     partType: str
     unitsMax: int | None
-
-
-@serde
-class SelectionRule:
-    code: str
-    text: str
-    params: list[Param]
-
-
-@serde
-class ComponentPayloadBodyBodyHeader:
-    partUUID: str | None
     notes: str | None
-    partReference: str
-    auxiliaryRules: list[AuxiliaryRule] | None
     selectionRule: SelectionRule | None
-    title: str
     partType: str
 
 
@@ -157,7 +142,7 @@ class EquivalenceGroup:
 
 
 @serde
-class ComponentPayloadBodyBodyBody:
+class ComponentPayloadLeaf:
     rowType: str | None
     orderNumber: int | None
     notes: str | None
@@ -167,22 +152,13 @@ class ComponentPayloadBodyBodyBody:
     wildCardItem: WildCardItem | None
 
 
-@serde
-class ComponentPayloadBodyBody:
-    header: ComponentPayloadBodyBodyHeader | None
-    body: list[ComponentPayloadBodyBodyBody] | None
+ComponentPayload = TypeRef()
 
 
-@serde
-class ComponentPayloadBody:
-    header: ComponentPayloadBodyHeader
-    body: list[ComponentPayloadBodyBody]
-
-
-@serde
+@serde(type_check=coerce)
 class ComponentPayload:
     header: ComponentPayloadHeader | None
-    body: list[ComponentPayloadBody] | None
+    body: list["ComponentPayload | ComponentPayloadLeaf"] | None
 
 
 @serde

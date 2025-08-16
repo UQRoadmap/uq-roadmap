@@ -4,7 +4,7 @@ from serde import serde
 
 from api.plan import Plan
 from degree.aux_rule import AR
-from backend.src.degree.sr_rule import SR
+from degree.srs_rule import SR
 from degree.validate_result import ValidateResult
 
 
@@ -39,3 +39,13 @@ class Degree:
             results.append(srs.validate(plan))
 
         return results
+
+    def __init__(self):
+        self.name = ""
+        self.code = ""
+        self.year = ""
+        self.sem = ""
+        self.aux = list()
+        self.srs = list()
+        self.part_references = dict()
+        self.rule_logic = list()
