@@ -1,21 +1,9 @@
 """Course models."""
 
-from enum import Enum
-
 from pydantic import computed_field
 
+from common.enums import CourseLevel
 from scraper.models import UQScrapeModel
-
-
-class CourseLevel(Enum):
-    """Level of a course."""
-
-    UNDERGRADUATE = "undergraduate"
-    POSTGRADUATE = "postgraduate"
-    POSTGRADUATE_COURSEWORK = "postgraduate coursework"
-    UQ_COLLEGE = "uq college"
-    NON_AWARD = "non-award"
-    OTHER = "other"
 
 
 class CourseOffering(UQScrapeModel):
@@ -27,12 +15,24 @@ class CourseOffering(UQScrapeModel):
     profile_url: str | None
 
 
+class SecatQuestion(UQScrapeModel):
+    """Secat question."""
+
+    name: str
+    s_agree: float
+    agree: float
+    middle: float
+    disagree: float
+    s_disagree: float
+
+
 class CourseSecatInfo(UQScrapeModel):
     """Secat information for a course."""
 
     num_enrolled: int
     num_responses: int
     response_rate: float
+    questions: list[SecatQuestion]
 
 
 class Course(UQScrapeModel):
