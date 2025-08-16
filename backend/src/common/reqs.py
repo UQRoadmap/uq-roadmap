@@ -12,12 +12,14 @@ GRAMMAR = """
 
     ?term: factor
          | term AND factor -> and_expr
+         | course_list -> and_expr
 
     ?factor: identifier         -> identifier
            | "(" expr ")"   -> parentheses
 
     identifier: PART_PATTERN
               | COURSE_CODE
+    course_list: COURSE_CODE ("," COURSE_CODE)+
 
     PART_PATTERN: "Part" WS LETTER
     COURSE_CODE: /[a-zA-Z0-9]+/

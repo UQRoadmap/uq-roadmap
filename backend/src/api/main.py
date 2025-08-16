@@ -8,7 +8,7 @@ from fastapi.responses import RedirectResponse
 
 from api.config import CONFIG
 from api.courses.routes import router as courses_router
-from api.database.service import db_engine, initialise_database
+from api.database.service import db_engine, setup_database
 from api.degree.routes import router as degree_router
 from common.logging import configure_logging
 
@@ -17,7 +17,7 @@ from common.logging import configure_logging
 async def lifespan(_: FastAPI) -> AsyncGenerator:
     """Lifespan event handler."""
     configure_logging(CONFIG.log_level)
-    await initialise_database(db_engine)
+    await setup_database(db_engine)
     yield
 
 
