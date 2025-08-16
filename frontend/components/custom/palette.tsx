@@ -18,6 +18,7 @@ import Draggable from '@/components/draggable'
 import { useState } from 'react'
 
 import { Course } from '@/types/course'
+import { MagnifyingGlassIcon } from '@heroicons/react/16/solid';
 
 const courses: Course[] = [
   {
@@ -110,77 +111,83 @@ export default function CommandPalette({draggable, clickable, setActiveId, activ
       }}
     >
       <div
-        className="fixed inset-0 z-10 w-screen overflow-y-auto p-4 sm:p-6 md:p-20"
+        className="fixed inset-0 z-10 w-screen overflow-y-auto p-4 sm:p-6 md:p-20 transition ease-in-out duration-300"
       >
+        <DialogBackdrop
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm"
+          style={{ opacity: opened ? 1 : 0, transition: 'opacity 200ms ease-in-out' }}
+        />
+
         <DialogPanel
           transition
-          className="mx-auto max-w-2xl transform divide-y divide-white/10 overflow-hidden rounded-xl bg-gray-900/80 shadow-2xl outline-1 -outline-offset-1 outline-white/10 backdrop-blur-sm backdrop-filter transition-all data-closed:scale-95 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
+          className="mx-auto max-w-2xl transform divide-y divide-white/10 overflow-hidden my-100 rounded-xl bg-black/60 shadow-2xl outline-1 -outline-offset-1 outline-white/10 backdrop-blur-sm backdrop-filter transition-all data-closed:scale-95 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
         >
           <Combobox
           >
-            <div className="grid grid-cols-1">
-              <ComboboxInput
-                autoFocus
-                className="col-start-1 row-start-1 h-12 w-full bg-transparent pr-4 pl-11 text-base text-white outline-hidden placeholder:text-gray-400 sm:text-sm"
-                placeholder="Search courses..."
-                onChange={(event) => setQuery(event.target.value)}
-              />
-            </div>
+        <div className="flex items-center gap-3 px-3">
+          <MagnifyingGlassIcon className="h-5 w-5 text-white" />
+          <ComboboxInput
+            autoFocus
+            className="flex-1 h-12 bg-transparent pr-4 text-base text-white placeholder:text-white sm:text-sm outline-none"
+            placeholder="Search courses..."
+            onChange={(event) => setQuery(event.target.value)}
+          />
+        </div>
 
-            {(query === '' || filteredcourses.length > 0) && (
-              <ul
-                className="max-h-80 scroll-py-2 divide-y divide-white/10 overflow-y-auto"
+        {(query === '' || filteredcourses.length > 0) && (
+          <ul
+            className="max-h-80 scroll-py-2 divide-y divide-white/10 overflow-y-auto"
+          >
+            <li className="p-2">
+          {query === '' && <h2 className="mt-4 mb-2 px-3 text-sm font-semibold text-white">Recent searches</h2>}
+          <ul className="space-y-2 text-sm text-gray-300">
+            {(query === '' ? recent : filteredcourses).map((course) => (
+              <Draggable
+            id={course.id}
+            key={course.id}
+            data={course}
+            disabled={!draggable}
               >
-                <li className="p-2">
-                  {query === '' && <h2 className="mt-4 mb-2 px-3 text-sm font-semibold text-white">Recent searches</h2>}
-                  <ul className="space-y-2 text-sm text-gray-300">
-                    {(query === '' ? recent : filteredcourses).map((course) => (
-                      <Draggable
-                        id={course.id}
-                        key={course.id}
-                        data={course}
-                        disabled={!draggable}
-                      >
-                        <li
-                          className="group cursor-move rounded-md px-3 py-2 bg-gray-800 hover:bg-gray-700 transition-colors flex flex-col select-none"
-                          onClick={() => handleClick(course)}
-                          style={{
-                            opacity: activeId === course.id ? 0 : 1, // hide original while dragging
-                          }}
-                        >
-                          <div className="flex justify-between items-center">
-                            <span className="ml-3 flex-auto truncate text-lg">{course.code} - {course.name}</span>
-                            <span className="ml-3 hidden flex-none text-gray-400 group-data-focus:inline">Add to planner</span>
-                          </div>
-                          <span className="ml-3 text-gray-400 text-sm">{course.desc.length > 180 ? course.desc.slice(0, 180) + '…' : course.desc}</span>
-                          <span className="ml-3 text-gray-400 text-sm space-x-2">
-                              <Badge color={course.sem == "2" ? "blue" : course.sem == "1" ? "red" : "purple"}>Semester {course.sem}</Badge>
-                              <Badge color="pink">{course.units} Units</Badge>
-                              <Badge color={course.secats > 3.5 ? "green" : course.secats > 2 ? "orange" : "red"}>
-                                  <div className="flex items-center space-x-1 text-yellow-400">
-                                    stars to go here
-                                  </div>
-                              </Badge>
-                          </span>
-                        </li>
-                      </Draggable>
-                    ))}
-                  </ul>
-                </li>
-                {query === '' && (
-                  <li className="p-2">
-                  </li>
-                )}
-              </ul>
-            )}
-
-            {query !== '' && filteredcourses.length === 0 && (
-              <div className="px-6 py-14 text-center sm:px-14">
-                <p className="mt-4 text-sm text-white">
-                  We couldn’t find any courses with that query. Please try again.
-                </p>
+            <li
+              className={`group ${clickable ? "cursor-pointer" : "cursor-grab"} rounded-md px-3 py-2 bg-black hover:bg-[#1f1f1f] transition-colors flex flex-col select-none`}
+              onClick={() => handleClick(course)}
+              style={{
+                opacity: activeId === course.id ? 0 : 1, // hide original while dragging
+              }}
+            >
+              <div className="flex justify-between items-center">
+                <span className="ml-3 flex-auto truncate text-lg">{course.code} - {course.name}</span>
+                <span className="ml-3 hidden flex-none text-gray-400 group-data-focus:inline">Add to planner</span>
               </div>
+              <span className="ml-3 text-gray-400 text-sm">{course.desc.length > 180 ? course.desc.slice(0, 180) + '…' : course.desc}</span>
+              <span className="ml-3 text-gray-400 text-sm space-x-2">
+              <Badge color={course.sem == "2" ? "blue" : course.sem == "1" ? "red" : "purple"}>Semester {course.sem}</Badge>
+              <Badge color="pink">{course.units} Units</Badge>
+              <Badge color={course.secats > 3.5 ? "green" : course.secats > 2 ? "orange" : "red"}>
+                  <div className="flex items-center space-x-1 text-yellow-400">
+                stars to go here
+                  </div>
+              </Badge>
+              </span>
+            </li>
+              </Draggable>
+            ))}
+          </ul>
+            </li>
+            {query === '' && (
+          <li className="p-2">
+          </li>
             )}
+          </ul>
+        )}
+
+        {query !== '' && filteredcourses.length === 0 && (
+          <div className="px-6 py-14 text-center sm:px-14">
+            <p className="mt-4 text-sm text-white">
+          We couldn’t find any courses with that query. Please try again.
+            </p>
+          </div>
+        )}
           </Combobox>
         </DialogPanel>
       </div>
