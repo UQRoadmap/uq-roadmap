@@ -8,8 +8,6 @@ from degree.validate_result import ValidateResult, Status
 
 @serde(tagging=AdjacentTagging("code", "data"))
 class AR:
-    pass
-
     def validate(plan) -> ValidateResult:
         return ValidateResult(Status.OK, None, "", [])
 
