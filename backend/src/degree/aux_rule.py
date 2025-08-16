@@ -4,12 +4,13 @@ from serde import serde, AdjacentTagging
 
 from degree.params import CourseRef, ProgramRef
 from degree.validate_result import ValidateResult, Status
+from api.plan import Plan
 
 
 @serde(tagging=AdjacentTagging("code", "data"))
 class AR:
     def validate(plan) -> ValidateResult:
-        return ValidateResult(Status.OK, None, "", [])
+        return ValidateResult(Status.ERROR, None, "Should not be seeing this", [])
 
 
 @serde
@@ -19,6 +20,25 @@ class AR1(AR):
     n: int
     level: int
     or_higher: bool = True
+
+    def validate(self, plan: Plan) -> ValidateResult:
+        count = 0
+        try:
+            for course in plan.courses:
+                course_level = int(course[4])
+                if course_level == self.level or (course_level > self.level and self.or_higher):
+                    count += 1
+            if count >= self.n:
+                return ValidateResult(Status.OK, None, "", [])
+            else:
+                return ValidateResult(
+                    Status.ERROR,
+                    count / self.n * 100,
+                    f"Expected at least {self.n} units at level {self.level}{' or higher' if self.or_higher else ''}, found {count}.",
+                    plan.courses,
+                )
+        except ValueError:
+            return ValidateResult(Status.ERROR, None, "Invalid course level format", plan.courses)
 
 
 @serde
