@@ -67,6 +67,6 @@ def load_degrees_from_file() -> Generator[DegreeDBModel]:
 
                 flat = convert_degree(degree)
 
-                degree_db_model = DegreeDBModel(degree_id=flat.code, title=flat.name, json=to_json(flat))
+                degree_db_model = DegreeDBModel(degree_id=str(flat.code), title=flat.name, json=to_json(flat))
 
                 yield degree_db_model
