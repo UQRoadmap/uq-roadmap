@@ -708,5 +708,29 @@ def main():
                     pprint(flat)
                     return
 
+
+# testing by printing to a file, it works
+# import contextlib
+# def main():
+#     with open("../../data/course_reqs/details.json") as f:
+#         raw = f.read()
+#         details = json.loads(raw)["program_details"]
+
+#         for detail in details:
+#             for year, data in detail["data"].items():
+#                 degree: ParsedDegree = from_dict(ParsedDegree | None, data)
+#                 if degree is None:
+#                     continue
+
+#                 flat = convert_degree(degree, data)
+
+#                 if len(flat.aux) > 10:
+#                     # Redirect stdout to file (like freopen in C)
+#                     with open("degree_output.txt", "w") as f:
+#                         with contextlib.redirect_stdout(f):
+#                             pprint(flat)
+#                     print("Output written to degree_output.txt")
+#                     return
+
 if __name__ == "__main__":
     main()
