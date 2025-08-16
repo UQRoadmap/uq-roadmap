@@ -16,6 +16,7 @@ dependencies = [
     "curl-cffi>=0.13.0",
     "playwright>=1.54.0",
     "orjson>=3.11.2",
+    "lark>=1.2.2",
 ]
 
 [dependency-groups]
