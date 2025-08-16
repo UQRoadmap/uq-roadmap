@@ -5,7 +5,7 @@ import { Badge } from '@/components/badge'
 
 import { Course } from '@/types/course'
 
-export default function CourseCard({id, code, name, units, sem, secats, desc, degreeReq, completed}: Course, activeId) {
+export default function CourseCard({id, code, name, units, sem, secats, desc, degreeReq, completed}: Course) {
     console.log(units)
     return (
       <Draggable
@@ -46,7 +46,7 @@ export default function CourseCard({id, code, name, units, sem, secats, desc, de
     )
 }
 
-export function EmptyCourseCard({degreeReq, id, setPaletteOpen, setActiveId, setSem}:
+export function EmptyCourseCard({degreeReq, id, setPaletteOpen, setActiveId}:
     {degreeReq?: string, id: string, setPaletteOpen: (open: boolean) => void,
      setActiveId: (targetId: string) => void }) {
     return (

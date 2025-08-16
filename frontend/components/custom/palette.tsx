@@ -72,7 +72,7 @@ const recent = [courses[0]]
 export default function CommandPalette({draggable, clickable, setActiveId, activeId, opened, sem, setPaletteOpen, onSelectCourse, stateCourses}:
     {draggable?: boolean, clickable?: boolean, setActiveId: (open: string) => void,
         activeId: string, opened: boolean, sem?: string, setPaletteOpen: (open: boolean) => void,
-        onSelectCourse: (course: Course, id: string) => void, stateCourses: Courses[][]}) {
+        onSelectCourse: (course: Course, id: string) => void, stateCourses: Course[][]}) {
   const [query, setQuery] = useState('')
   const activeCourse = courses.find(c => c.id === activeId) as Course;
   const filteredcourses: Course[] =
@@ -89,7 +89,7 @@ export default function CommandPalette({draggable, clickable, setActiveId, activ
     const handleClick = (course: Course) => {
       if (!clickable) return;
       console.log(course)
-      course.sem = sem
+      course.sem = sem ?? "";
       console.log("active", activeCourse)
       setActiveId(course.id)
       if (onSelectCourse) {

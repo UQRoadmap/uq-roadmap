@@ -7,6 +7,7 @@ type DraggableProps = {
   id: string;
   children: ReactNode;
   data: Course; // or `Course` if you always pass course objects
+  disabled: boolean; // or `Course` if you always pass course objects
 };
 
 export default function Draggable(props:DraggableProps) {

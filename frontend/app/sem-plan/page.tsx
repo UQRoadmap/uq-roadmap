@@ -8,9 +8,9 @@ import Pop from '@/components/custom/palette'
 import {DndContext, DragEndEvent} from '@dnd-kit/core';
 import { Course } from '@/types/course';
 import { v4 as uuidv4 } from "uuid";
-function SemesterSection({ semester, courses, setPaletteOpen, setActiveId, setSem }:
+function SemesterSection({ semester, courses, setPaletteOpen, setActiveId }:
     { semester: number; courses?: Course[], setPaletteOpen: (open: boolean) => void,
-      setActiveId: (id: string) => void, setSem: (sem: string) => void}) {
+      setActiveId: (id: string) => void}) {
     const [collapsed, setCollapsed] = useState(false);
 
     const normalCourses: Course[] = [];
@@ -78,7 +78,7 @@ function SemesterSection({ semester, courses, setPaletteOpen, setActiveId, setSe
                           {course ?
                             <CourseCard {...course} />
                                 :
-                            <EmptyCourseCard id={`${semester}-${i}`} setPaletteOpen={setPaletteOpen} setActiveId={setActiveId} setSem={setSem}/>
+                            <EmptyCourseCard id={`${semester}-${i}`} setPaletteOpen={setPaletteOpen} setActiveId={setActiveId} />
                           }
 
                         </div>
@@ -111,7 +111,7 @@ function SemesterSection({ semester, courses, setPaletteOpen, setActiveId, setSe
 
 export default function Courses() {
     const [isPaletteOpen, setPaletteOpen] = useState(false);
-    const [sem, setSem] = useState(null);
+    const [sem, setSem] = useState(undefined);
     function handleDragEnd(event: DragEndEvent) {
       const { active, over } = event;
 
@@ -150,7 +150,7 @@ export default function Courses() {
         console.log("drag", newCourses)
         return newCourses;
       });
-      setActiveId(undefined);
+      setActiveId("");
     }
 
     const handleInsertCourse = (course: Course, targetId: string) => {
@@ -169,11 +169,11 @@ export default function Courses() {
         console.log("insert", newCourses)
         return newCourses;
       });
-      setActiveId(undefined);
+      setActiveId("");
     };
 
 
-    const [activeId, setActiveId] = useState<string | undefined>(undefined);
+    const [activeId, setActiveId] = useState<string>("");
     const startYear = 2024;
     const endYear = 2026; // example
     useEffect(() => {
@@ -213,7 +213,6 @@ export default function Courses() {
               courses={stateCourses[i]}
               setPaletteOpen={setPaletteOpen}
               setActiveId={setActiveId}
-              setSem={setSem}
             />
           ))}
         </div>
