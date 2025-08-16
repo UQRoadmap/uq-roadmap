@@ -9,6 +9,9 @@ import { DndContext, DragEndEvent } from '@dnd-kit/core';
 import { Course } from '@/types/course';
 import { v4 as uuidv4 } from "uuid";
 import ProgressCircle from '@/components/custom/progressCircle';
+import { Plan } from '@/types/plan';
+
+
 function SemesterSection({ semester, courses, setPaletteOpen, setActiveId }:
     {
         semester: number; courses?: Course[], setPaletteOpen: (open: boolean) => void,
@@ -112,11 +115,15 @@ function SemesterSection({ semester, courses, setPaletteOpen, setActiveId }:
     );
 }
 
-export default function Courses() {
+export function PlanDetailClient({ plan: initialPlan }: { plan: Plan }) {
+    const [plan, setPlan] = useState<Plan>(initialPlan);
     const [isPaletteOpen, setPaletteOpen] = useState(false);
     const [sem, setSem] = useState(undefined);
+    const [isReversed, setIsReversed] = useState(false);
+    
     function handleDragEnd(event: DragEndEvent) {
         const { active, over } = event;
+
 
         if (!over) return;
 
@@ -124,9 +131,18 @@ export default function Courses() {
         if (!dragCourse) return;
 
         const [targetSemIndexStr, targetIndexStr] = over.id.toString().split("-");
+        
         const year = Math.floor(Number(targetSemIndexStr) / 10);
         const semNum = Number(targetSemIndexStr) % 10;
-        const targetSemIndex = (year - startYear) * 2 + (semNum - 1);
+ 
+        let targetSemIndex;
+        if (isReversed) {
+            const totalSemesters = (plan.endYear - plan.startYear + 1) * 2;
+            targetSemIndex = totalSemesters - 1 - ((year - plan.startYear) * 2 + (semNum - 1));
+        } else {
+            targetSemIndex = (year - plan.startYear) * 2 + (semNum - 1);
+        }
+
         const targetIndex = parseInt(targetIndexStr, 10);
 
         setCourses((prevCourses) => {
@@ -160,7 +176,15 @@ export default function Courses() {
         const [targetSemStr, targetIndexStr] = targetId.split("-");
         const year = Math.floor(Number(targetSemStr) / 10);
         const semNum = Number(targetSemStr) % 10;
-        const targetSemIndex = (year - startYear) * 2 + (semNum - 1);
+
+        let targetSemIndex;
+        if (isReversed) {
+            const totalSemesters = (plan.endYear - plan.startYear + 1) * 2;
+            targetSemIndex = totalSemesters - 1 - ((year - plan.startYear) * 2 + (semNum - 1));
+        } else {
+            targetSemIndex = (year - plan.startYear) * 2 + (semNum - 1);
+        }
+        
         const targetIndex = parseInt(targetIndexStr, 10);
 
         setCourses(prevCourses => {
@@ -177,32 +201,30 @@ export default function Courses() {
 
 
     const [activeId, setActiveId] = useState<string>("");
-    const startYear = 2024;
-    const endYear = 2026; // example
     useEffect(() => {
         console.log("id change: ", activeId);
     });
-    const semesters: number[] = [];
-    const tmpCourses: Course[][] = [];
-    for (let year = startYear; year <= endYear; year++) {
-        semesters.push(Number(`${year}1`));
-        semesters.push(Number(`${year}2`));
-        tmpCourses.push([]);
-        tmpCourses.push([]);
-    }
-    const [stateCourses, setCourses] = useState<Course[][]>(tmpCourses);
+    const [semesters, setSemesters] = useState<number[]>([]);
+    const [stateCourses, setCourses] = useState<Course[][]>([]);
 
     const validate = {
         "status": 1, "percentage": 0.2, "relevant": ["csse2310", "csse2010", "csse3010"], "message": "Core Courses"
     };
 
-    const plan = {
-        name: "My Plan",
-        degree: "Bachelor Engineering (Honours) and Master of Engineering",
-        percentage: 29,
-        plannedCompleteSem: "2025.2",
-        unitsRemaining: 8,
-    };
+    useEffect(() => {
+        if (plan) {
+            const newSemesters: number[] = [];
+            const newCourses: Course[][] = [];
+            for (let year = plan.startYear; year <= plan.endYear; year++) {
+                newSemesters.push(Number(`${year}1`));
+                newSemesters.push(Number(`${year}2`));
+                newCourses.push([]);
+                newCourses.push([]);
+            }
+            setSemesters(newSemesters);
+            setCourses(newCourses);
+        }
+    }, [plan]);
 
     async function DeletePlan() {
         const status = await Promise.resolve({ status: "success" })
@@ -210,46 +232,73 @@ export default function Courses() {
     }
 
     function sort() {
-        [].reverse()
+        setSemesters(prevSemesters => [...prevSemesters].reverse());
+        setCourses(prevCourses => [...prevCourses].reverse());
+        setIsReversed(prev => !prev);
     }
 
     return (
         <div>
             <div className="bg-secondary py-4 overflow-y-auto">
                 <div className="max-w-7xl px-8 mx-auto flex items-center justify-between w-full">
-                    <div>
-                        <div className='flex items-center gap-x-6 gap-y-2'>
-                            <div className='text-white text-lg'>
-                                {plan.name}
-                            </div>
-                            <div className='ml-2'>
-                                <Dropdown>
-                                    <DropdownButton accent>
-                                        Options
-                                        <ChevronDownIcon />
-                                    </DropdownButton>
-                                    <DropdownMenu>
-                                        <DropdownItem href="/users/1">View</DropdownItem>
-                                        <DropdownItem href="/users/1/edit">Edit</DropdownItem>
-                                        <DropdownItem className="hover:cursor-pointer" onClick={() => sort()}>Reverse Sorting</DropdownItem>
-                                        <DropdownItem className="hover:cursor-pointer" onClick={async () => await DeletePlan()}>Delete</DropdownItem>
-                                    </DropdownMenu>
-                                </Dropdown>
-
-                            </div>
-                        </div>
-                        <div className='my-4 text-xl text-white'>
-                            {plan.degree}
-                        </div>
-                        <div className='flex text-white italic'>
+                    {plan ? (
+                        <>
                             <div>
-                                Planned Completion Date: {plan.plannedCompleteSem.split(".")[0]} Semester {plan.plannedCompleteSem.split(".")[1]}
+                                <div className='flex items-center gap-x-6 gap-y-2'>
+                                    <div className='text-white text-lg'>
+                                        {plan.name}
+                                    </div>
+                                    <div className='ml-2'>
+                                        <Dropdown>
+                                            <DropdownButton accent>
+                                                Options
+                                                <ChevronDownIcon />
+                                            </DropdownButton>
+                                            <DropdownMenu>
+                                                <DropdownItem href="/users/1">View</DropdownItem>
+                                                <DropdownItem href="/users/1/edit">Edit</DropdownItem>
+                                                <DropdownItem className="hover:cursor-pointer" onClick={() => sort()}>Reverse Sorting</DropdownItem>
+                                                <DropdownItem className="hover:cursor-pointer" onClick={async () => await DeletePlan()}>Delete</DropdownItem>
+                                            </DropdownMenu>
+                                        </Dropdown>
+                                    </div>
+                                </div>
+                                <div className='my-4 text-xl text-white'>
+                                    {plan.degree}
+                                </div>
+                                <div className='flex text-white italic'>
+                                    <div>
+                                        Planned Completion Date: {plan.plannedCompleteSem.substring(0, 4)} Semester {plan.plannedCompleteSem.substring(4)}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div className='flex flex-wrap items-center gap-x-6 gap-y-2'>
-                        <ProgressCircle percentage={plan.percentage} />
-                    </div>
+                            <div className='flex flex-wrap items-center gap-x-6 gap-y-2'>
+                                <ProgressCircle percentage={plan.percentage || 0} />
+                            </div>
+                        </>
+                    ) : (
+                        // This skeleton loader is likely not needed anymore since the page
+                        // won't render until the plan is fetched, but keeping it just in case.
+                        <>
+                            <div className="flex-1">
+                                <div className="flex items-center gap-x-6 gap-y-2">
+                                    <div className="w-48 h-6 bg-gray-400/30 rounded-md animate-pulse" />
+                                    <div className="ml-2">
+                                        <div className="w-20 h-6 bg-gray-400/30 rounded-md animate-pulse" />
+                                    </div>
+                                </div>
+                                <div className="my-4">
+                                    <div className="w-128 h-5 bg-gray-400/30 rounded-md animate-pulse" />
+                                </div>
+                                <div className='flex text-white italic'>
+                                    <div className="w-64 h-4 bg-gray-400/30 rounded-md animate-pulse" />
+                                </div>
+                            </div>
+                            <div className='flex flex-wrap items-center gap-x-6 gap-y-2'>
+                                <div className="w-24 h-24 rounded-full bg-gray-400/30 animate-pulse" />
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
             <div className='max-w-7xl mx-auto px-4'>
