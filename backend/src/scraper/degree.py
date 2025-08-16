@@ -13,6 +13,8 @@ def main():
         components = {}
         rule_logic = set()
         ars = {}
+        row_types = set()
+        srs = {}
 
         for detail in details:
             for year, data in detail["data"].items():
@@ -30,10 +32,28 @@ def main():
 
                     rule_logic.add(component.payload.header.ruleLogic)
 
-                    # program_rules[program_rule.header.ruleLogic] = program_rule.header.ruleLogic
+                    for body in component.payload.body:
+                        for ar in body.header.auxiliaryRules:
+                            ars[ar.code] = ar.text
+
+                        for body2 in body.body:
+                            if body2.header is not None and body2.header.auxiliaryRules is not None:
+                                for ar in body2.header.auxiliaryRules:
+                                    ars[ar.code] = ar.text
+
+                            if body2.header is not None and body2.header.selectionRule is not None:
+                                srs[body2.header.selectionRule.code] = body2.header.selectionRule.text
+
+                            if body2.body is not None:
+                                for body3 in body2.body:
+                                    row_types.add(body3.rowType)
+                                    if body3.rowType == "CurriculumReference":
+                                        row_types.add((body3.rowType, body3.curriculumReference.type))
 
         pprint(rule_logic)
         pprint(ars)
+        pprint(srs)
+        pprint(row_types)
 
 
 @serde
@@ -52,9 +72,90 @@ class ComponentPayloadHeader:
 
 
 @serde
+class ComponentPayloadBodyHeader:
+    partUID: str | None
+    ruleLogic: str | None
+    partReference: str
+    unitsMin: int | None
+    auxiliaryRules: list[AuxiliaryRule]
+    title: str
+    summaryDescription: str | None
+    partType: str
+    unitsMax: int | None
+
+
+@serde
+class SelectionRule:
+    code: str
+    text: str
+    params: list[dict]
+
+
+@serde
+class ComponentPayloadBodyBodyHeader:
+    partUUID: str | None
+    notes: str | None
+    partReference: str
+    auxiliaryRules: list[AuxiliaryRule] | None
+    selectionRule: SelectionRule | None
+    title: str
+    partType: str
+
+
+@serde
+class CurriculumReference:
+    unitsMaximum: int
+    code: str | None
+    orgName: str
+    type: str
+    version: dict
+    subtype: str | None
+    fromYear: str | None
+    latestVersion: bool | None
+    unitsMinimum: int
+    orgCode: str
+    name: str
+    fromTerm: str | None
+    state: str
+
+
+@serde
+class WildCardItem:
+    code: str
+    orgName: str | None
+    orgCode: str | None
+    includeChildOrgs: bool
+    type: str
+
+
+@serde
+class EquivalenceGroup:
+    orderNumber: int
+    notes: str | None
+    curriculumReference: CurriculumReference
+
+
+@serde
+class ComponentPayloadBodyBodyBody:
+    rowType: str | None
+    orderNumber: int | None
+    notes: str | None
+    # PYSERDE SUCKS COMPARED TO SERDE!!!
+    curriculumReference: CurriculumReference | None
+    equivalenceGroup: list[EquivalenceGroup] | None
+    wildCardItem: WildCardItem | None
+
+
+@serde
+class ComponentPayloadBodyBody:
+    header: ComponentPayloadBodyBodyHeader | None
+    body: list[ComponentPayloadBodyBodyBody] | None
+
+
+@serde
 class ComponentPayloadBody:
-    header: dict
-    body: list[dict]
+    header: ComponentPayloadBodyHeader
+    body: list[ComponentPayloadBodyBody]
 
 
 @serde
