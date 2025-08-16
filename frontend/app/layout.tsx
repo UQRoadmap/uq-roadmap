@@ -25,12 +25,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
     return (
-    <html lang="en" className="bg-white">
+    <html lang="en" className="bg-white h-full">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white h-full`}
       >
         <Header />
-        <main className="max-w-7xl mx-auto w-full px-4 bg-white">{children}</main>
+        <main className="max-w-7xl mx-auto min-h-screen px-4 bg-white">{children}</main>
         <Footer />
       </body>
     </html>
