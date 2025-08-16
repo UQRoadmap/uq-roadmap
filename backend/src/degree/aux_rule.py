@@ -278,6 +278,15 @@ class AR13(AR):
     course_list: list[CourseRef]
     program_plan_list: list[ProgramRef]
 
+    # This is such a crazy edge case i'm just not gonna bother - it reads
+    """
+    Students undertaking the BE(Hons) Specialisation in Chemical
+    Engineering, BE(Hons) Specialisation in Civil Engineering, BE(Hons)
+    Specialisation in Electrical Engineering, BE(Hons) Specialisation in
+    Mechanical Engineering, or BE(Hons) Specialisation in Mechatronic
+    Engineering are exempt from STAT2203 in the BA Major in Mathematics.
+    """
+
     def validate(self, plan: Plan) -> ValidateResult:
         for plan_ref in self.plan_list: 
             if plan_ref.code in plan.specialisations[self.part]:
@@ -286,7 +295,7 @@ class AR13(AR):
                     return ValidateResult(
                         Status.ERROR,
                         0,
-                        f"Students completing {plan_ref} are exempt from {overlap}.",
+                        f"Students completing {plan_ref} are exempt from {overlap} in {self.program_plan_list}.",
                         list(overlap),
                     )
                 else:
@@ -302,6 +311,35 @@ class AR15(AR):
     must: bool  # True=MUST, False=MAY
     program_plan_list: list[ProgramRef]
     lists: list[str]  # reference names/ids to course lists
+
+    def validate(self, plan: Plan) -> ValidateResult:
+        if self.must:
+            # If it's a MUST, then we need to check that the course_list is in the program_plan_list
+            overlap = set(self.course_list) & set(plan.courses)
+            if not overlap:
+                return ValidateResult(
+                    Status.ERROR,
+                    0,
+                    f"Expected {self.course_list} to be substituted in {self.program_plan_list} by a course from {self.lists}.",
+                    list(overlap),
+                )
+            else:
+                return ValidateResult(Status.OK, 100, "", [])
+        else:
+            # If it's a MAY, we don't need to check anything
+            overlap = set(self.course_list) & set(plan.courses)
+            if overlap:
+                return ValidateResult(Status.OK, 100,
+                                  f"{self.course_list} may be substituted in" +
+                                  f"{self.program_plan_list} by a course from"
+                                  + f"{self.lists}", overlap)
+            else:
+                return ValidateResult(
+                    Status.OK,
+                    100,
+                    "",
+                    []
+                )
 
 
 @serde
