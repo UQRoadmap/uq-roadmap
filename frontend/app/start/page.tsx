@@ -24,7 +24,7 @@ export default function Home() {
     useEffect(() => {
         async function fetchDegrees() {
             try {
-                const res = await fetch("/api/degrees/summary");
+                const res = await fetch("/api/degree/summary");
                 if (!res.ok) {
                     console.error(await res.text())
                     throw new Error("Failed to fetch degrees");
@@ -59,7 +59,7 @@ export default function Home() {
             return;
         }
 
-        const res = await fetch(`/api/degrees?degree_code=${selectedDegree.degree_code}&year=${startYear}`)
+        const res = await fetch(`/api/degree?degree_code=${selectedDegree.degree_code}&year=${startYear}`)
         if (res.status == 404) {
             console.error("Degree not found", await res.text());
             return
@@ -82,7 +82,7 @@ export default function Home() {
         }
 
         try {
-            const res = await fetch("/api/plans", {
+            const res = await fetch("/api/plan", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(createPayload),
