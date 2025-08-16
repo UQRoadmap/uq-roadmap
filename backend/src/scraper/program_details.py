@@ -1,7 +1,10 @@
-from bs4 import BeautifulSoup
-import cloudscraper
+"""Program details."""
+
 import json
 import re
+
+import cloudscraper
+from bs4 import BeautifulSoup
 
 DETAILS_URL = "https://programs-courses.uq.edu.au/requirements/program/{}/{}"
 
@@ -20,24 +23,24 @@ def extract_details(html: str) -> str:
 
     # Get the script's content
     script_content = script_tag.string.strip()
-    match = re.search(r'window\.AppData\s*=\s*({.*?});?\s*$', script_content, re.DOTALL)
+    match = re.search(r"window\.AppData\s*=\s*({.*?});?\s*$", script_content, re.DOTALL)
     if not match:
         return None
     json_str = match.group(1)
     # Remove trailing semicolon if present
-    json_str = json_str.rstrip(';')
+    json_str = json_str.rstrip(";")
     # Parse JSON
     try:
         return json.loads(json_str)
     except Exception as e:
         print("JSON decode error:", e)
         return None
-    
+
     return script_content
 
 
 def fetch_programs():
-    with open("program.json", "r") as f:
+    with open("program.json") as f:
         data = json.load(f)
     return list(set([item["program_id"] for item in data]))
 
@@ -61,8 +64,5 @@ def scrape_all_program_details(programs: list[str]) -> list:
         for year in range(2021, 2027):
             details = fetch_page(scraper, program_id, year)
             year_data[str(year)] = details
-        all_programs.append({
-            "program_id": program_id,
-            "data": year_data
-        })
+        all_programs.append({"program_id": program_id, "data": year_data})
     return all_programs

@@ -3,8 +3,9 @@ from pprint import pprint
 from serde import serde, AdjacentTagging
 from serde.json import to_json, from_json
 from serde import coerce
-from serde import from_dict
+from serde import from_dict, Untagged
 from json import loads
+from typing import Union
 
 
 def main():
@@ -57,11 +58,11 @@ def main():
                                         sr_params[param.name] = set()
                                     sr_params[param.name].add(param.type)
 
-                            if body2.body is not None:
-                                for body3 in body2.body:
-                                    row_types.add(body3.rowType)
-                                    if body3.rowType == "CurriculumReference":
-                                        row_types.add((body3.rowType, body3.curriculumReference.type))
+                            # if body2.body is not None:
+                            #     for body3 in body2.body:
+                            #         row_types.add(body3.rowType)
+                            #         if body3.rowType == "CurriculumReference":
+                            #             row_types.add((body3.rowType, body3.curriculumReference.type))
 
         pprint(rule_logic)
         pprint(ars)
@@ -96,21 +97,21 @@ class SelectionRule:
 class ComponentPayloadHeader:
     partUID: str | None
     ruleLogic: str | None
-    partReference: str
+    partReference: str | None
     unitsMin: int | None
     auxiliaryRules: list[AuxiliaryRule]
     title: str
     summaryDescription: str | None
-    partType: str
+    partType: str | None
     unitsMax: int | None
     notes: str | None
     selectionRule: SelectionRule | None
-    partType: str
+    partType: str | None
 
 
 @serde
 class CurriculumReference:
-    unitsMaximum: int
+    unitsMaximum: int | None
     code: str | None
     orgName: str
     type: str
@@ -118,7 +119,7 @@ class CurriculumReference:
     subtype: str | None
     fromYear: str | None
     latestVersion: bool | None
-    unitsMinimum: int
+    unitsMinimum: int | None
     orgCode: str
     name: str
     fromTerm: str | None
@@ -152,13 +153,13 @@ class ComponentPayloadLeaf:
     wildCardItem: WildCardItem | None
 
 
-ComponentPayload = TypeRef()
-
-
-@serde(type_check=coerce)
 class ComponentPayload:
+    rowType: str | None
     header: ComponentPayloadHeader | None
-    body: list["ComponentPayload | ComponentPayloadLeaf"] | None
+    body: list[Union["ComponentPayload", ComponentPayloadLeaf]] | None
+
+
+ComponentPayload = serde(type_check=coerce, tagging=Untagged)(ComponentPayload)
 
 
 @serde
@@ -224,7 +225,7 @@ class ProgramRequirements:
     orgCode: str
     externalSystemIdentifiers: list
     state: str
-    unitsMaximum: int
+    unitsMaximum: int | None
     orgName: str
     baseVersion: dict
     workflowName: str
@@ -233,7 +234,7 @@ class ProgramRequirements:
     previousState: str
     swaggerVersion: dict | None
     templateName: str
-    unitsMinimum: int
+    unitsMinimum: int | None
     templateIntegrationIdentifier: str
     yearApplied: str
     authorGivenName: str

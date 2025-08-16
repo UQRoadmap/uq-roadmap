@@ -41,7 +41,7 @@ async def get_all_courses(
     return list(result.scalars().unique().all())
 
 
-async def get_course_by_code(db: AsyncSession, course_code: str) -> CourseDBModel | None:
+async def get_course_by_full_code(db: AsyncSession, course_code: str) -> CourseDBModel | None:
     """Get a course by code.
 
     Args:

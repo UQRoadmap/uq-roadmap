@@ -1,6 +1,8 @@
 """Programs scraping."""
 
-import cloudscraper
+import logging
+
+import curl_cffi
 from bs4 import BeautifulSoup
 
 from scraper.models import Program
@@ -10,8 +12,10 @@ PROGRAMS_URL = "https://study.uq.edu.au/study-options/programs"
 PROGRAMS_PREFIX = "https://study.uq.edu.au"
 PROGRAMS_NUM_PAGES = 11
 
+log = logging.getLogger(__name__)
 
-def extract_programs(html: str) -> list[Program]:
+
+def _extract_programs(html: str) -> list[Program]:
     soup = BeautifulSoup(html, "html.parser")
     program_cards = soup.select("div.grid__col")
     programs = []
@@ -25,8 +29,8 @@ def extract_programs(html: str) -> list[Program]:
             continue
 
         href = link["href"]
-        full_url = PROGRAMS_PREFIX + href
-        program_id = href.strip("/").split("-")[-1]
+        full_url = PROGRAMS_PREFIX + str(href)
+        program_id = str(href).strip("/").split("-")[-1]
 
         if not program_id.isdigit():
             continue
@@ -39,20 +43,22 @@ def extract_programs(html: str) -> list[Program]:
     return programs
 
 
-def fetch_page(page: int) -> list[Program]:
-    scraper = cloudscraper.create_scraper()
+async def _fetch_page(session: curl_cffi.AsyncSession, page: int) -> list[Program]:
     try:
-        response = scraper.get(PROGRAMS_URL, params={"page": page}, headers=HEADERS)
+        response = await session.get(PROGRAMS_URL, params={"page": page}, headers=HEADERS)
         response.raise_for_status()
-        return extract_programs(response.text)
-    except Exception as e:
-        print(f"Error fetching page {page}: {e}")
+        return _extract_programs(response.text)
+    except Exception:
+        log.exception(f"Error fetching page {page}")
         return []
 
 
-def scrape_all_programs() -> list[Program]:
-    all_programs = []
-    for page in range(PROGRAMS_NUM_PAGES):
-        page_programs = fetch_page(page)
-        all_programs.extend(page_programs)
+async def scrape_all_programs() -> list[Program]:
+    """Scrape all programs."""
+    all_programs: list[Program] = []
+
+    async with curl_cffi.AsyncSession() as session:
+        for page in range(PROGRAMS_NUM_PAGES):
+            page_programs = await _fetch_page(session, page)
+            all_programs.extend(page_programs)
     return all_programs

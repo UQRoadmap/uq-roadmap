@@ -1,19 +1,11 @@
 """Degree services."""
 
+from uuid import UUID
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.degree.models import DegreeDBModel
-from api.degree.schemas import DegreeCreate
-
-
-async def create_degree(session: AsyncSession, degree_in: DegreeCreate) -> DegreeDBModel:
-    """Create a new degree in the db."""
-    model = DegreeDBModel(degree_id=degree_in.degree_id, title=degree_in.title)
-
-    session.add(model)
-    await session.commit()
-    return model
 
 
 async def get_all_degrees(session: AsyncSession) -> list[DegreeDBModel]:
@@ -22,6 +14,13 @@ async def get_all_degrees(session: AsyncSession) -> list[DegreeDBModel]:
     return list(result.scalars().all())
 
 
-async def get_degree_by_id(session: AsyncSession, program_id: int) -> DegreeDBModel | None:
+async def get_degree(session: AsyncSession, degree_code: str, year: int) -> DegreeDBModel | None:
     """Get a degree by its ID."""
-    return await session.get(DegreeDBModel, program_id)
+    query = select(DegreeDBModel).where(DegreeDBModel.degree_code == degree_code).where(DegreeDBModel.year == year)
+    result = await session.execute(query)
+    return result.scalar_one_or_none()
+
+
+async def get_degree_by_id(session: AsyncSession, degree_id: UUID) -> DegreeDBModel | None:
+    """Get a degree by its ID."""
+    return await session.get(DegreeDBModel, degree_id)

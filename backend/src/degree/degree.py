@@ -32,6 +32,8 @@ class Degree:
     rule_logic: list[str]
 
     def validate(self, plan: Plan) -> list[ValidateResult]:
+        # Things to do:
+        # -
         results = []
         for aux in self.aux:
             results.append(aux.validate(plan))
