@@ -22,11 +22,21 @@ class SR1(SR):
     options: list[CourseRef]
 
     def validate(self, plan: Plan):
+        count = 0
+        badcourses = []
         for option in self.options:
             if option.code not in plan.courses:
-                return ValidateResult(Status.ERROR, None,
-                                      f"Course {option.code}" +
-                                      "not found in plan", option)
+                badcourses.append(option.code)
+            else:
+                count += 2  # UPDATE UNITS
+        if count != self.n:
+            return ValidateResult(Status.ERROR, count / self.n * 100,
+                                  f"{count} units found in plan, "
+                                  f"but {self.n} required. Add from: "
+                                  f"{', '.join(badcourses)}", badcourses)
+        elif badcourses:
+            return ValidateResult(Status.ERROR, (self.n - len(badcourses)) / self.n * 100,
+                                  f"{', '.join(badcourses)} need to be in the plan", badcourses)
         return ValidateResult(Status.OK, 100, "", [])
 
 
@@ -39,11 +49,28 @@ class SR2(SR):
     options: list[CourseRef]
 
     def validate(self, plan: Plan):
-        for option in self.options:
-            if option.code not in plan.courses:
-                return ValidateResult(Status.ERROR, None,
-                                      f"Course {option.code}" +
-                                      "not found in plan", option)
+        count = 0
+        badcourses = []
+        donecourses = []
+        for course in self.options:
+            if course.code in plan.courses:
+                count += 2  # UPDATE UNITS
+                donecourses.append(course.code)
+            else:
+                badcourses.append(course.code)
+        if count < self.n:
+            return ValidateResult(Status.ERROR, count / self.n * 100,
+                                  f"{count} units found in plan, "
+                                  f"but {self.n} required. Add from: "
+                                  f"{', '.join(badcourses)}", badcourses)
+        elif count > self.m:
+            return ValidateResult(Status.WARN, count / self.m * 100,
+                                  f"{count} units found in plan, "
+                                  f"but {self.m} maximum. Remove from: "
+                                  f"{', '.join(donecourses)}", donecourses)
+        if badcourses:
+            return ValidateResult(Status.ERROR, (self.n - len(badcourses)) / self.n * 100,
+                                  f"{', '.join(badcourses)} need to be in the plan", badcourses)
         return ValidateResult(Status.OK, 100, "", [])
 
 
@@ -63,7 +90,7 @@ class SR3(SR):
             else:
                 badcourses.append(course.code)
         if count < self.n:
-            return ValidateResult(Status.ERROR, None,
+            return ValidateResult(Status.ERROR, count / self.n * 100,
                                   f"{count} units found in plan, "
                                   f"but {self.n} required. Add from: "
                                   f"{', '.join(badcourses)}", badcourses)
@@ -90,12 +117,12 @@ class SR4(SR):
             else:
                 badcourses.append(course.code)
         if count < self.n:
-            return ValidateResult(Status.ERROR, None,
+            return ValidateResult(Status.ERROR, count / self.n * 100,
                                   f"{count} units found in plan, "
                                   f"but {self.n} required. Add from: "
                                   f"{', '.join(badcourses)}", badcourses)
         elif count > self.m:
-            return ValidateResult(Status.WARN, None,
+            return ValidateResult(Status.WARN, count / self.m * 100,
                                   f"{count} units found in plan, "
                                   f"but {self.m} maximum. Remove from: "
                                   f"{', '.join(donecourses)}", donecourses)
@@ -120,12 +147,12 @@ class SR5(SR):
             else:
                 badcourses.append(course.code)
         if count < self.n:
-            return ValidateResult(Status.ERROR, None,
+            return ValidateResult(Status.ERROR, count / self.n * 100,
                                   f"{count} units found in plan, "
                                   f"but {self.n} required. Add from: "
                                   f"{', '.join(badcourses)}", badcourses)
         elif count > self.n:
-            return ValidateResult(Status.WARN, None,
+            return ValidateResult(Status.WARN, count / self.n * 100,
                                   f"{count} units found in plan, "
                                   f"but {self.n} required. Remove from: "
                                   f"{', '.join(donecourses)}", donecourses)
