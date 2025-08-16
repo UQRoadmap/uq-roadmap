@@ -1,6 +1,8 @@
 from serde import serde
 from degree.validate_result import ValidateResult, Status
 
+from degree.params import ProgramRef
+
 
 @serde
 class SR:
@@ -49,7 +51,7 @@ class SR5(SR):
 class SR6(SR):
     """Complete one [PLANTYPE] from the following"""
 
-    # plan_type:
+    plan_types: list[ProgramRef]
 
 
 @serde
@@ -57,8 +59,7 @@ class SR7(SR):
     """Complete exactly [N] [PLANTYPES] from the following"""
 
     n: int
-
-    # plan_types:
+    plan_types: list[ProgramRef]
 
 
 @serde
@@ -67,4 +68,4 @@ class SR8(SR):
 
     n: int
     m: int
-    # plan_types:
+    plan_types: list[ProgramRef]
