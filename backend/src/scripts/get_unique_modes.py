@@ -1,14 +1,16 @@
+"""Script to get unique offering modes."""
+
 from pathlib import Path
 
 import orjson
 
-COURSES_FILE = "data/courses.json"
+from scripts.constants import COURSES_FILE_NAME
 
 
 def get_unique_modes() -> set[str]:
     """Get all the unique modes."""
     result: set[str] = set()
-    with Path.open(Path(COURSES_FILE), "rb") as f:
+    with Path.open(Path(COURSES_FILE_NAME), "rb") as f:
         data = orjson.loads(f.read())
 
         for course in data["courses"]:
