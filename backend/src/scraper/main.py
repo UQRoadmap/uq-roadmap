@@ -12,12 +12,11 @@ from common.enums import LogLevel
 from common.logging import configure_logging
 from scraper.courses import iter_secat_info, scrape_courses
 from scraper.models import Program
+from scraper.plans import fetch_plans, scrape_all_plans
 from scraper.programs import scrape_all_programs
-from scraper.plans import scrape_all_plans, fetch_plans
-
 
 if TYPE_CHECKING:
-    from scraper.courses.models import Course
+    from scraper.courses.models import ScrapedCourse
     from scraper.models import Program
 
 
@@ -64,7 +63,7 @@ def main() -> None:
 
     # getting all the uq courses
     if args.mode == ScrapeType.COURSE:
-        courses: list[Course] = asyncio.run(scrape_courses())
+        courses: list[ScrapedCourse] = asyncio.run(scrape_courses())
         data = {"courses": [c.model_dump(mode="json") for c in courses]}
         with Path.open(output_file, "w") as f:
             json.dump(data, f, indent=2)
@@ -86,7 +85,7 @@ def main() -> None:
         asyncio.run(write_secat(output_file))
         log.info(f"Scraped secats for {count} courses. Written to {output_file}")
         return
-    
+
     if args.mode == ScrapeType.PLANS:
         plans = fetch_plans()
         result = scrape_all_plans(plans)
