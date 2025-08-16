@@ -17,7 +17,7 @@ import {DragOverlay} from '@dnd-kit/core';
 import Draggable from '@/components/draggable'
 import { useState } from 'react'
 
-import { Course } from '@/types/course'
+import { Course, DegreeReq } from '@/types/course'
 import { MagnifyingGlassIcon } from '@heroicons/react/16/solid';
 
 const courses: Course[] = [
@@ -71,11 +71,11 @@ const courses: Course[] = [
 const recent = [courses[0]]
 
 export default function CommandPalette({draggable, clickable, setActiveId, activeId, opened, sem,
-    setPaletteOpen, onSelectCourse, stateCourses, setDelete}:
+    setPaletteOpen, onSelectCourse, stateCourses, setDelete, courseReqs}:
     {draggable?: boolean, clickable?: boolean, setActiveId: (open: string) => void,
         activeId: string, opened: boolean, sem?: string, setPaletteOpen: (open: boolean) => void,
         onSelectCourse: (course: Course, id: string) => void, stateCourses: Course[][],
-     setDelete: (id: string, sem:string) => void}) {
+     setDelete: (id: string, sem:string) => void, courseReqs:DegreeReq }) {
   const [query, setQuery] = useState('')
   const activeCourse = courses.find(c => c.id === activeId) as Course;
 
@@ -203,9 +203,9 @@ export default function CommandPalette({draggable, clickable, setActiveId, activ
         </DialogPanel>
       </div>
     </Dialog>
-<DragOverlay>
+<DragOverlay className="z-50">
   {activeId && (
-    <CourseCard {...stateCourses.flat().find(c => c.id === activeId)!} deleteMeth={setDelete} />
+    <CourseCard {...stateCourses.flat().find(c => c.id === activeId)!} deleteMeth={setDelete} degreeReq={courseReqs}/>
   )}
 </DragOverlay>
     </div>

@@ -5,8 +5,10 @@ import { ArrowDownIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
 import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/components/dropdown';
 import Pop from '@/components/custom/palette'
 
-import { DndContext, DragEndEvent } from '@dnd-kit/core';
-import { Course } from '@/types/course';
+import { MouseSensor, KeyboardSensor } from '@/components/custom-sensors'
+
+import { DndContext, DragEndEvent, useSensor, useSensors  } from '@dnd-kit/core';
+import { Course, DegreeReq } from '@/types/course';
 import { v4 as uuidv4 } from "uuid";
 import ProgressCircle from '@/components/custom/progressCircle';
 import { Plan } from '@/types/plan';
@@ -14,10 +16,11 @@ import { Dialog, DialogBody, DialogTitle } from '@/components/dialog';
 import { Textarea } from '@/components/textarea';
 
 
-function SemesterSection({ semester, courses, setPaletteOpen, setActiveId }:
+function SemesterSection({ semester, courses, setPaletteOpen, setActiveId, setDelete, courseReqs}:
     {
         semester: number; courses?: Course[], setPaletteOpen: (open: boolean) => void,
-        setActiveId: (id: string) => void
+        setActiveId: (id: string) => void, setDelete: (id:string, sem:string) => void,
+        courseReqs: DegreeReq
     }) {
     const [collapsed, setCollapsed] = useState(false);
 
@@ -38,7 +41,7 @@ function SemesterSection({ semester, courses, setPaletteOpen, setActiveId }:
 
     const getSemesterLabel = (sem: number) => {
         const year = Math.floor(sem / 10);
-        const semesterNum = sem % 10;
+        const semesterNum = sem % 10;type DegreeReq = Record<string, string[]>;
         return `${year} Semester ${semesterNum}`;
     };
 
@@ -84,7 +87,7 @@ function SemesterSection({ semester, courses, setPaletteOpen, setActiveId }:
                                     className={getColSpanClass(course ? course.units : 2)} // default empty to 2 units
                                 >
                                     {course ?
-                                        <CourseCard {...course} />
+                                        <CourseCard {...course} deleteMeth={setDelete} degreeReq={courseReqs}/>
                                         :
                                         <EmptyCourseCard id={`${semester}-${i}`} setPaletteOpen={setPaletteOpen} setActiveId={setActiveId} />
                                     }
@@ -101,13 +104,6 @@ function SemesterSection({ semester, courses, setPaletteOpen, setActiveId }:
                                     <div>Overloaded Courses</div>
                                     <ArrowDownIcon className="h-3 ml-1" />
                                 </div>
-                                <div className="grid grid-cols-8 w-full gap-2">
-                                    {overloadCourses.map((course, idx) => (
-                                        <div key={`${course.id}-ov-${semester}-${idx}`} className={getColSpanClass(course.units * 2)}>
-                                            <CourseCard {...course} />
-                                        </div>
-                                    ))}
-                                </div>
                             </div>
                         </div>
                     )}
@@ -122,6 +118,23 @@ export function PlanDetailClient({ plan: initialPlan }: { plan: Plan }) {
     const [isPaletteOpen, setPaletteOpen] = useState(false);
     const [sem, setSem] = useState(undefined);
     const [isReversed, setIsReversed] = useState(false);
+
+    const courseReqs: DegreeReq = {
+        core: [
+            "csse2310",
+            "csse2010",
+            "CSSE6400"
+        ],
+        electives: [
+            "DATA2001",
+            "CSSE6400"
+        ],
+    }
+
+    const sensors = useSensors(
+      useSensor(MouseSensor),
+      useSensor(KeyboardSensor)
+    );
     const [isPlanDialogOpen, setIsPlanDialogOpen] = useState(false);
     const [planDialogData, setPlanDialogData] = useState<string>("");
 
@@ -253,14 +266,14 @@ export function PlanDetailClient({ plan: initialPlan }: { plan: Plan }) {
         } else {
             targetSemIndex = (year - plan.startYear) * 2 + (semNum - 1);
         }
-
         const targetIndex = parseInt(targetIndexStr, 10);
 
+        const targetIndex = parseInt(targetIndexStr, 10);
         setCourses(prevCourses => {
             const newCourses = prevCourses.map(sem => [...sem]);
 
             const updatedCourse = { ...course, sem: targetId, id: uuidv4() };
-            newCourses[targetSemIndex].splice(targetIndex, 1, updatedCourse); // replace empty card
+            newCourses[targetSemIndex].splice(targetIndex, 0, updatedCourse); // replace empty card
 
             console.log("insert", newCourses)
             return newCourses;
@@ -268,6 +281,31 @@ export function PlanDetailClient({ plan: initialPlan }: { plan: Plan }) {
         setActiveId("");
     };
 
+    function handleDeleteCourse(courseId: string, targetId: string) {
+        const [targetSemStr] = targetId.split("-");
+        const year = Math.floor(Number(targetSemStr) / 10);
+        const semNum = Number(targetSemStr) % 10;
+
+        let targetSemIndex;
+        if (isReversed) {
+            const totalSemesters = (plan.endYear - plan.startYear + 1) * 2;
+            targetSemIndex = totalSemesters - 1 - ((year - plan.startYear) * 2 + (semNum - 1));
+        } else {
+            targetSemIndex = (year - plan.startYear) * 2 + (semNum - 1);
+        }
+
+        setCourses(prevCourses => {
+            const newCourses = prevCourses.map(sem => [...sem]);
+
+            // filter out the course by ID
+            newCourses[targetSemIndex] = newCourses[targetSemIndex].filter(c => c.id !== courseId);
+
+            console.log("delete", newCourses);
+            return newCourses;
+        });
+
+        setActiveId("");
+    };
 
     const [activeId, setActiveId] = useState<string>("");
     useEffect(() => {
@@ -406,6 +444,7 @@ export function PlanDetailClient({ plan: initialPlan }: { plan: Plan }) {
             </div>
             <div className='max-w-7xl mx-auto px-4'>
                 <DndContext
+                    sensors={sensors}
                     onDragStart={({ active }) => setActiveId(active.id as string)}
                     onDragEnd={handleDragEnd}
                 >
@@ -418,6 +457,8 @@ export function PlanDetailClient({ plan: initialPlan }: { plan: Plan }) {
                         onSelectCourse={handleInsertCourse}
                         sem={sem}
                         stateCourses={stateCourses}
+                        setDelete={handleDeleteCourse}
+                        courseReqs={courseReqs}
                     />
 
                     <div className="flex flex-col h-screen overflow-y-auto">
@@ -428,11 +469,14 @@ export function PlanDetailClient({ plan: initialPlan }: { plan: Plan }) {
                                 courses={stateCourses[i]}
                                 setPaletteOpen={setPaletteOpen}
                                 setActiveId={setActiveId}
+                                setDelete={handleDeleteCourse}
+                                courseReqs={courseReqs}
                             />
                         ))}
                     </div>
                 </DndContext>
             </div>
+
             
             {/* Dialog for Plan Data */}
             <Dialog
