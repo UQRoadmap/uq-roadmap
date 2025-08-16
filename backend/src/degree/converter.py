@@ -2,32 +2,12 @@
 
 from __future__ import annotations
 
+import json
+from pprint import pprint
 from typing import Iterable, Optional, Tuple
 
 from serde.json import from_dict, to_json
-from pprint import pprint
-import json
 
-from scraper.degree import (
-    Degree as ParsedDegree,
-    Component,
-    ComponentPayload,
-    ComponentPayloadHeader,
-    ComponentPayloadBody,
-    ComponentPayloadBodyHeader,
-    ComponentPayloadBodyBody,
-    ComponentPayloadBodyBodyHeader,
-    ComponentPayloadBodyBodyBody,
-    SelectionRule as ParsedSelectionRule,
-    AuxiliaryRule as ParsedAuxRule,
-    CurriculumReference,
-    WildCardItem,
-    EquivalenceGroup as ParsedEquivalenceGroup,
-    Param as ParsedParam,
-)
-
-from degree.degree import Degree as FlatDegree
-from degree.params import CourseRef, ProgramRef, EquivalenceGroup
 from degree.aux_rule import (
     AR,
     AR1,
@@ -49,6 +29,8 @@ from degree.aux_rule import (
     AR20,
     ARUnknown,
 )
+from degree.degree import Degree as FlatDegree
+from degree.params import CourseRef, EquivalenceGroup, ProgramRef
 from degree.srs_rule import (
     SR,
     SR1,
@@ -59,6 +41,29 @@ from degree.srs_rule import (
     SR6,
     SR7,
     SR8,
+)
+from scraper.degree import (
+    AuxiliaryRule as ParsedAuxRule,
+)
+from scraper.degree import (
+    Component,
+    ComponentPayload,
+    ComponentPayloadHeader,
+    CurriculumReference,
+    WildCardItem,
+    ComponentPayloadLeaf,
+)
+from scraper.degree import (
+    Degree as ParsedDegree,
+)
+from scraper.degree import (
+    EquivalenceGroup as ParsedEquivalenceGroup,
+)
+from scraper.degree import (
+    Param as ParsedParam,
+)
+from scraper.degree import (
+    SelectionRule as ParsedSelectionRule,
 )
 
 
@@ -355,7 +360,9 @@ def process_ar(parsed_ar: ParsedAuxRule, part: str) -> AR:
     return ARUnknown(part=part, text=getattr(parsed_ar, "text", ""), raw_params=raw_params)
 
 
-def process_sr(parsed_sr: ParsedSelectionRule, rows: list[ComponentPayloadBodyBodyBody], part: str) -> SR:
+def process_sr(parsed_sr: ParsedSelectionRule, rows: list[ComponentPayloadLeaf], part: str) -> SR:
+    """Convert a parsed selection rule and its sibling leaves into a flat SR instance."""
+
     def _num(x) -> int:
         if isinstance(x, int):
             return x
@@ -388,6 +395,7 @@ def process_sr(parsed_sr: ParsedSelectionRule, rows: list[ComponentPayloadBodyBo
         )
 
     def _collect_options() -> tuple[list[CourseRef], list[ProgramRef]]:
+        # Gather options from the sibling leaves of this SR node.
         courses: list[CourseRef] = []
         programs: list[ProgramRef] = []
 
@@ -395,28 +403,30 @@ def process_sr(parsed_sr: ParsedSelectionRule, rows: list[ComponentPayloadBodyBo
             return courses, programs
 
         for r in rows:
+            # curriculumReference directly on the leaf?
             if r.curriculumReference is not None:
                 cr = r.curriculumReference
-                if (cr.type or cr.type) == "Course":
-                    courses.append(_to_course_ref(cr if isinstance(cr, dict) else cr.__dict__))
-                elif (cr.type or cr.type) in {"Program Rqt", "ProgramRqt", "Program"}:
-                    programs.append(_to_program_ref(cr if isinstance(cr, dict) else cr.__dict__))
+                cr_d = cr if isinstance(cr, dict) else cr.__dict__
+                t = cr_d.get("type")
+                if t == "Course":
+                    courses.append(_to_course_ref(cr_d))
+                elif t in {"Program Rqt", "ProgramRqt", "Program"}:
+                    programs.append(_to_program_ref(cr_d))
 
+            # inside equivalenceGroup?
             if r.equivalenceGroup is not None:
-                eq_list = r.equivalenceGroup
-                for eg in eq_list:
+                for eg in r.equivalenceGroup:
                     cr = eg.get("curriculumReference") if isinstance(eg, dict) else eg.curriculumReference
                     if cr is None:
                         continue
-                    if (cr.type if isinstance(cr, dict) else cr.type) == "Course":
-                        courses.append(_to_course_ref(cr if isinstance(cr, dict) else cr.__dict__))
-                    elif (cr.type if isinstance(cr, dict) else cr.type) in {
-                        "Program Rqt",
-                        "ProgramRqt",
-                        "Program",
-                    }:
-                        programs.append(_to_program_ref(cr if isinstance(cr, dict) else cr.__dict__))
+                    cr_d = cr if isinstance(cr, dict) else cr.__dict__
+                    t = cr_d.get("type")
+                    if t == "Course":
+                        courses.append(_to_course_ref(cr_d))
+                    elif t in {"Program Rqt", "ProgramRqt", "Program"}:
+                        programs.append(_to_program_ref(cr_d))
 
+        # de-dupe by code
         seen_c: set[str] = set()
         dedup_courses: list[CourseRef] = []
         for c in courses:
@@ -437,7 +447,7 @@ def process_sr(parsed_sr: ParsedSelectionRule, rows: list[ComponentPayloadBodyBo
     params = {p.name: p for p in (parsed_sr.params or [])}
     get = lambda key, default=None: (params.get(key).value if key in params else default)
 
-    # gather options once
+    # gather options once (from the sibling leaves given to us)
     course_opts, program_opts = _collect_options()
 
     code = parsed_sr.code
@@ -459,7 +469,6 @@ def process_sr(parsed_sr: ParsedSelectionRule, rows: list[ComponentPayloadBodyBo
         return SR5(part=part, n=_num(get("N", 0)), options=course_opts)
 
     if code == "SR6":  # Complete one [PLANTYPE] from the following
-        # sometimes it's PLANTYPE, sometimes PLANTYPE_SINGULAR
         plan_type = get("PLANTYPE", get("PLANTYPE_SINGULAR", ""))
         plan_type = "" if plan_type is None else str(plan_type)
         return SR6(part=part, plan_type=plan_type, options=program_opts)
@@ -479,80 +488,73 @@ def process_sr(parsed_sr: ParsedSelectionRule, rows: list[ComponentPayloadBodyBo
 
 
 def convert_degree(parsed_degree: ParsedDegree) -> FlatDegree:
+    """Convert the recursive scraper.degree structure to a flat Degree.
+
+    Walks the recursive ComponentPayload tree, threading the current `part`
+    downwards and, at each node with a selection rule, passes that node's
+    *sibling leaves* (only the immediate leaves at this level) to process_sr.
+    """
+
     flat_degree = FlatDegree()
     flat_degree.name = parsed_degree.title
     flat_degree.code = parsed_degree.params.code
     flat_degree.year = parsed_degree.params.year
 
-    # Get all of the auxiliaries from the parsed degree.
-    # Making sure they have the right part id.
+    # Collect everything here, then assign to flat_degree at the end.
+    rule_logic: dict[str, str | None] = {}
+    ars: list[AR] = []
+    srs: list[SR] = []
 
-    # Same for SRS.
-    rule_logic = {}
-    ars = []
-    ar_params = set()
-    row_types = set()
-    srs = []
-    sr_params: dict[str, set] = {}
-    letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M"]
-    letter = 0
+    # Recursive walker for ComponentPayload nodes
+    def _walk(node: ComponentPayload, inherited_part: str) -> None:
+        # part can be on any node; inherit if missing
+        part = inherited_part
+        if getattr(node, "header", None) is not None:
+            if node.header.partReference is not None:
+                part = node.header.partReference
 
+            # Aux rules live on headers at all levels
+            if node.header.auxiliaryRules is not None:
+                for ar in node.header.auxiliaryRules:
+                    ars.append(process_ar(ar, part))
+
+            # Rule logic can appear on headers (keep last write per part)
+            if node.header.ruleLogic is not None:
+                rule_logic[part] = node.header.ruleLogic
+
+        # If this node declares a SelectionRule, gather *its own* sibling leaves
+        # (do not recurse into grandchildren here, those are separate SR contexts).
+        sibling_leaves: list[ComponentPayloadLeaf] = []
+        children_nodes: list[ComponentPayload] = []
+
+        if getattr(node, "body", None) is not None:
+            for child in node.body:
+                if isinstance(child, ComponentPayloadLeaf):
+                    sibling_leaves.append(child)
+                else:
+                    # It's another ComponentPayload (serde-untagged union)
+                    children_nodes.append(child)
+
+        if getattr(node, "header", None) is not None and node.header.selectionRule is not None:
+            srs.append(process_sr(node.header.selectionRule, sibling_leaves, part))
+
+        # Recurse into children after handling this node's SR
+        for child_node in children_nodes:
+            _walk(child_node, part)
+
+    # Only process the Program Requirements component with internalComponentIdentifier == 1
     for component in parsed_degree.programRequirements.payload.components:
         if component.internalComponentIdentifier != 1:
             continue
+        if component.payload is None:
+            continue
 
-        # Initial aux rules are going to have no part, ""
-        part = ""
-        for ar in component.payload.header.auxiliaryRules:
-            ars.append(process_ar(ar, part))
-
-        rule_logic[part] = component.payload.header.ruleLogic
-
-        for body in component.payload.body:
-            # print(body)
-            # These are all still root nodes
-            # Very sad!
-            part = body.header.partReference
-            # print(part)
-            for ar in body.header.auxiliaryRules:
-                ars.append(process_ar(ar, part))
-
-            for body2 in body.body:
-                print("----")
-                print(part)
-                if body2.header is None:
-                    continue
-
-                print(">>")
-                part = body2.header.partReference
-                print(part)
-
-                if body2.header.auxiliaryRules is not None:
-                    for ar in body2.header.auxiliaryRules:
-                        ars.append(process_ar(ar, part))
-
-                if body2.header.selectionRule is None or body2.body is None:
-                    continue
-
-                sr = body2.header.selectionRule
-
-                rows = []
-                for body3 in body2.body:
-                    # Course references and program references are here.
-                    # We dont really care about tracking these tooooo much except that the selection rule should probably store them in their lists.
-                    rows.append(body3)
-
-                # to process SR we need the SR and its body (ikr!)
-                srs.append(process_sr(sr, rows, part))
-                # print(part)
-                # print(srs[-1])
-
-    # pprint(ars)
+        # Component-level header (root node) can also have aux/rule logic and (rarely) SR
+        _walk(component.payload, inherited_part="")
 
     flat_degree.aux = ars
     flat_degree.srs = srs
-
-    # rule logic...? hmmmm
+    # rule_logic is available if/when you want to persist it later
 
     return flat_degree
 

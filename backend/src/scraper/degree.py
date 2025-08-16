@@ -58,11 +58,11 @@ def main():
                                         sr_params[param.name] = set()
                                     sr_params[param.name].add(param.type)
 
-                            if body2.body is not None:
-                                for body3 in body2.body:
-                                    row_types.add(body3.rowType)
-                                    if body3.rowType == "CurriculumReference":
-                                        row_types.add((body3.rowType, body3.curriculumReference.type))
+                            # if body2.body is not None:
+                            #     for body3 in body2.body:
+                            #         row_types.add(body3.rowType)
+                            #         if body3.rowType == "CurriculumReference":
+                            #             row_types.add((body3.rowType, body3.curriculumReference.type))
 
         pprint(rule_logic)
         pprint(ars)
