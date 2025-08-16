@@ -205,7 +205,6 @@ export default function Courses() {
     };
 
     async function DeletePlan() {
-        const status = await Promise.resolve(() => { status: "success" })
         const status = await Promise.resolve({ status: "success" })
         console.log(status);
     }
