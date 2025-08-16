@@ -9,6 +9,7 @@ from api.plan import Plan
 class SR:
     # Part, e.g. A or A.1
     part: str
+    type: str = "SR"
 
     def validate(self, plan: Plan) -> ValidateResult:
         return ValidateResult(Status.ERROR, None, "Should not be seeing this - validating abstract SR", plan.courses)
@@ -17,7 +18,7 @@ class SR:
 @serde
 class SR1(SR):
     """Complete [N] units for ALL of the following"""
-
+    type: str = "SR1"
     n: int
     options: list[CourseRef]
 
@@ -44,6 +45,7 @@ class SR1(SR):
 class SR2(SR):
     """Complete [N] to [M] units for ALL of the following"""
 
+    type: str = "SR2"
     n: int
     m: int
     options: list[CourseRef]
@@ -78,6 +80,7 @@ class SR2(SR):
 class SR3(SR):
     """Complete at least [N] units from the following"""
 
+    type: str = "SR3"
     n: int
     options: list[CourseRef]
 
@@ -102,6 +105,7 @@ class SR3(SR):
 class SR4(SR):
     """Complete [N] to [M] units from the following"""
 
+    type: str = "SR4"
     n: int
     m: int
     options: list[CourseRef]
@@ -133,6 +137,7 @@ class SR4(SR):
 class SR5(SR):
     """Complete exactly [N] units from the following"""
 
+    type: str = "SR5"
     n: int
     options: list[CourseRef]
 
@@ -163,6 +168,7 @@ class SR5(SR):
 class SR6(SR):
     """Complete one [PLANTYPE] from the following"""
 
+    type: str = "SR6"
     plan_type: str
     options: list[ProgramRef]
 
@@ -180,6 +186,7 @@ class SR6(SR):
 class SR7(SR):
     """Complete exactly [N] [PLANTYPES] from the following"""
 
+    type: str = "SR7"
     n: int
     plan_types: str
     options: list[ProgramRef]
@@ -205,6 +212,7 @@ class SR7(SR):
 class SR8(SR):
     """Complete [N] to [M] [PLANTYPES] from the following"""
 
+    type: str = "SR8"
     n: int
     m: int
     plan_types: str  # Usually just major unless your course is weird
