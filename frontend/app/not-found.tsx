@@ -16,15 +16,6 @@ export default function Example() {
           <Button accent href="/" className="">
             Go back home
           </Button>
-          <a href="#" className="text-sm/6 font-semibold group">
-            Report an issue{" "}
-            <span
-              aria-hidden="true"
-              className="inline-block transition-transform duration-200 ease-out group-hover:translate-x-1"
-            >
-              <ArrowRightIcon className="w-3" />
-            </span>
-          </a>
         </div>
       </div>
     </div>
