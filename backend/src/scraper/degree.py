@@ -3,13 +3,13 @@ from pprint import pprint
 from serde import serde, AdjacentTagging
 from serde.json import to_json, from_json
 from serde import from_dict
-import json
+from json import loads
 
 
 def main():
     with open("../data/course_reqs/details.json") as f:
         raw = f.read()
-        details = json.loads(raw)["program_details"]
+        details = loads(raw)["program_details"]
         components = {}
         rule_logic = set()
         ars = {}
@@ -103,6 +103,9 @@ class ComponentPayloadBodyHeader:
     summaryDescription: str | None
     partType: str
     unitsMax: int | None
+    notes: str | None
+    selectionRule: SelectionRule | None
+    partType: str
 
 
 @serde
@@ -114,7 +117,7 @@ class SelectionRule:
 
 @serde
 class ComponentPayloadBodyBodyHeader:
-    partUUID: str | None
+    partUID: str | None
     notes: str | None
     partReference: str
     auxiliaryRules: list[AuxiliaryRule] | None
@@ -127,7 +130,7 @@ class ComponentPayloadBodyBodyHeader:
 class CurriculumReference:
     unitsMaximum: int
     code: str | None
-    orgName: str
+    orgName: strmponentPayloadBod
     type: str
     version: dict
     subtype: str | None
@@ -176,7 +179,7 @@ class ComponentPayloadBodyBody:
 @serde
 class ComponentPayloadBody:
     header: ComponentPayloadBodyHeader
-    body: list[ComponentPayloadBodyBody]
+    body: list[ComponentPayloadBody]
 
 
 @serde

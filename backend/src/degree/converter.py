@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Iterable, Optional, Tuple
 
-from serde.json import from_dict
+from serde.json import from_dict, to_json
 from pprint import pprint
 import json
 
@@ -168,8 +168,6 @@ def process_ar(parsed_ar: ParsedAuxRule, part: str) -> AR:
                             org_code="",
                             name="",
                             abbreviation="",
-                            version_minor=0,
-                            version_major=0,
                         )
                     )
             return out
@@ -184,8 +182,6 @@ def process_ar(parsed_ar: ParsedAuxRule, part: str) -> AR:
                 org_code="",
                 name="",
                 abbreviation="",
-                version_minor=0,
-                version_major=0,
             )
         ]
 
@@ -202,8 +198,6 @@ def process_ar(parsed_ar: ParsedAuxRule, part: str) -> AR:
                 org_code="",
                 name="",
                 abbreviation="",
-                version_minor=0,
-                version_major=0,
             )
         )
 
@@ -348,7 +342,7 @@ def process_ar(parsed_ar: ParsedAuxRule, part: str) -> AR:
     if code == "AR20":
         return AR20(
             part=part,
-            plan=_single_program(get("PLAN")),
+            plan_1=_single_program(get("PLAN")),
             plan_list_1=_list_to_programs(get("PLAN_LIST_1", [])),
             course_list=_list_to_courses(get("COURSE_LIST", [])),
             plan_list_2=_list_to_programs(get("PLAN_LIST_2", [])),
@@ -359,6 +353,129 @@ def process_ar(parsed_ar: ParsedAuxRule, part: str) -> AR:
     for p in parsed_ar.params or []:
         raw_params.append({"name": p.name, "type": p.type, "value": p.value})
     return ARUnknown(part=part, text=getattr(parsed_ar, "text", ""), raw_params=raw_params)
+
+
+def process_sr(parsed_sr: ParsedSelectionRule, rows: list[ComponentPayloadBodyBodyBody], part: str) -> SR:
+    def _num(x) -> int:
+        if isinstance(x, int):
+            return x
+        if isinstance(x, str) and x.isdigit():
+            return int(x)
+        try:
+            return int(str(x).strip())
+        except Exception:
+            return 0
+
+    def _to_course_ref(d: dict) -> CourseRef:
+        return CourseRef(
+            units_max=d.get("unitsMaximum"),
+            units_min=d.get("unitsMinimum"),
+            code=d.get("code") or "",
+            org_name=d.get("orgName") or "",
+            org_code=d.get("orgCode") or "",
+            name=d.get("name") or "",
+        )
+
+    def _to_program_ref(d: dict) -> ProgramRef:
+        return ProgramRef(
+            units_max=d.get("unitsMaximum"),
+            units_min=d.get("unitsMinimum"),
+            code=d.get("code") or "",
+            org_name=d.get("orgName") or "",
+            org_code=d.get("orgCode") or "",
+            name=d.get("name") or "",
+            abbreviation=d.get("abbreviation") or "",
+        )
+
+    def _collect_options() -> tuple[list[CourseRef], list[ProgramRef]]:
+        courses: list[CourseRef] = []
+        programs: list[ProgramRef] = []
+
+        if not rows:
+            return courses, programs
+
+        for r in rows:
+            if r.curriculumReference is not None:
+                cr = r.curriculumReference
+                if (cr.type or cr.type) == "Course":
+                    courses.append(_to_course_ref(cr if isinstance(cr, dict) else cr.__dict__))
+                elif (cr.type or cr.type) in {"Program Rqt", "ProgramRqt", "Program"}:
+                    programs.append(_to_program_ref(cr if isinstance(cr, dict) else cr.__dict__))
+
+            if r.equivalenceGroup is not None:
+                eq_list = r.equivalenceGroup
+                for eg in eq_list:
+                    cr = eg.get("curriculumReference") if isinstance(eg, dict) else eg.curriculumReference
+                    if cr is None:
+                        continue
+                    if (cr.type if isinstance(cr, dict) else cr.type) == "Course":
+                        courses.append(_to_course_ref(cr if isinstance(cr, dict) else cr.__dict__))
+                    elif (cr.type if isinstance(cr, dict) else cr.type) in {
+                        "Program Rqt",
+                        "ProgramRqt",
+                        "Program",
+                    }:
+                        programs.append(_to_program_ref(cr if isinstance(cr, dict) else cr.__dict__))
+
+        seen_c: set[str] = set()
+        dedup_courses: list[CourseRef] = []
+        for c in courses:
+            if c.code not in seen_c:
+                seen_c.add(c.code)
+                dedup_courses.append(c)
+
+        seen_p: set[str] = set()
+        dedup_programs: list[ProgramRef] = []
+        for p in programs:
+            if p.code not in seen_p:
+                seen_p.add(p.code)
+                dedup_programs.append(p)
+
+        return dedup_courses, dedup_programs
+
+    # index params by name for convenience
+    params = {p.name: p for p in (parsed_sr.params or [])}
+    get = lambda key, default=None: (params.get(key).value if key in params else default)
+
+    # gather options once
+    course_opts, program_opts = _collect_options()
+
+    code = parsed_sr.code
+
+    # ---- SR mappings --------------------------------------------------------
+    if code == "SR1":  # Complete [N] units for ALL of the following
+        return SR1(part=part, n=_num(get("N", 0)), options=course_opts)
+
+    if code == "SR2":  # Complete [N] to [M] units for ALL of the following
+        return SR2(part=part, n=_num(get("N", 0)), m=_num(get("M", 0)), options=course_opts)
+
+    if code == "SR3":  # Complete at least [N] units from the following
+        return SR3(part=part, n=_num(get("N", 0)), options=course_opts)
+
+    if code == "SR4":  # Complete [N] to [M] units from the following
+        return SR4(part=part, n=_num(get("N", 0)), m=_num(get("M", 0)), options=course_opts)
+
+    if code == "SR5":  # Complete exactly [N] units from the following
+        return SR5(part=part, n=_num(get("N", 0)), options=course_opts)
+
+    if code == "SR6":  # Complete one [PLANTYPE] from the following
+        # sometimes it's PLANTYPE, sometimes PLANTYPE_SINGULAR
+        plan_type = get("PLANTYPE", get("PLANTYPE_SINGULAR", ""))
+        plan_type = "" if plan_type is None else str(plan_type)
+        return SR6(part=part, plan_type=plan_type, options=program_opts)
+
+    if code == "SR7":  # Complete exactly [N] [PLANTYPES] from the following
+        plan_types = get("PLANTYPES", "")
+        plan_types = "" if plan_types is None else str(plan_types)
+        return SR7(part=part, n=_num(get("N", 0)), plan_types=plan_types, options=program_opts)
+
+    if code == "SR8":  # Complete [N] to [M] [PLANTYPES] from the following
+        plan_types = get("PLANTYPES", "")
+        plan_types = "" if plan_types is None else str(plan_types)
+        return SR8(part=part, n=_num(get("N", 0)), m=_num(get("M", 0)), plan_types=plan_types, options=program_opts)
+
+    # unknown future SR type: keep part so it still validates as a no-op SR
+    return SR(part=part)
 
 
 def convert_degree(parsed_degree: ParsedDegree) -> FlatDegree:
@@ -375,7 +492,7 @@ def convert_degree(parsed_degree: ParsedDegree) -> FlatDegree:
     ars = []
     ar_params = set()
     row_types = set()
-    srs = {}
+    srs = []
     sr_params: dict[str, set] = {}
     letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M"]
     letter = 0
@@ -392,53 +509,48 @@ def convert_degree(parsed_degree: ParsedDegree) -> FlatDegree:
         rule_logic[part] = component.payload.header.ruleLogic
 
         for body in component.payload.body:
+            # print(body)
             # These are all still root nodes
             # Very sad!
             part = body.header.partReference
+            # print(part)
             for ar in body.header.auxiliaryRules:
                 ars.append(process_ar(ar, part))
 
             for body2 in body.body:
-                if body2.header is not None:
-                    part = body2.header.partReference
+                print("----")
+                print(part)
+                if body2.header is None:
+                    continue
 
-                    if body2.header.auxiliaryRules is not None:
-                        for ar in body2.header.auxiliaryRules:
-                            ars.append(process_ar(ar, part))
+                print(">>")
+                part = body2.header.partReference
+                print(part)
 
-                    if body2.header.selectionRule is None and body2.body is None:
-                        continue
+                if body2.header.auxiliaryRules is not None:
+                    for ar in body2.header.auxiliaryRules:
+                        ars.append(process_ar(ar, part))
 
-                    # selectionrule SR and the body are present
-                    # for SR we need the body to form its list of refs
-                    if part not in srs:
-                        srs[part] = []
+                if body2.header.selectionRule is None or body2.body is None:
+                    continue
 
-                    sr = body2.header.selectionRule
+                sr = body2.header.selectionRule
 
-                    rows = []
-                    for body3 in body2.body:
-                        # Course references and program references are here.
-                        # We dont really care about tracking these tooooo much except that the selection rule should probably store them in their lists.
-                        # row_types.add(body3.rowType)
-                        # if body3.rowType == "CurriculumReference":
-                        #     row_types.add((body3.rowType, body3.curriculumReference.type))
-                        if body3.curriculumReference is not None:
-                            # rows.append(process_curriculum_ref(body3.curriculumReference))
-                            pass
-                        if body3.equivalenceGroup is not None:
-                            # rows.append(process_equivalence_grou(body3.equivalenceGroup))
-                            pass
-                        if body3.wildCardItem is not None:
-                            # rows.append(process_wildcard(body3.wildCardItem))
-                            pass
+                rows = []
+                for body3 in body2.body:
+                    # Course references and program references are here.
+                    # We dont really care about tracking these tooooo much except that the selection rule should probably store them in their lists.
+                    rows.append(body3)
 
-                    # to process SR we need the SR and its body (ikr!)
-                    # srs[part].push(process_sr(sr, rows))
+                # to process SR we need the SR and its body (ikr!)
+                srs.append(process_sr(sr, rows, part))
+                # print(part)
+                # print(srs[-1])
 
     # pprint(ars)
 
     flat_degree.aux = ars
+    flat_degree.srs = srs
 
     # rule logic...? hmmmm
 
@@ -463,7 +575,14 @@ def main():
                 if degree is None:
                     continue
 
+                print("--------------------------------")
+                print("--------------------------------")
+                print("--------------------------------")
+                print("--------------------------------")
                 flat = convert_degree(degree)
+
+                with open("../../data/magic.json", "w") as f2:
+                    f2.write(to_json(degree))
 
                 if len(flat.aux) > 10:
                     pprint(flat)
