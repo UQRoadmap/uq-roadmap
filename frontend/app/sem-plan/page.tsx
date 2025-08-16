@@ -8,21 +8,25 @@ import Pop from '@/components/custom/palette'
 import {DndContext, DragEndEvent} from '@dnd-kit/core';
 import { Course } from '@/types/course';
 
-function SemesterSection({ semester, courses }: { semester: number; courses: Course[] }) {
+function SemesterSection({ semester, courses }: { semester: number; courses?: Course[] }) {
     const [collapsed, setCollapsed] = useState(false);
 
-    let usedUnits = 0;
     const normalCourses: Course[] = [];
     const overloadCourses: Course[] = [];
-    courses.forEach(course => {
-        if (usedUnits + course.units <= 8) {
-            normalCourses.push(course);
-            usedUnits += course.units;
-        } else {
-            overloadCourses.push(course);
-        }
-    });
+    let usedUnits = 0;
 
+    if (courses && courses.length > 0) {
+      courses.forEach((course) => {
+        if (usedUnits + (course?.units ?? 0) <= 8) {
+          normalCourses.push(course);
+          usedUnits += course?.units ?? 0;
+        } else {
+          overloadCourses.push(course);
+        }
+      });
+    }
+
+    console.log(semester, courses)
 
     const getSemesterLabel = (sem: number) => {
         const year = Math.floor(sem / 10);
@@ -58,16 +62,26 @@ function SemesterSection({ semester, courses }: { semester: number; courses: Cou
             </div>
             {!collapsed && (
                 <>
-                    <div className="grid grid-cols-8 w-full gap-2">
-                        {normalCourses.map((course, idx) => (
-                            <div key={`${course.id}-${semester}-${idx}`} className={getColSpanClass(course.units)}>
-                                <CourseCard {...course} key={semester + idx} />
-                            </div>
-                        ))}
-                        <div key={`empty-${semester}`} className={getColSpanClass(2)}>
-                            <EmptyCourseCard id={semester}/>
+                  <div className="grid grid-cols-8 w-full gap-2">
+                    {Array.from({ length: 4 }).map((_, i) => {
+                      const course = normalCourses.find(c => {
+                        if (!c) return false;
+                        const [sem, pos] = c.sem.split("-"); // "20251-2"
+                        console.log(sem, semester)
+                        return Number(pos) === i;
+                      });
+
+                      return (
+                        <div
+                          key={`${course ? course.id : "empty"}-${semester}-${i}`}
+                          className={getColSpanClass(course ? course.units : 2)} // default empty to 2 units
+                        >
+                          {course ? <CourseCard {...course} /> : <EmptyCourseCard id={`${semester}-${i}`} />}
                         </div>
-                    </div>
+                      );
+                    })}
+                  </div>
+
                     {overloadCourses.length > 0 && (
                         <div className="my-4 w-full rounded border-t-2 border-red-500 border-dotted">
                             <div className="space-y-2 mt-4">
@@ -93,32 +107,58 @@ function SemesterSection({ semester, courses }: { semester: number; courses: Cou
 
 export default function Courses() {
     function handleDragEnd(event: DragEndEvent) {
-      const {active, over} = event;
-      console.log(active)
-      if (over) {
-        const dragCourse = active.data.current as Course;
-        if (dragCourse) {
-          const updatedCourse = { ...dragCourse, sem: over.id.toString()};
-          setCourses((prevCourses) => [
-            ...prevCourses.filter(c => c.id !== dragCourse.id),
-            updatedCourse
-          ]);
+      const { active, over } = event;
+
+      if (!over) return;
+
+      const dragCourse = active.data.current as Course;
+      if (!dragCourse) return;
+
+      const [targetSemIndexStr, targetIndexStr] = over.id.toString().split("-");
+      const year = Math.floor(Number(targetSemIndexStr) / 10);
+      const semNum = Number(targetSemIndexStr) % 10;
+      const targetSemIndex = (year - startYear) * 2 + (semNum - 1);
+      const targetIndex = parseInt(targetIndexStr, 10);
+
+      setCourses((prevCourses) => {
+        // Deep copy
+        const newCourses = prevCourses.map((sem) => [...sem]);
+
+        // Check if course already exists in any semester
+       const currentSemIndex = newCourses.findIndex((sem) => sem &&
+         sem.some((c) => c.id === dragCourse.id)
+       );
+
+        // If it exists, remove from old semester
+        if (currentSemIndex !== -1) {
+          const courseIndex = newCourses[currentSemIndex].findIndex(
+            (c) => c && c.id === dragCourse.id
+          );
+          newCourses[currentSemIndex].splice(courseIndex, 1);
         }
-      }
+
+        // Update semester property (optional)
+        const updatedCourse = { ...dragCourse, sem: year.toString() + targetSemIndex.toString() + "-" + targetIndex };
+        // Insert at target position
+        newCourses[targetSemIndex].splice(targetIndex, 0, updatedCourse);
+        return newCourses;
+      });
       setActiveId(undefined);
     }
 
     const [activeId, setActiveId] = useState<string | undefined>(undefined);
-    const [stateCourses, setCourses] = useState<Course[]>([]);
-
     const startYear = 2024;
     const endYear = 2026; // example
 
     const semesters: number[] = [];
+    const tmpCourses: Course[][] = [];
     for (let year = startYear; year <= endYear; year++) {
       semesters.push(Number(`${year}1`));
       semesters.push(Number(`${year}2`));
+      tmpCourses.push([]);
+      tmpCourses.push([]);
     }
+    const [stateCourses, setCourses] = useState<Course[][]>(tmpCourses);
 
     return (
       <DndContext
@@ -127,11 +167,11 @@ export default function Courses() {
       >
         <Pop draggable activeId={activeId}></Pop>
         <div className="flex flex-col h-screen overflow-y-auto">
-          {semesters.map((semester) => (
+          {semesters.map((semester, i) => (
             <SemesterSection
               key={semester}
               semester={semester}
-              courses={stateCourses.filter(c => +c.sem === semester)}
+              courses={stateCourses[i]}
             />
           ))}
         </div>
