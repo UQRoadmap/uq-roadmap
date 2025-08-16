@@ -1,11 +1,13 @@
 """Routes for degrees."""
 
+from uuid import UUID
+
 from fastapi import APIRouter, HTTPException, status
 
 from api.database.deps import DbSession
 from api.degree.models import DegreeDBModel
-from api.degree.schemas import DegreeCreate, DegreeRead
-from api.degree.service import create_degree, get_all_degrees, get_degree_by_id
+from api.degree.schemas import DegreeRead
+from api.degree.service import get_all_degrees, get_degree, get_degree_by_id
 
 r = router = APIRouter()
 
@@ -17,7 +19,7 @@ async def get_many(session: DbSession) -> list[DegreeDBModel]:
 
 
 @r.get("/{degree_id}", response_model=DegreeRead)
-async def get_one(degree_id: int, session: DbSession) -> DegreeDBModel:
+async def get_one(degree_id: UUID, session: DbSession) -> DegreeDBModel:
     """Get a single degree."""
     result = await get_degree_by_id(session, degree_id)
     if result is None:
@@ -25,11 +27,12 @@ async def get_one(degree_id: int, session: DbSession) -> DegreeDBModel:
     return result
 
 
-@r.post("", response_model=DegreeRead, status_code=status.HTTP_201_CREATED)
-async def create(degree_in: DegreeCreate, session: DbSession) -> DegreeDBModel:
-    """Create a degree."""
-    existing = await get_degree_by_id(session, degree_in.degree_id)
-    if existing is not None:
-        raise HTTPException(status.HTTP_400_BAD_REQUEST, f"Degree under the id '{degree_in.degree_id}' already exists")
-
-    return await create_degree(session, degree_in)
+@r.get("/simple", response_model=DegreeRead)
+async def get_one_simple(degree_code: int, year: int, session: DbSession) -> DegreeDBModel:
+    """Get a single degree."""
+    result = await get_degree(session, str(degree_code), year)
+    if result is None:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND, f"Degree with the code {degree_code} and year {year} could not be found"
+        )
+    return result
