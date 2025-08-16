@@ -4,6 +4,7 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
 from api.config import CONFIG
@@ -26,6 +27,14 @@ app = FastAPI(lifespan=lifespan)
 app.include_router(degree_router, prefix="/degrees", tags=["degrees"])
 app.include_router(courses_router, prefix="/courses", tags=["courses"])
 app.include_router(plan_router, prefix="/plans", tags=["plans"])
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[CONFIG.frontend_url, "http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
