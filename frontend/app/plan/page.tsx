@@ -82,7 +82,7 @@ export default function PlanPage() {
 
             {plans.length === 0 && (
                 <div className="text-center p-8 bg-gray-50 rounded-lg">
-                    <p>You haven't created any plans yet.</p>
+                    <p>You haven&apos;t created any plans yet.</p>
                     <Button
                         onClick={() => router.push('/start')}
                         accent
