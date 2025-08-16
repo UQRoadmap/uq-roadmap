@@ -7,10 +7,7 @@ import Link from 'next/link'
 import Logo from './logo'
 
 const navigation = [
-
-
-  { name: 'Track Progress', href: '/progress' },
-  { name: 'Plan Your Path', href: '/sem-plan' },
+  { name: 'Plan', href: '/sem-plan' },
   { name: 'Samples', href: '/sample' },
 ]
 
@@ -18,8 +15,8 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <header className="bg-[#51247a]">
-      <nav aria-label="Global" className="mx-auto max-w-7xl flex items-center justify-between p-6 lg:px-8">
+    <header className="bg-primary">
+      <nav aria-label="Global" className="mx-auto max-w-7xl flex items-center justify-between py-2 px-6">
         <div className="flex lg:flex-1">
           <Link href="/">
             <Logo />

@@ -9,7 +9,11 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        accent: "var(--color-accent)",
+        primary: "var(--color-primary)",
+        secondary: "var(--color-secondary)",
+        tertiary: "var(--color-tertiary)",
+        incomplete: "var(--color-incomplete)",
+        complete: "var(--color-complete)"
       },
     },
   },

@@ -2,15 +2,18 @@
 import React, { useState, useEffect } from 'react';
 import CourseCard, { EmptyCourseCard } from "@/components/custom/course-card";
 import { ArrowDownIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
-
+import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/components/dropdown';
 import Pop from '@/components/custom/palette'
 
-import {DndContext, DragEndEvent} from '@dnd-kit/core';
+import { DndContext, DragEndEvent } from '@dnd-kit/core';
 import { Course } from '@/types/course';
 import { v4 as uuidv4 } from "uuid";
+import ProgressCircle from '@/components/custom/progressCircle';
 function SemesterSection({ semester, courses, setPaletteOpen, setActiveId }:
-    { semester: number; courses?: Course[], setPaletteOpen: (open: boolean) => void,
-      setActiveId: (id: string) => void}) {
+    {
+        semester: number; courses?: Course[], setPaletteOpen: (open: boolean) => void,
+        setActiveId: (id: string) => void
+    }) {
     const [collapsed, setCollapsed] = useState(false);
 
     const normalCourses: Course[] = [];
@@ -18,14 +21,14 @@ function SemesterSection({ semester, courses, setPaletteOpen, setActiveId }:
     let usedUnits = 0;
 
     if (courses && courses.length > 0) {
-      courses.forEach((course) => {
-        if (usedUnits + (course?.units ?? 0) <= 8) {
-          normalCourses.push(course);
-          usedUnits += course?.units ?? 0;
-        } else {
-          overloadCourses.push(course);
-        }
-      });
+        courses.forEach((course) => {
+            if (usedUnits + (course?.units ?? 0) <= 8) {
+                normalCourses.push(course);
+                usedUnits += course?.units ?? 0;
+            } else {
+                overloadCourses.push(course);
+            }
+        });
     }
 
     const getSemesterLabel = (sem: number) => {
@@ -56,40 +59,40 @@ function SemesterSection({ semester, courses, setPaletteOpen, setActiveId }:
             >
                 <div>{getSemesterLabel(semester)}</div>
                 <ChevronDownIcon
-                    className={`w-5 h-5 transform transition-transform text-black hover:bg-gray-800 rounded-xl ${collapsed ? 'rotate-180' : ''}`}
+                    className={`w-5 h-5 transform transition-transform text-black hover:bg-gray-300 rounded-xl ${collapsed ? 'rotate-180' : ''}`}
                     onClick={() => setCollapsed(prev => !prev)}
                 />
             </div>
             {!collapsed && (
                 <>
-                  <div className="grid grid-cols-8 w-full gap-2">
-                    {Array.from({ length: 4 }).map((_, i) => {
-                      const course = normalCourses.find(c => {
-                        if (!c) return false;
-                        const [_, pos] = c.sem.split("-"); // "20251-2"
-                        return Number(pos) === i;
-                      });
+                    <div className="grid grid-cols-8 w-full gap-2">
+                        {Array.from({ length: 4 }).map((_, i) => {
+                            const course = normalCourses.find(c => {
+                                if (!c) return false;
+                                const [_, pos] = c.sem.split("-"); // "20251-2"
+                                return Number(pos) === i;
+                            });
 
-                      return (
-                        <div
-                          key={`${course ? course.id : "empty"}-${semester}-${i}`}
-                          className={getColSpanClass(course ? course.units : 2)} // default empty to 2 units
-                        >
-                          {course ?
-                            <CourseCard {...course} />
-                                :
-                            <EmptyCourseCard id={`${semester}-${i}`} setPaletteOpen={setPaletteOpen} setActiveId={setActiveId} />
-                          }
+                            return (
+                                <div
+                                    key={`${course ? course.id : "empty"}-${semester}-${i}`}
+                                    className={getColSpanClass(course ? course.units : 2)} // default empty to 2 units
+                                >
+                                    {course ?
+                                        <CourseCard {...course} />
+                                        :
+                                        <EmptyCourseCard id={`${semester}-${i}`} setPaletteOpen={setPaletteOpen} setActiveId={setActiveId} />
+                                    }
 
-                        </div>
-                      );
-                    })}
-                  </div>
+                                </div>
+                            );
+                        })}
+                    </div>
 
                     {overloadCourses.length > 0 && (
                         <div className="my-4 w-full rounded border-t-2 border-red-500 border-dotted">
                             <div className="space-y-2 mt-4">
-                            <div className="flex items-center gap-1">
+                                <div className="flex items-center gap-1">
                                     <div>Overloaded Courses</div>
                                     <ArrowDownIcon className="h-3 ml-1" />
                                 </div>
@@ -113,63 +116,63 @@ export default function Courses() {
     const [isPaletteOpen, setPaletteOpen] = useState(false);
     const [sem, setSem] = useState(undefined);
     function handleDragEnd(event: DragEndEvent) {
-      const { active, over } = event;
+        const { active, over } = event;
 
-      if (!over) return;
+        if (!over) return;
 
-      const dragCourse = active.data.current as Course;
-      if (!dragCourse) return;
+        const dragCourse = active.data.current as Course;
+        if (!dragCourse) return;
 
-      const [targetSemIndexStr, targetIndexStr] = over.id.toString().split("-");
-      const year = Math.floor(Number(targetSemIndexStr) / 10);
-      const semNum = Number(targetSemIndexStr) % 10;
-      const targetSemIndex = (year - startYear) * 2 + (semNum - 1);
-      const targetIndex = parseInt(targetIndexStr, 10);
+        const [targetSemIndexStr, targetIndexStr] = over.id.toString().split("-");
+        const year = Math.floor(Number(targetSemIndexStr) / 10);
+        const semNum = Number(targetSemIndexStr) % 10;
+        const targetSemIndex = (year - startYear) * 2 + (semNum - 1);
+        const targetIndex = parseInt(targetIndexStr, 10);
 
-      setCourses((prevCourses) => {
-        // Deep copy
-        const newCourses = prevCourses.map((sem) => [...sem]);
+        setCourses((prevCourses) => {
+            // Deep copy
+            const newCourses = prevCourses.map((sem) => [...sem]);
 
-        // Check if course already exists in any semester
-       const currentSemIndex = newCourses.findIndex((sem) => sem &&
-         sem.some((c) => c.id === dragCourse.id)
-       );
+            // Check if course already exists in any semester
+            const currentSemIndex = newCourses.findIndex((sem) => sem &&
+                sem.some((c) => c.id === dragCourse.id)
+            );
 
-        // If it exists, remove from old semester
-        if (currentSemIndex !== -1) {
-          const courseIndex = newCourses[currentSemIndex].findIndex(
-            (c) => c && c.id === dragCourse.id
-          );
-          newCourses[currentSemIndex].splice(courseIndex, 1);
-        }
+            // If it exists, remove from old semester
+            if (currentSemIndex !== -1) {
+                const courseIndex = newCourses[currentSemIndex].findIndex(
+                    (c) => c && c.id === dragCourse.id
+                );
+                newCourses[currentSemIndex].splice(courseIndex, 1);
+            }
 
-        // Update semester property (optional)
-        const updatedCourse = { ...dragCourse, sem: year.toString() + targetSemIndex.toString() + "-" + targetIndex };
-        // Insert at target position
-        newCourses[targetSemIndex].splice(targetIndex, 0, updatedCourse);
-        console.log("drag", newCourses)
-        return newCourses;
-      });
-      setActiveId("");
+            // Update semester property (optional)
+            const updatedCourse = { ...dragCourse, sem: year.toString() + targetSemIndex.toString() + "-" + targetIndex };
+            // Insert at target position
+            newCourses[targetSemIndex].splice(targetIndex, 0, updatedCourse);
+            console.log("drag", newCourses)
+            return newCourses;
+        });
+        setActiveId("");
     }
 
     const handleInsertCourse = (course: Course, targetId: string) => {
-      const [targetSemStr, targetIndexStr] = targetId.split("-");
-      const year = Math.floor(Number(targetSemStr) / 10);
-      const semNum = Number(targetSemStr) % 10;
-      const targetSemIndex = (year - startYear) * 2 + (semNum - 1);
-      const targetIndex = parseInt(targetIndexStr, 10);
+        const [targetSemStr, targetIndexStr] = targetId.split("-");
+        const year = Math.floor(Number(targetSemStr) / 10);
+        const semNum = Number(targetSemStr) % 10;
+        const targetSemIndex = (year - startYear) * 2 + (semNum - 1);
+        const targetIndex = parseInt(targetIndexStr, 10);
 
-      setCourses(prevCourses => {
-        const newCourses = prevCourses.map(sem => [...sem]);
+        setCourses(prevCourses => {
+            const newCourses = prevCourses.map(sem => [...sem]);
 
-        const updatedCourse = { ...course, sem: targetId, id: uuidv4()};
-        newCourses[targetSemIndex].splice(targetIndex, 1, updatedCourse); // replace empty card
+            const updatedCourse = { ...course, sem: targetId, id: uuidv4() };
+            newCourses[targetSemIndex].splice(targetIndex, 1, updatedCourse); // replace empty card
 
-        console.log("insert", newCourses)
-        return newCourses;
-      });
-      setActiveId("");
+            console.log("insert", newCourses)
+            return newCourses;
+        });
+        setActiveId("");
     };
 
 
@@ -182,40 +185,104 @@ export default function Courses() {
     const semesters: number[] = [];
     const tmpCourses: Course[][] = [];
     for (let year = startYear; year <= endYear; year++) {
-      semesters.push(Number(`${year}1`));
-      semesters.push(Number(`${year}2`));
-      tmpCourses.push([]);
-      tmpCourses.push([]);
+        semesters.push(Number(`${year}1`));
+        semesters.push(Number(`${year}2`));
+        tmpCourses.push([]);
+        tmpCourses.push([]);
     }
     const [stateCourses, setCourses] = useState<Course[][]>(tmpCourses);
 
-    return (
-      <DndContext
-        onDragStart={({ active }) => setActiveId(active.id as string)}
-        onDragEnd={handleDragEnd}
-      >
-        <Pop
-          clickable
-          setActiveId={setActiveId}
-          activeId={activeId}
-          opened={isPaletteOpen}
-          setPaletteOpen={setPaletteOpen}
-          onSelectCourse={handleInsertCourse}
-          sem={sem}
-          stateCourses={stateCourses}
-        />
+    const validate = {
+        "status": 1, "percentage": 0.2, "relevant": ["csse2310", "csse2010", "csse3010"], "message": "Core Courses"
+    };
 
-        <div className="flex flex-col h-screen overflow-y-auto">
-          {semesters.map((semester, i) => (
-            <SemesterSection
-              key={semester}
-              semester={semester}
-              courses={stateCourses[i]}
-              setPaletteOpen={setPaletteOpen}
-              setActiveId={setActiveId}
-            />
-          ))}
+    const plan = {
+        name: "My Plan",
+        degree: "Bachelor Engineering (Honours) and Master of Engineering",
+        percentage: 29,
+        plannedCompleteSem: "2025.2",
+        unitsRemaining: 8,
+    };
+
+    async function DeletePlan() {
+        const status = await Promise.resolve(() => { status: "success" })
+        console.log(status());
+    }
+
+    function sort() {
+        [].reverse()
+    }
+
+    return (
+        <div>
+            <div className="bg-secondary py-4 overflow-y-auto">
+                <div className="max-w-7xl px-8 mx-auto flex items-center justify-between w-full">
+                    <div>
+                        <div className='flex items-center gap-x-6 gap-y-2'>
+                            <div className='text-white text-lg'>
+                                {plan.name}
+                            </div>
+                            <div className='ml-2'>
+                                <Dropdown>
+                                    <DropdownButton accent>
+                                        Options
+                                        <ChevronDownIcon />
+                                    </DropdownButton>
+                                    <DropdownMenu>
+                                        <DropdownItem href="/users/1">View</DropdownItem>
+                                        <DropdownItem href="/users/1/edit">Edit</DropdownItem>
+                                        <DropdownItem className="hover:cursor-pointer" onClick={() => sort()}>Reverse Sorting</DropdownItem>
+                                        <DropdownItem className="hover:cursor-pointer" onClick={async () => await DeletePlan()}>Delete</DropdownItem>
+                                    </DropdownMenu>
+                                </Dropdown>
+
+                            </div>
+                        </div>
+                        <div className='my-4 text-xl text-white'>
+                            {plan.degree}
+                        </div>
+                        <div className='flex text-white italic'>
+                            <div>
+                                Planned Completion Date: {plan.plannedCompleteSem.split(".")[0]} Semester {plan.plannedCompleteSem.split(".")[1]}
+                            </div>
+                        </div>
+                    </div>
+                    <div className='flex flex-wrap items-center gap-x-6 gap-y-2'>
+                        <ProgressCircle percentage={plan.percentage} />
+                    </div>
+                </div>
+            </div>
+            <div className='max-w-7xl mx-auto px-4'>
+                <DndContext
+                    onDragStart={({ active }) => setActiveId(active.id as string)}
+                    onDragEnd={handleDragEnd}
+                >
+                    <Pop
+                        clickable
+                        setActiveId={setActiveId}
+                        activeId={activeId}
+                        opened={isPaletteOpen}
+                        setPaletteOpen={setPaletteOpen}
+                        onSelectCourse={handleInsertCourse}
+                        sem={sem}
+                        stateCourses={stateCourses}
+                    />
+
+                    <div className="flex flex-col h-screen overflow-y-auto">
+                        {semesters.map((semester, i) => (
+                            <SemesterSection
+                                key={semester}
+                                semester={semester}
+                                courses={stateCourses[i]}
+                                setPaletteOpen={setPaletteOpen}
+                                setActiveId={setActiveId}
+                            />
+                        ))}
+                    </div>
+                </DndContext>
+            </div>
+
         </div>
-      </DndContext>
+
     );
 }

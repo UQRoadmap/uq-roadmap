@@ -3,7 +3,11 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --accent: #51247a;
+  --primary: #51247a;
+  --secondary: #3c1b5a;
+  --tertiary: #723f89;
+  --incomplete: #cecece;
+  --complete:   #48BB78;
 }
 
 @theme inline {
@@ -11,7 +15,11 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --color-accent: var(--accent)
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-tertiary: var(--tertiary);
+  --color-incomplete: var(--incomplete);
+  --color-complete: var(--complete);
 }
 
 body {
