@@ -433,6 +433,7 @@ def process_sr(parsed_sr: ParsedSelectionRule, rows: list[ComponentPayloadLeaf],
             abbreviation=d.get("abbreviation") or "",
         )
 
+
     def _collect_options() -> tuple[list[CourseRef], list[ProgramRef]]:
         # Gather options from the sibling leaves of this SR node.
         courses: list[CourseRef] = []
@@ -482,6 +483,7 @@ def process_sr(parsed_sr: ParsedSelectionRule, rows: list[ComponentPayloadLeaf],
 
         return dedup_courses, dedup_programs
 
+
     # index params by name for convenience
     params = {p.name: p for p in (parsed_sr.params or [])}
     get = lambda key, default=None: (params.get(key).value if key in params else default)
@@ -525,15 +527,14 @@ def process_sr(parsed_sr: ParsedSelectionRule, rows: list[ComponentPayloadLeaf],
     # unknown future SR type: keep part so it still validates as a no-op SR
     return SR(part=part)
 
+# Replace the convert_degree function with this version that uses raw JSON:
 
-def convert_degree(parsed_degree: ParsedDegree) -> FlatDegree:
+def convert_degree(parsed_degree: ParsedDegree, raw_json: dict = None) -> FlatDegree:
     """Convert the recursive scraper.degree structure to a flat Degree.
-
-    Walks the recursive ComponentPayload tree, threading the current `part`
-    downwards. Only attach AR/SR to parts that actually exist (headers with
-    partReference).
+    
+    Also takes raw_json to extract course data when serde fails.
     """
-
+    
     flat_degree = FlatDegree()
     flat_degree.name = parsed_degree.title
     flat_degree.code = parsed_degree.params.code
@@ -546,7 +547,65 @@ def convert_degree(parsed_degree: ParsedDegree) -> FlatDegree:
     srs: list[SR] = []
     valid_parts: set[str] = set()
 
-    # Recursive walker for ComponentPayload nodes
+    # Fix the extract_courses_from_raw_json_for_part function:
+
+    def extract_courses_from_raw_json_for_part(part: str) -> list[ComponentPayloadLeaf]:
+        """Extract course data from raw JSON when serde fails."""
+        if not raw_json:
+            return []
+            
+        leaves = []
+        
+        def find_part_in_json(obj, target_part: str):
+            if isinstance(obj, dict):
+                # Check if this is a header with our target part
+                if (obj.get("header", {}).get("partReference") == target_part and 
+                    "body" in obj):
+                    
+                    for body_item in obj.get("body", []):
+                        if (body_item.get("rowType") == "CurriculumReference" and 
+                            "curriculumReference" in body_item):
+                            
+                            cr_data = body_item["curriculumReference"]
+                            
+                            # Create a proper CurriculumReference object using the actual class
+                            curriculum_ref = CurriculumReference(
+                                unitsMaximum=cr_data.get("unitsMaximum"),
+                                code=cr_data.get("code", ""),
+                                orgName=cr_data.get("orgName", ""),
+                                type=cr_data.get("type", "Course"),
+                                version=cr_data.get("version"),
+                                subtype=cr_data.get("subtype"),
+                                fromYear=cr_data.get("fromYear"),
+                                latestVersion=cr_data.get("latestVersion"),
+                                unitsMinimum=cr_data.get("unitsMinimum"),
+                                orgCode=cr_data.get("orgCode", ""),
+                                name=cr_data.get("name", ""),
+                                fromTerm=cr_data.get("fromTerm"),
+                                state=cr_data.get("state")
+                            )
+                            
+                            # Create ComponentPayloadLeaf manually
+                            leaf = ComponentPayloadLeaf(
+                                rowType=body_item.get("rowType"),
+                                orderNumber=body_item.get("orderNumber"),
+                                notes=body_item.get("notes"),
+                                curriculumReference=curriculum_ref,
+                                equivalenceGroup=None,
+                                wildCardItem=None
+                            )
+                            
+                            leaves.append(leaf)
+                # Recurse through all values
+                for value in obj.values():
+                    find_part_in_json(value, target_part)
+            elif isinstance(obj, list):
+                for item in obj:
+                    find_part_in_json(item, target_part)
+        
+        find_part_in_json(raw_json, part)
+        return leaves
+
     def _walk(node: ComponentPayload, part_stack: list[str]) -> None:
         header = getattr(node, "header", None)
         # If this node declares a partReference, push it
@@ -579,13 +638,34 @@ def convert_degree(parsed_degree: ParsedDegree) -> FlatDegree:
                 else:
                     children_nodes.append(child)
 
+        def collect_all_leaves(n: ComponentPayload) -> list[ComponentPayloadLeaf]:
+            leaves = []
+            
+            if getattr(n, "body", None) is not None:
+                for child in n.body:
+                    if isinstance(child, ComponentPayloadLeaf):
+                        leaves.append(child)
+                    else:
+                        # Recurse to find any properly deserialized leaves deeper
+                        leaves.extend(collect_all_leaves(child))
+            
+            return leaves
+
         # Only attach SR when this very header declares a concrete part AND
         # the selectionRule has a valid code.
         if header is not None and header.partReference and header.selectionRule:
             sr_code = getattr(header.selectionRule, "code", None)
             if sr_code:  # skip empty selection rules
                 current_part = header.partReference
-                srs.append(process_sr(header.selectionRule, sibling_leaves, current_part))
+                
+                # First try serde-deserialized leaves
+                all_leaves = collect_all_leaves(node)
+                
+                # If serde failed, extract from raw JSON
+                if len(all_leaves) == 0:
+                    all_leaves = extract_courses_from_raw_json_for_part(current_part)
+                
+                srs.append(process_sr(header.selectionRule, all_leaves, current_part))
 
         # Recurse
         for child_node in children_nodes:
@@ -611,16 +691,9 @@ def convert_degree(parsed_degree: ParsedDegree) -> FlatDegree:
 
 
 def main():
-    with open("../data/program_details.json") as f:
+    with open("../../data/course_reqs/details.json") as f:
         raw = f.read()
         details = json.loads(raw)["program_details"]
-        components = {}
-        rule_logic = set()
-        ars = {}
-        ar_params = set()
-        row_types = set()
-        srs = {}
-        sr_params: dict[str, set] = {}
 
         for detail in details:
             for year, data in detail["data"].items():
@@ -628,12 +701,12 @@ def main():
                 if degree is None:
                     continue
 
-                flat = convert_degree(degree)
+                # Pass the raw JSON data to the converter
+                flat = convert_degree(degree, data)
 
                 if len(flat.aux) > 10:
                     pprint(flat)
                     return
-
 
 if __name__ == "__main__":
     main()
