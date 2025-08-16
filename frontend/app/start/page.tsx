@@ -67,19 +67,19 @@ export default function Home() {
   }, [selectedDegree]);
 
   // Set default graduation year and semester when offering is selected
-  useEffect(() => {
-    if (selectedOffering && selectedDegree) {
-      const offerYear = parseInt(selectedOffering, 10);
-      if (!Number.isNaN(offerYear)) {
-        // Calculate the earliest graduation year based on units
-        const earliestGradYear = offerYear + (selectedDegree.units > 0 ? Math.floor(selectedDegree.units / 16) : 0);
-        setGraduationYear(String(earliestGradYear));
-        
-        // Set earliest graduation semester
-        setGraduationSem("Semester 1");
-      }
-    }
-  }, [selectedOffering, selectedDegree]);
+    //   useEffect(() => {
+    //     if (selectedOffering && selectedDegree) {
+    //       const offerYear = parseInt(selectedOffering, 10);
+    //       if (!Number.isNaN(offerYear)) {
+    //         // Calculate the earliest graduation year based on units
+    //         const earliestGradYear = offerYear + (selectedDegree.units > 0 ? Math.floor(selectedDegree.units / 16) : 0);
+    //         setGraduationYear(String(earliestGradYear));
+            
+    //         // Set earliest graduation semester
+    //         setGraduationSem("Semester 1");
+    //       }
+    //     }
+    //   }, [selectedOffering, selectedDegree]);
 
   const semToNumber = (sem: string) => {
     if (sem !== "Summer Semester") {
