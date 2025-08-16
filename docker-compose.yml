@@ -4,7 +4,7 @@ services:
     container_name: database
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d expense_db"]
+      test: ["CMD-SHELL", "pg_isready -U admin -d uqroadmap"]
       interval: 5s
       retries: 5
       start_period: 20s
@@ -15,7 +15,7 @@ services:
       - PGDATA=/var/lib/postgresql/data/pgdata
       - POSTGRES_PASSWORD=password
       - POSTGRES_USER=admin
-      - POSTGRES_DB=expense_db
+      - POSTGRES_DB=uqroadmap
     ports:
       - 5432:5432
 
@@ -24,7 +24,7 @@ services:
     ports:
       - 8080:8080
     environment:
-      - DB_URL=postgresql+asyncpg://admin:password@database:5432/expense_db
+      - DB_URL=postgresql+asyncpg://admin:password@database:5432/uqroadmap
     depends_on:
       database:
         condition: service_healthy

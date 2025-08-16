@@ -3,7 +3,7 @@
 from fastapi import APIRouter, HTTPException, status
 
 from api.courses.models import CourseDBModel
-from api.courses.schemas import CourseRead
+from api.courses.schemas import CourseRead, CourseReadDetailed
 from api.courses.service import get_all_courses, get_course_by_code
 from api.database.deps import DbSession
 from common.enums import CourseLevel
@@ -23,7 +23,7 @@ async def get_all(
     return await get_all_courses(db, course_category, course_level, num_units, is_active)
 
 
-@r.get("/{course_code}", response_model=CourseRead)
+@r.get("/{course_code}", response_model=CourseReadDetailed)
 async def get(course_code: str, db: DbSession) -> CourseDBModel:
     """Get a course by ID."""
     result = await get_course_by_code(db, course_code)

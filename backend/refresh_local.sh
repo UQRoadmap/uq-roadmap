@@ -1,2 +1,2 @@
-docker compose down --volumes
+docker compose down -v
 docker compose up --build
