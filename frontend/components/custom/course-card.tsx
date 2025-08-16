@@ -46,23 +46,20 @@ export default function CourseCard({id, name, units, sem, secats, desc, degreeRe
     )
 }
 
-export function EmptyCourseCard({degreeReq, id}: {degreeReq?: string, id: number}) {
+export function EmptyCourseCard({degreeReq, id, setPaletteOpen,  setActiveId}:
+    {degreeReq?: string, id: number, setPaletteOpen: (open: boolean) => void,
+     setActiveId: (targetId: string) => void }) {
     return (
-        <Droppable key={id} id={id}>
+        <Droppable key={id} id={id}
+        >
           <div
               className="relative box-border h-30 flex flex-col justify-between rounded-lg border border-dashed border-gray-400 shadow-md overflow-hidden"
           >
               {/* Overlay to dim entire card with interactive icon */}
-              <div className="absolute inset-0 bg-gray-800/50 z-10 rounded-lg flex items-center justify-center">
+              <div className="absolute inset-0 bg-gray-500/50 z-10 rounded-lg flex items-center justify-center"
+                    onClick={() => { setPaletteOpen(true); setActiveId(id.toString()); }}
+              >
                   <PlusIcon className="h-6 w-6 text-white" />
-              </div>
-              <div className="bg-red-400 p-2 space-y-1 flex justify-between align-center h-9">
-                  <div className="text-xs font-medium truncate">
-                      {degreeReq ?? "Elective"}
-                  </div>
-                  <div>
-
-                  </div>
               </div>
               <div className="text-xs font-medium truncate p-2">
 

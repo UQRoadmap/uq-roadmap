@@ -64,9 +64,11 @@ const courses: Course[] = [
 
 const recent = [courses[0]]
 
-export default function CommandPalette({draggable, clickable, activeId}: {draggable?: boolean, clickable?: boolean, activeId?: string}) {
+export default function CommandPalette({draggable, clickable, setActiveId, activeId, opened, setPaletteOpen, onSelectCourse}:
+    {draggable?: boolean, clickable?: boolean, setActiveId: (open: string) => void,
+        activeId: string, opened: boolean, setPaletteOpen: (open: boolean) => void,
+        onSelectCourse: (course: Course, id: string) => void}) {
   const [query, setQuery] = useState('')
-  const [open, setOpen] = useState(true)
 
   const activeCourse = courses.find(c => c.id === activeId) as Course;
   const filteredcourses: Course[] =
@@ -80,18 +82,25 @@ export default function CommandPalette({draggable, clickable, activeId}: {dragga
           );
         });
 
-    const handleClick = () => {
-        if (!clickable) return
-        console.error('Clicked!')
-    }
+    const handleClick = (course: Course) => {
+      if (!clickable) return;
+      console.log(course)
+
+      if (onSelectCourse) {
+        onSelectCourse(course, activeId); // pass the course and the target slot id
+      }
+
+      setPaletteOpen(false);
+      setQuery('');
+    };
 
   return (
     <div>
     <Dialog
       className="relative z-10"
-      open={open}
+      open={opened}
       onClose={() => {
-        setOpen(false)
+        setPaletteOpen(false)
         setQuery('')
       }}
     >
@@ -125,10 +134,11 @@ export default function CommandPalette({draggable, clickable, activeId}: {dragga
                         id={course.id}
                         key={course.id}
                         data={course}
+                        disabled={!draggable}
                       >
                         <li
                           className="group cursor-move rounded-md px-3 py-2 bg-gray-800 hover:bg-gray-700 transition-colors flex flex-col select-none"
-                          onClick={() => handleClick()}
+                          onClick={() => handleClick(course)}
                         style={{
                           opacity: activeId === course.id ? 0 : 1, // hide original while dragging
                         }}

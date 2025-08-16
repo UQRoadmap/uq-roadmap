@@ -8,7 +8,9 @@ import Pop from '@/components/custom/palette'
 import {DndContext, DragEndEvent} from '@dnd-kit/core';
 import { Course } from '@/types/course';
 
-function SemesterSection({ semester, courses }: { semester: number; courses?: Course[] }) {
+function SemesterSection({ semester, courses, setPaletteOpen, setActiveId }:
+    { semester: number; courses?: Course[], setPaletteOpen: (open: boolean) => void,
+      setActiveId: (id: string) => void}) {
     const [collapsed, setCollapsed] = useState(false);
 
     const normalCourses: Course[] = [];
@@ -25,8 +27,6 @@ function SemesterSection({ semester, courses }: { semester: number; courses?: Co
         }
       });
     }
-
-    console.log(semester, courses)
 
     const getSemesterLabel = (sem: number) => {
         const year = Math.floor(sem / 10);
@@ -67,7 +67,6 @@ function SemesterSection({ semester, courses }: { semester: number; courses?: Co
                       const course = normalCourses.find(c => {
                         if (!c) return false;
                         const [sem, pos] = c.sem.split("-"); // "20251-2"
-                        console.log(sem, semester)
                         return Number(pos) === i;
                       });
 
@@ -76,7 +75,11 @@ function SemesterSection({ semester, courses }: { semester: number; courses?: Co
                           key={`${course ? course.id : "empty"}-${semester}-${i}`}
                           className={getColSpanClass(course ? course.units : 2)} // default empty to 2 units
                         >
-                          {course ? <CourseCard {...course} /> : <EmptyCourseCard id={`${semester}-${i}`} />}
+                          {course ? <CourseCard {...course} />
+                                :
+                                    <EmptyCourseCard id={`${semester}-${i}`} setPaletteOpen={setPaletteOpen} setActiveId={setActiveId}/>
+                          }
+
                         </div>
                       );
                     })}
@@ -106,6 +109,7 @@ function SemesterSection({ semester, courses }: { semester: number; courses?: Co
 }
 
 export default function Courses() {
+    const [isPaletteOpen, setPaletteOpen] = useState(false);
     function handleDragEnd(event: DragEndEvent) {
       const { active, over } = event;
 
@@ -146,6 +150,25 @@ export default function Courses() {
       setActiveId(undefined);
     }
 
+    const handleInsertCourse = (course: Course, targetId: string) => {
+      const [targetSemStr, targetIndexStr] = targetId.split("-");
+      const year = Math.floor(Number(targetSemStr) / 10);
+      const semNum = Number(targetSemStr) % 10;
+      const targetSemIndex = (year - startYear) * 2 + (semNum - 1);
+      const targetIndex = parseInt(targetIndexStr, 10);
+
+      setCourses(prevCourses => {
+        const newCourses = prevCourses.map(sem => [...sem]);
+
+        const updatedCourse = { ...course, sem: targetId };
+        newCourses[targetSemIndex].splice(targetIndex, 1, updatedCourse); // replace empty card
+
+        return newCourses;
+      });
+      console.log(stateCourses)
+    };
+
+
     const [activeId, setActiveId] = useState<string | undefined>(undefined);
     const startYear = 2024;
     const endYear = 2026; // example
@@ -165,13 +188,25 @@ export default function Courses() {
         onDragStart={({ active }) => setActiveId(active.id as string)}
         onDragEnd={handleDragEnd}
       >
-        <Pop draggable activeId={activeId}></Pop>
+        <Pop
+          draggable={false}
+          clickable={true}
+          setActiveId={setActiveId}
+          activeId={activeId}
+          opened={isPaletteOpen}
+          setPaletteOpen={setPaletteOpen}
+          onSelectCourse={handleInsertCourse}
+        >
+
+        </Pop>
         <div className="flex flex-col h-screen overflow-y-auto">
           {semesters.map((semester, i) => (
             <SemesterSection
               key={semester}
               semester={semester}
               courses={stateCourses[i]}
+              setPaletteOpen={setPaletteOpen}
+              setActiveId={setActiveId}
             />
           ))}
         </div>
