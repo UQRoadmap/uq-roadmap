@@ -2,16 +2,65 @@ from __future__ import annotations
 from pprint import pprint
 from serde import serde, AdjacentTagging
 from serde.json import to_json, from_json
+from serde import from_dict
+import json
 
 
 def main():
-    print("HI THERE!")
-    with open("../data/course_reqs/beme_reqs.json") as f:
-        lines = f.read()
-        out = from_json(Degree, lines)
-        pprint(out)
-        print(to_json(out))
-        # print(out.programRequirements.keys())
+    with open("../data/course_reqs/details.json") as f:
+        raw = f.read()
+        details = json.loads(raw)["program_details"]
+        components = {}
+        rule_logic = set()
+        ars = {}
+
+        for detail in details:
+            for year, data in detail["data"].items():
+                degree: Degree = from_dict(Degree | None, data)
+                if degree is None:
+                    continue
+
+                for component in degree.programRequirements.payload.components:
+                    components[component.internalComponentIdentifier] = component.type
+                    if component.internalComponentIdentifier != 1:
+                        continue
+
+                    for ar in component.payload.header.auxiliaryRules:
+                        ars[ar.code] = ar.text
+
+                    rule_logic.add(component.payload.header.ruleLogic)
+
+                    # program_rules[program_rule.header.ruleLogic] = program_rule.header.ruleLogic
+
+        pprint(rule_logic)
+        pprint(ars)
+
+
+@serde
+class AuxiliaryRule:
+    code: str  # Seems like 1,2,6,7,9,10 are the only AR numbers
+    text: str
+    params: list[dict]
+
+
+@serde
+class ComponentPayloadHeader:
+    title: str
+    summaryDescription: str
+    ruleLogic: str
+    auxiliaryRules: list[AuxiliaryRule]
+
+
+@serde
+class ComponentPayloadBody:
+    header: dict
+    body: list[dict]
+
+
+@serde
+class ComponentPayload:
+    header: ComponentPayloadHeader | None
+    body: list[ComponentPayloadBody] | None
 
 
 @serde
@@ -30,7 +79,7 @@ class Domestic:
 @serde
 class Status:
     noLongerOffered: bool
-    alternate: str | None
+    alternate: dict | None
     domestic: Domestic
 
 
@@ -53,7 +102,7 @@ class ApplicablePeriod:
 class Component:
     internalComponentIdentifier: int
     componentIntegrationIdentifier: str
-    payload: dict
+    payload: ComponentPayload
     name: str
     type: str
 
@@ -67,8 +116,8 @@ class Payload:
 class ProgramRequirements:
     coPDF: dict
     code: str
-    applicablePeriod: ApplicablePeriod
-    publishInstanceID: int
+    applicablePeriod: ApplicablePeriod | None
+    publishInstanceID: int | None
     type: str
     orgParent: str
     authorLastName: str
@@ -84,7 +133,7 @@ class ProgramRequirements:
     version: dict
     editDate: str
     previousState: str
-    swaggerVersion: dict
+    swaggerVersion: dict | None
     templateName: str
     unitsMinimum: int
     templateIntegrationIdentifier: str
