@@ -9,6 +9,7 @@ import { Button } from '@/components/button'
 import MajorSelect from './major-comp'
 import { v4 } from "uuid";
 import { Textarea } from "@/components/textarea";
+import { DegreeSummary } from "../api/degrees/types";
 
 type Degree = { name: string; offerings: string[], id: string };
 
@@ -42,94 +43,82 @@ const degrees: Degree[] = [
 ];
 
 export default function Home() {
-  const [selectedDegree, setSelectedDegree] = useState<Degree | null>(null);
+  const [selectedDegree, setSelectedDegree] = useState<DegreeSummary | null>(null);
   const [selectedMajor, setSelectedMajor] = useState<string | null>(null);
   const [selectedMinor, setSelectedMinor] = useState<string | null>(null);
-  const [selectedOffering, setSelectedOffering] = useState<string | null>(null);
-  const [graduationYear, setGraduationYear] = useState<string | null>(null);
-  const [graduationSem, setGraduationSem] = useState<string | null>(null);
+  const [selectedOfferingYear, setSelectedOfferingYear] = useState<number | null>(null);
   const [planName, setPlanName] = useState<string>("");
+
+  const [degreeSummaries, setDegreeSummaries] = useState<DegreeSummary[]>([])
   
   const router = useRouter();
 
   // Set default selections when degree changes
   useEffect(() => {
-    if (selectedDegree) {
-      // Set default value only for offering
-      if (selectedDegree.offerings && selectedDegree.offerings.length > 0) {
-        setSelectedOffering(selectedDegree.offerings[0]);
+    async function fetchDegrees() {
+      try {
+        const res = await fetch("/api/degrees");
+        if (!res.ok) throw new Error("Failed to fetch degrees");
+        const data: DegreeSummary[] = await res.json();
+        setDegreeSummaries(data);
+      } catch (err) {
+        console.error("Error fetching degrees:", err);
       }
-      
-      // Set major and minor to null by default
+    }
+    fetchDegrees()
+  }, []);
+
+  // Set default selections when degree changes
+  useEffect(() => {
+    if (selectedDegree) {
+      if (selectedDegree.years && selectedDegree.years.length > 0) {
+        setSelectedOfferingYear(selectedDegree.years[0]);
+      }
       setSelectedMajor(null);
       setSelectedMinor(null);
     }
   }, [selectedDegree]);
 
-  // Set default graduation year and semester when offering is selected
-    //   useEffect(() => {
-    //     if (selectedOffering && selectedDegree) {
-    //       const offerYear = parseInt(selectedOffering, 10);
-    //       if (!Number.isNaN(offerYear)) {
-    //         // Calculate the earliest graduation year based on units
-    //         const earliestGradYear = offerYear + (selectedDegree.units > 0 ? Math.floor(selectedDegree.units / 16) : 0);
-    //         setGraduationYear(String(earliestGradYear));
-            
-    //         // Set earliest graduation semester
-    //         setGraduationSem("Semester 1");
-    //       }
-    //     }
-    //   }, [selectedOffering, selectedDegree]);
-
-  const semToNumber = (sem: string) => {
-    if (sem !== "Summer Semester") {
-        return sem.split(" ")[1]
-    }
-    else if (sem === "Summer Semester") return 3;
-    else return "Unknown";
-  }
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     console.log("Form submitted. Selected degree:", selectedDegree);
-    if (selectedDegree) {
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
-        const id = v4();
-        const offeringYear = parseInt(selectedOffering || "0", 10);
+    return;
+    // if (selectedDegree) {
+    //     const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
+    //     const id = v4();
+    //     const offeringYear = parseInt(selectedOfferingYear || "0", 10);
         
-        // Create the payload object to match the DegreeDBModel structure
-        const payload = {
-          id: id,
-          degree_id: id,
-          startYear: offeringYear,
-          title: selectedDegree.name,
-          json: {
-            plan_id: id,
-            degree_id: selectedDegree.id,
-            degree: selectedDegree.name,
-            planName: planName || `${selectedDegree.name} Plan` // Default name if none provided
-          }
-        };
+    //     // Create the payload object to match the DegreeDBModel structure
+    //     const payload = {
+    //       id: id,
+    //       degree_id: id,
+    //       startYear: offeringYear,
+    //       title: selectedDegree.name,
+    //       json: {
+    //         plan_id: id,
+    //         degree_id: selectedDegree.id,
+    //         degree: selectedDegree.name,
+    //         planName: planName || `${selectedDegree.name} Plan` // Default name if none provided
+    //       }
+    //     };
         
         
-        // Store data in localStorage with plans_ prefix
-        localStorage.setItem(`plans_${id}`, JSON.stringify(payload));
         
-        const result = await fetch(`${baseUrl}/plan/${id}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-        });
+    //     const result = await fetch(`${baseUrl}/plan/${id}`, {
+    //         method: "POST",
+    //         headers: { "Content-Type": "application/json" },
+    //         body: JSON.stringify(payload),
+    //     });
 
-        if (result.status === 200) {
-            const id = await result.json();
-            router.push(`/plan/${id}`)
-        }
-        // need to handle validation error
-        else {
-            console.error("Unexpected error occurred, try again later")
-        }
-    }
+    //     if (result.status === 200) {
+    //         const id = await result.json();
+    //         router.push(`/plan/${id}`)
+    //     }
+    //     // need to handle validation error
+    //     else {
+    //         console.error("Unexpected error occurred, try again later")
+    //     }
+    // }
   };
 
   return (
@@ -151,24 +140,24 @@ export default function Home() {
                     <Label> Degree </Label>
                     <Combobox
                         name="degree"
-                        options={degrees}
-                        displayValue={(degree) => degree?.name}
+                        options={degreeSummaries}
+                        displayValue={(degree) => degree?.title}
                         aria-label="Your degree"
                         value={selectedDegree}
                         onChange={setSelectedDegree}
                     >
                         {degree => (
                             <ComboboxOption value={degree}>
-                                <ComboboxLabel>{degree.name}</ComboboxLabel>
+                                <ComboboxLabel>{degree.title}</ComboboxLabel>
                             </ComboboxOption>
                         )}
                     </Combobox>
                 </Field>
                 <MajorSelect
                     name="Offerings"
-                    options={selectedDegree?.offerings ?? []}
+                    options={selectedDegree?.years ?? []}
                     disabled={!selectedDegree}
-                    setter={setSelectedOffering}
+                    setter={setSelectedOfferingYear}
                 />
             </FieldGroup>
             <Button type="submit" accent className="mt-5" disabled={!selectedDegree}> Add Courses </Button>
@@ -177,3 +166,4 @@ export default function Home() {
     </div>
   )
 }
+

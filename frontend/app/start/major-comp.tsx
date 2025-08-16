@@ -3,7 +3,7 @@
 import { Field, Label } from '@/components/fieldset'
 import { Select } from '@/components/select'
 
-export default function MajorSelect({name, options, disabled, setter}: {name: string, options: string[], disabled?: boolean, setter: (value: string | null) => void}) {
+export default function MajorSelect({name, options, disabled, setter}: {name: string, options: number[], disabled?: boolean, setter: (value: number | null) => void}) {
   const shouldHaveNoneOption = name === "Majors" || name === "Minors";
   
   return (
@@ -15,7 +15,7 @@ export default function MajorSelect({name, options, disabled, setter}: {name: st
               if (e.target.value === "none") {
                 setter(null);
               } else {
-                setter(e.target.value);
+                setter(+e.target.value);
               }
             }}
             defaultValue={shouldHaveNoneOption ? "none" : options[0] || ""}
