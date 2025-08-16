@@ -113,7 +113,7 @@ function SemesterSection({ semester, courses, setPaletteOpen, setActiveId, setDe
     );
 }
 
-export function PlanDetailClient(initialPlan: Plan, courses: Course[]) {
+export function PlanDetailClient({initialPlan, courses} : {initialPlan: Plan, courses: Course[]}) {
     const [plan, setPlan] = useState<Plan>(initialPlan);
     const [isPaletteOpen, setPaletteOpen] = useState(false);
     const [sem, setSem] = useState(undefined);
