@@ -19,8 +19,6 @@ class CourseRef(Param):
     org_name: str
     org_code: str
     name: str
-    version_minor: int
-    version_major: int
 
 
 @serde
@@ -49,5 +47,3 @@ class ProgramRef(Param):
     org_code: str
     name: str
     abbreviation: str
-    version_minor: int
-    version_major: int

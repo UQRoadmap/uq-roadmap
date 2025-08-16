@@ -39,3 +39,13 @@ class Degree:
             results.append(srs.validate(plan))
 
         return results
+
+    def __init__(self):
+        self.name = ""
+        self.code = ""
+        self.year = ""
+        self.sem = ""
+        self.aux = list()
+        self.srs = list()
+        self.part_references = dict()
+        self.rule_logic = list()
