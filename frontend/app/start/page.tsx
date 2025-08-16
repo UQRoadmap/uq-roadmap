@@ -1,57 +1,21 @@
 "use client"
 import { useState, FormEvent, useEffect } from "react";
-import { useRouter } from "next/navigation";
 
 import { Field, FieldGroup, Fieldset, Label } from '@/components/fieldset'
-import { Combobox, ComboboxLabel, ComboboxOption } from '@/components/combobox'
 import { Button } from '@/components/button'
 
-import MajorSelect from './major-comp'
-import { v4 } from "uuid";
 import { Textarea } from "@/components/textarea";
 import { DegreeSummary } from "../api/degrees/types";
-
-type Degree = { name: string; offerings: string[], id: string };
-
-const degrees: Degree[] = [
-    {
-        name: "Bachelor of Software Engineering",
-        id: "2",
-        offerings: [
-            "2020",
-            "2021",
-            "2022",
-            "2023",
-            "2024",
-            "2025",
-            "2026",
-        ],
-    },
-    {
-        name: "Bachelor of Computer Science",
-        id: "1",
-        offerings: [
-            "2020",
-            "2021",
-            "2022",
-            "2023",
-            "2024",
-            "2025",
-            "2026",
-        ],
-    },
-];
+import Dropdown from "./Dropdown";
 
 export default function Home() {
   const [selectedDegree, setSelectedDegree] = useState<DegreeSummary | null>(null);
-  const [selectedMajor, setSelectedMajor] = useState<string | null>(null);
-  const [selectedMinor, setSelectedMinor] = useState<string | null>(null);
-  const [selectedOfferingYear, setSelectedOfferingYear] = useState<number | null>(null);
+  const [startYear, setStartYear] = useState<number | null>(null);
+  const [startSemester, setStartSemester] = useState<number>(1);
   const [planName, setPlanName] = useState<string>("");
 
   const [degreeSummaries, setDegreeSummaries] = useState<DegreeSummary[]>([])
   
-  const router = useRouter();
 
   // Set default selections when degree changes
   useEffect(() => {
@@ -72,10 +36,8 @@ export default function Home() {
   useEffect(() => {
     if (selectedDegree) {
       if (selectedDegree.years && selectedDegree.years.length > 0) {
-        setSelectedOfferingYear(selectedDegree.years[0]);
+        setStartYear(selectedDegree.years[0]);
       }
-      setSelectedMajor(null);
-      setSelectedMinor(null);
     }
   }, [selectedDegree]);
 
@@ -122,7 +84,7 @@ export default function Home() {
   };
 
   return (
-    <div className="font-sans grid mt-2grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 max-w-7xl mx-auto px-4">
+        <div className="font-sans flex flex-col items-center py-8 max-w-3xl mx-auto px-12">
         <form onSubmit={handleSubmit}>
         <Fieldset>
             <h1 className="text-3xl"> Start Your UQ Journey </h1>
@@ -136,29 +98,40 @@ export default function Home() {
                         placeholder="Enter a name for your plan"
                     />
                 </Field>
-                <Field>
-                    <Label> Degree </Label>
-                    <Combobox
-                        name="degree"
-                        options={degreeSummaries}
-                        displayValue={(degree) => degree?.title}
-                        aria-label="Your degree"
-                        value={selectedDegree}
-                        onChange={setSelectedDegree}
-                    >
-                        {degree => (
-                            <ComboboxOption value={degree}>
-                                <ComboboxLabel>{degree.title}</ComboboxLabel>
-                            </ComboboxOption>
-                        )}
-                    </Combobox>
-                </Field>
-                <MajorSelect
-                    name="Offerings"
-                    options={selectedDegree?.years ?? []}
-                    disabled={!selectedDegree}
-                    setter={setSelectedOfferingYear}
+            <Dropdown
+              label="Degree"
+              options={degreeSummaries}
+              value={selectedDegree ?? null}
+              onChange={setSelectedDegree}
+              displayValue={(d) => d?.title ?? ""}
+              isEnabled
+            />
+
+            {(selectedDegree != null ? 
+                <Dropdown
+                label="Start Year"
+                options={selectedDegree?.years ?? []}
+                value={startYear ?? (selectedDegree?.years?.[0] ?? null)}
+                onChange={setStartYear}
+                displayValue={(y) => y?.toString() ?? ""}
+                id="start-year"
+                isEnabled={!!selectedDegree}
                 />
+             : <></>)
+            }
+
+            {(startYear != null ? 
+                <Dropdown
+                label="Start Semester"
+                options={[1, 2]}
+                value={startSemester}
+                onChange={setStartSemester}
+                displayValue={(v) => `Semester ${v}`}
+                id="start-semester"
+                isEnabled={!!startYear}
+                />
+             : <></>)
+        }
             </FieldGroup>
             <Button type="submit" accent className="mt-5" disabled={!selectedDegree}> Add Courses </Button>
         </Fieldset>

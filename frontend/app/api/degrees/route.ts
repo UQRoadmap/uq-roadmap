@@ -13,7 +13,7 @@ export async function GET() {
             );
         }
 
-        let degrees: DegreeSummary[] = await res.json()
+        const degrees: DegreeSummary[] = await res.json()
         return NextResponse.json(degrees)
     }
      catch (err) {
