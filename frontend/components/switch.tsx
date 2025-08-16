@@ -41,7 +41,7 @@ export function SwitchField({
       )}
     />
   )
-}        '',
+}
 
 export function Switch({
   className,
