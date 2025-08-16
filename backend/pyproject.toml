@@ -16,6 +16,7 @@ dependencies = [
     "curl-cffi>=0.13.0",
     "playwright>=1.54.0",
     "orjson>=3.11.2",
+    "lark>=1.2.2",
 ]
 
 [dependency-groups]
@@ -24,6 +25,13 @@ dev = [
     "pytest>=8.4.1",
     "ruff>=0.12.9",
 ]
+
+[tool.pytest.ini_options]
+pythonpath = "src"
+log_cli = true
+log_cli_level = "DEBUG"
+log_cli_format = "%(asctime)s %(levelname)s %(message)s"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 
 [tool.mypy]
 mypy_path = "uqroadmap"
@@ -41,3 +49,16 @@ convention = "google"
 
 [tool.ruff.per-file-ignores]
 "src/api/database/service.py" = ["PLC0415", "F401"] # These are needed for create db tables
+
+[tool.ruff.lint.extend-per-file-ignores]
+"tests/**/*.py" = [
+    "S101",    # asserts allowed in tests...
+    "ARG",     # Unused function args -> fixtures
+    "FBT",     # Don't care about booleans as positional arguments in tests
+    "PLR2004", # Magic values
+    "INP001",  # No __init__.py files
+    "ANN201",
+    "D103",
+    "PT023",
+    "PT001",
+]

@@ -2,12 +2,12 @@
 
 from uuid import UUID, uuid4
 
-from sqlalchemy import ForeignKey, ForeignKeyConstraint, UniqueConstraint
+from sqlalchemy import JSON, ForeignKey, ForeignKeyConstraint, UniqueConstraint
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from api.database.base import BaseDBModel
-from common.enums import CourseLevel, CourseOfferingMode, UniversitySemester
+from common.enums import CourseLevel, CourseMode, CourseSemester
 
 
 class CourseSecatQuestionsDBModel(BaseDBModel):
@@ -58,11 +58,21 @@ class CourseOfferingDBModel(BaseDBModel):
     course_code: Mapped[str] = mapped_column(primary_key=True)
 
     year: Mapped[int]
-    semester: Mapped[UniversitySemester]
+    semester: Mapped[str]
     location: Mapped[str]
-    mode: Mapped[CourseOfferingMode]
+    mode: Mapped[CourseMode]
     profile_url: Mapped[str | None]
     active: Mapped[bool]
+
+    @hybrid_property
+    def semester_enum(self) -> CourseSemester:
+        """Get full course code e.g., 'CSSE1001."""
+        start = self.semester.split(",")[0]
+
+        try:
+            return CourseSemester(start)
+        except ValueError:
+            return CourseSemester.OTHER
 
 
 class CourseDBModel(BaseDBModel):
@@ -77,10 +87,11 @@ class CourseDBModel(BaseDBModel):
     description: Mapped[str]
     level: Mapped[CourseLevel]
     num_units: Mapped[float]
-    incompatible: Mapped[str | None]
-    prerequisite: Mapped[str | None]
+    incompatible: Mapped[dict | None] = mapped_column(JSON)
+    prerequisite: Mapped[dict | None] = mapped_column(JSON)
 
     # Misc Info
+    attendance_mode: Mapped[CourseMode]
     faculty: Mapped[str]
     faculty_url: Mapped[str | None]
     school: Mapped[str]
@@ -91,12 +102,14 @@ class CourseDBModel(BaseDBModel):
     # Offerings
     offerings: Mapped[list[CourseOfferingDBModel]] = relationship(CourseOfferingDBModel, cascade="all, delete-orphan")
 
+    secat: Mapped[CourseSecatDBModel | None] = relationship(
+        CourseSecatDBModel,
+        cascade="all, delete-orphan",
+    )
+
+    assessment: Mapped[dict | None] = mapped_column(JSON)
+
     @hybrid_property
     def full_code(self) -> str:
         """Get full course code e.g., 'CSSE1001."""
         return self.category + self.code
-
-    @hybrid_property
-    def active(self) -> bool:
-        """Get full course code e.g., 'CSSE1001."""
-        return bool([])
