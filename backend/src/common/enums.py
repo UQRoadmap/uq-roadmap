@@ -4,6 +4,15 @@ import logging
 from enum import Enum, StrEnum
 
 
+class CourseRequirementKind(StrEnum):
+    """Course requirement enum for types of data."""
+
+    OR = "or"
+    AND = "and"
+    ATOMIC = "atomic"
+    OTHER = "other"
+
+
 class LogLevel(str, Enum):
     """Log levels."""
 

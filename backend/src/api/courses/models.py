@@ -2,7 +2,7 @@
 
 from uuid import UUID, uuid4
 
-from sqlalchemy import JSON, ForeignKey, ForeignKeyConstraint, UniqueConstraint
+from sqlalchemy import JSON, ForeignKey, UniqueConstraint
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -15,7 +15,8 @@ class CourseSecatQuestionsDBModel(BaseDBModel):
 
     __tablename__ = "course_secat_quesions"
 
-    secat_id: Mapped[UUID] = mapped_column(ForeignKey("course_secat.secat_id"), primary_key=True)
+    question_id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    secat_id: Mapped[UUID] = mapped_column(ForeignKey("course_secat.secat_id"))
 
     name: Mapped[str]
     s_agree: Mapped[float]
@@ -30,15 +31,10 @@ class CourseSecatDBModel(BaseDBModel):
 
     __tablename__ = "course_secat"
 
-    __table_args__ = (
-        UniqueConstraint("course_category", "course_code"),
-        ForeignKeyConstraint(["course_category", "course_code"], ["course.category", "course.code"]),
-    )  # we're only have 1 secat per course for now
+    __table_args__ = (UniqueConstraint("course_id"),)  # we're only have 1 secat per course for now
 
     secat_id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
-
-    course_category: Mapped[str] = mapped_column()
-    course_code: Mapped[str] = mapped_column()
+    course_id: Mapped[UUID] = mapped_column(ForeignKey("course.course_id"))
 
     questions: Mapped[list[CourseSecatQuestionsDBModel]] = relationship(
         CourseSecatQuestionsDBModel,
@@ -52,15 +48,16 @@ class CourseOfferingDBModel(BaseDBModel):
 
     __tablename__ = "course_offering"
 
-    __table_args__ = (ForeignKeyConstraint(["course_category", "course_code"], ["course.category", "course.code"]),)
+    __table_args__ = (UniqueConstraint("course_id", "year", "semester", "mode", name="unique_course_offering"),)
 
-    course_category: Mapped[str] = mapped_column(primary_key=True)
-    course_code: Mapped[str] = mapped_column(primary_key=True)
+    offering_id: Mapped[UUID] = mapped_column(default=uuid4, primary_key=True)
+    course_id: Mapped[UUID] = mapped_column(ForeignKey("course.course_id"))
 
     year: Mapped[int]
     semester: Mapped[str]
-    location: Mapped[str]
     mode: Mapped[CourseMode]
+
+    location: Mapped[str]
     profile_url: Mapped[str | None]
     active: Mapped[bool]
 
@@ -80,9 +77,15 @@ class CourseDBModel(BaseDBModel):
 
     __tablename__ = "course"
 
-    # General info
-    category: Mapped[str] = mapped_column(primary_key=True)
-    code: Mapped[str] = mapped_column(primary_key=True)
+    __table_args__ = (UniqueConstraint("category", "code"),)
+
+    course_id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+
+    # another candidate
+    category: Mapped[str]
+    code: Mapped[str]
+
+    # info
     name: Mapped[str]
     description: Mapped[str]
     level: Mapped[CourseLevel]

@@ -1,8 +1,14 @@
 """Course prereqs / degree requirements module."""
 
-from lark import Lark, Token, Transformer
+import logging
 
+from lark import Lark, Token, Transformer
+from lark.exceptions import LarkError
+
+from common.enums import CourseRequirementKind
 from common.schemas import UQRoadmapBase
+
+log = logging.getLogger(__name__)
 
 GRAMMAR = """
     ?start: expr
@@ -38,28 +44,35 @@ parser = Lark(GRAMMAR)
 class RequirementRead[T](UQRoadmapBase):
     """Requirement base class."""
 
-    kind: str
+    kind: CourseRequirementKind
     value: T
 
 
 class OrRequirement(RequirementRead[list[RequirementRead]]):
     """OR course requirement."""
 
-    kind: str = "or"
+    kind: CourseRequirementKind = CourseRequirementKind.OR
     value: list[RequirementRead]
 
 
 class AndRequirement(RequirementRead[list[RequirementRead]]):
     """And course requirement."""
 
-    kind: str = "and"
+    kind: CourseRequirementKind = CourseRequirementKind.AND
     value: list[RequirementRead]
 
 
 class AtomicRequirement(RequirementRead[str]):
     """Atomic course requirement."""
 
-    kind: str = "atomic"
+    kind: CourseRequirementKind = CourseRequirementKind.ATOMIC
+    value: str
+
+
+class OtherRequirement(RequirementRead[str]):
+    """Other course requirement that normally denotes data that cannot be parsed."""
+
+    kind: CourseRequirementKind = CourseRequirementKind.OTHER
     value: str
 
 
@@ -100,5 +113,10 @@ parser = Lark(GRAMMAR)
 
 def parse_requirement(text: str) -> RequirementRead:
     """Parse a requirements string and turn it into something structured."""
-    tree = parser.parse(text)
-    return RequirementTransformer().transform(tree)
+    try:
+        tree = parser.parse(text)
+        return RequirementTransformer().transform(tree)
+    except LarkError as e:
+        log.warning(f"Couldn't parse requirements - {text}")
+        log.debug(e)
+        return OtherRequirement(value=text)

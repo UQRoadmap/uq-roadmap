@@ -2,7 +2,7 @@
 
 import pytest
 
-from common.reqs import parse_requirement
+from common.reqs_parsing import parse_requirement
 
 DATA = [
     "( Part A OR Part B ) AND Part C",
