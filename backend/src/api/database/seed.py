@@ -55,7 +55,7 @@ def load_courses_from_file() -> Generator[CourseDBModel]:
 
 def load_degrees_from_file() -> Generator[DegreeDBModel]:
     """Loads degrees from a JSON file and hydrates DegreeDBModel instances."""
-    with Path.open(DEGREE_FILE, "rb") as f:
+    with Path.open(DEGREES_FILE, "rb") as f:
         raw = f.read()
         details = json.loads(raw)["program_details"]
 
