@@ -6,7 +6,8 @@ WORKDIR /app
 
 # Install dependencies
 COPY package.json package-lock.json ./
-RUN npm install# Stage 1: Build the application
+RUN npm install
+# Stage 1: Build the application
 FROM node:20-alpine AS builder
 
 # Set working directory
