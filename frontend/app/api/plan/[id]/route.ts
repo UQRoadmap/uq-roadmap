@@ -12,9 +12,11 @@ const data = [{
     id: "123"
 }];
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
-  const { id } = params;
-  console.log('GET /api/plan/[id]', { id });
+export async function GET(
+  request: Request,
+  params: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params.params
 
   const plan = data.find(value => value.id === id);
   if (!plan) {

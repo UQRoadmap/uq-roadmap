@@ -14,7 +14,7 @@ export default function CourseCard({id, code, name, units, sem, secats, desc, de
         data={{id, code, name, units, sem, secats, desc, degreeReq, completed}}
         disabled={false}
       >
-        <Droppable key={id} id={id}>
+        <Droppable key={id} id={id} full>
             <div
             className="hover:cursor-grab bg-white box-border h-30 flex flex-col justify-between rounded-lg border border-gray-400 shadow-md overflow-hidden"
             key={id}

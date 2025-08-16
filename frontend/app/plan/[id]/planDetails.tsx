@@ -124,11 +124,76 @@ export function PlanDetailClient({ plan: initialPlan }: { plan: Plan }) {
     function handleDragEnd(event: DragEndEvent) {
         const { active, over } = event;
 
-
         if (!over) return;
 
         const dragCourse = active.data.current as Course;
         if (!dragCourse) return;
+
+        if (over.data?.current?.full) {
+            // Two course cards to swap
+            const targetCourseId = over.id.toString();
+            
+            setCourses((prevCourses) => {
+                // Deep copy
+                const newCourses = prevCourses.map((sem) => [...sem]);
+                
+                // Find both courses in the course array
+                let dragSemIndex = -1;
+                let dragCourseIndex = -1;
+                let targetSemIndex = -1;
+                let targetCourseIndex = -1;
+                
+                // Find the dragged course
+                for (let i = 0; i < newCourses.length; i++) {
+                    const courseIndex = newCourses[i].findIndex(c => c && c.id === dragCourse.id);
+                    if (courseIndex !== -1) {
+                        dragSemIndex = i;
+                        dragCourseIndex = courseIndex;
+                        break;
+                    }
+                }
+                
+                // Find the target course
+                for (let i = 0; i < newCourses.length; i++) {
+                    const courseIndex = newCourses[i].findIndex(c => c && c.id === targetCourseId);
+                    if (courseIndex !== -1) {
+                        targetSemIndex = i;
+                        targetCourseIndex = courseIndex;
+                        break;
+                    }
+                }
+                
+                // If both courses were found, swap them
+                if (dragSemIndex !== -1 && targetSemIndex !== -1) {
+                    const draggedCourse = { ...newCourses[dragSemIndex][dragCourseIndex] };
+                    const targetCourse = { ...newCourses[targetSemIndex][targetCourseIndex] };
+                    
+                    // Parse the semester values correctly
+                    const [dragSemesterStr, dragPosStr] = draggedCourse.sem.split("-");
+                    const [targetSemesterStr, targetPosStr] = targetCourse.sem.split("-");
+                    
+                    // Create new sem values with swapped positions
+                    draggedCourse.sem = `${targetSemesterStr}-${targetPosStr}`;
+                    targetCourse.sem = `${dragSemesterStr}-${dragPosStr}`;
+                    
+                    // Swap positions
+                    newCourses[dragSemIndex][dragCourseIndex] = targetCourse;
+                    newCourses[targetSemIndex][targetCourseIndex] = draggedCourse;
+                    
+                    console.log("Swapped courses:", {
+                        draggedFrom: `${dragSemIndex}-${dragCourseIndex}`,
+                        draggedTo: `${targetSemIndex}-${targetCourseIndex}`,
+                        draggedCourseSem: draggedCourse.sem,
+                        targetCourseSem: targetCourse.sem
+                    });
+                }
+                
+                return newCourses;
+            });
+            
+            setActiveId("");
+            return;
+        }
 
         const [targetSemIndexStr, targetIndexStr] = over.id.toString().split("-");
         

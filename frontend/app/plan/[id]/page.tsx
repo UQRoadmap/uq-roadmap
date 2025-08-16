@@ -15,8 +15,8 @@ async function getPlan(id: string): Promise<Plan | null> {
 }
 
 
-export default async function PlanPage({ params }: { params: { id: string } }) {
-    const { id } = await params;
+export default async function PlanPage(params: { params: Promise<{ id: string }> }) {
+    const { id } = await params.params;
     const plan = await getPlan(id);
 
     if (!plan) {
