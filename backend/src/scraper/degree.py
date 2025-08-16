@@ -13,8 +13,10 @@ def main():
         components = {}
         rule_logic = set()
         ars = {}
+        ar_params = set()
         row_types = set()
         srs = {}
+        sr_params: dict[str, set] = {}
 
         for detail in details:
             for year, data in detail["data"].items():
@@ -29,20 +31,30 @@ def main():
 
                     for ar in component.payload.header.auxiliaryRules:
                         ars[ar.code] = ar.text
+                        for param in ar.params:
+                            ar_params.add(param.type)
 
                     rule_logic.add(component.payload.header.ruleLogic)
 
                     for body in component.payload.body:
                         for ar in body.header.auxiliaryRules:
                             ars[ar.code] = ar.text
+                            for param in ar.params:
+                                ar_params.add(param.type)
 
                         for body2 in body.body:
                             if body2.header is not None and body2.header.auxiliaryRules is not None:
                                 for ar in body2.header.auxiliaryRules:
                                     ars[ar.code] = ar.text
+                                    for param in ar.params:
+                                        ar_params.add(param.type)
 
                             if body2.header is not None and body2.header.selectionRule is not None:
                                 srs[body2.header.selectionRule.code] = body2.header.selectionRule.text
+                                for param in body2.header.selectionRule.params:
+                                    if param.name in sr_params:
+                                        sr_params[param.name] = set()
+                                    sr_params[param.name].add(param.type)
 
                             if body2.body is not None:
                                 for body3 in body2.body:
@@ -54,13 +66,22 @@ def main():
         pprint(ars)
         pprint(srs)
         pprint(row_types)
+        pprint(ar_params)
+        pprint(sr_params)
+
+
+@serde
+class Param:
+    name: str
+    type: str
+    value: int | dict | list[dict] | str | None
 
 
 @serde
 class AuxiliaryRule:
     code: str  # Seems like 1,2,6,7,9,10 are the only AR numbers
     text: str
-    params: list[dict]
+    params: list[Param]
 
 
 @serde
@@ -88,7 +109,7 @@ class ComponentPayloadBodyHeader:
 class SelectionRule:
     code: str
     text: str
-    params: list[dict]
+    params: list[Param]
 
 
 @serde
