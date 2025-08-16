@@ -33,7 +33,7 @@ class AR1(AR):
                 course_level = int(course[4])
                 if course_level == self.level or \
                         (course_level > self.level and self.or_higher):
-                    count += -1  # change to units (ask lucas)
+                    count += 2  # change to units (ask lucas)
             if count >= self.n:
                 return ValidateResult(Status.OK, 100, "", [])
             else:
@@ -63,7 +63,7 @@ class AR2(AR):
                 exceptionCourse = course
                 course_level = int(course[4])
                 if course_level == self.level:
-                    count += -1  # change to units (ask lucas)
+                    count += 2  # change to units (ask lucas)
                     badcourses.append(course)
             if count < self.n:
                 return ValidateResult(Status.OK, 100, "", [])
@@ -93,7 +93,7 @@ class AR3(AR):
                 course_level = int(course[4])
                 if course_level == self.level or \
                         (course_level > self.level and self.or_higher):
-                    count += -1  # change to units (ask lucas)
+                    count += 2  # change to units (ask lucas)
                     badcourses.append(course)
             if count == self.n:
                 return ValidateResult(Status.OK, 100, "", [])
@@ -124,7 +124,7 @@ class AR4(AR):
                 course_level = int(course[4])
                 if course_level == self.level or \
                         (course_level > self.level and self.or_higher):
-                    count += -1  # change to units (ask lucas)
+                    count += 2  # change to units (ask lucas)
                     badcourses.append(course)
             if count >= self.n and count <= self.m:
                 return ValidateResult(Status.OK, 100, "", [])
@@ -188,12 +188,43 @@ class AR7(AR):
 
     n: int
 
+    def validate(self, plan: Plan) -> ValidateResult:
+        discipline_count = {}
+        discipline_lists = {}
+        badlist = []
+        totalcount = 0
+        for course in plan.courses:
+            discipline = course[:4]
+            discipline_count[discipline] = discipline_count.get(discipline, 0) + 2  #REPLACE WITH UNITS
+            discipline_lists[discipline].append(course)
+        if any(count > self.n for count in discipline_count.values()):
+            greater_than_n = [d for d, count in discipline_count.items() if count > self.n]
+            for discipline in greater_than_n:
+                badlist.extend(discipline_lists[discipline])
+            return ValidateResult(Status.ERROR, totalcount / self.n * 100, "", badlist)
+        else:
+            return ValidateResult(Status.OK, 100, "", [])
 
 @serde
 class AR9(AR):
     """No credit for [COURSE_LIST]."""
 
     course_list: list[CourseRef]
+    
+    def validate(self, plan: Plan) -> ValidateResult:
+        badcourses = []
+        for course in plan.courses:
+            if course in self.course_list:
+                badcourses.append(course)
+        if badcourses:
+            return ValidateResult(
+                Status.ERROR,
+                None,
+                f"No credit for {self.course_list}.",
+                badcourses
+            )
+        else:
+            return ValidateResult(Status.OK, 100, "", [])
 
 
 @serde
