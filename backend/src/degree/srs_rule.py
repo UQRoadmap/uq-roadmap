@@ -65,7 +65,7 @@ class SR3(SR):
         if count < self.n:
             return ValidateResult(Status.ERROR, None,
                                   f"{count} units found in plan, "
-                                  f"but {self.n} required. Missing: "
+                                  f"but {self.n} required. Add from: "
                                   f"{', '.join(badcourses)}", badcourses)
         return ValidateResult(Status.OK, 100, "", [])
 
@@ -92,12 +92,12 @@ class SR4(SR):
         if count < self.n:
             return ValidateResult(Status.ERROR, None,
                                   f"{count} units found in plan, "
-                                  f"but {self.n} required. Missing: "
+                                  f"but {self.n} required. Add from: "
                                   f"{', '.join(badcourses)}", badcourses)
         elif count > self.m:
             return ValidateResult(Status.WARN, None,
                                   f"{count} units found in plan, "
-                                  f"but {self.m} maximum. Done: "
+                                  f"but {self.m} maximum. Remove from: "
                                   f"{', '.join(donecourses)}", donecourses)
         return ValidateResult(Status.OK, 100, "", [])
 
@@ -108,6 +108,28 @@ class SR5(SR):
 
     n: int
     options: list[CourseRef]
+
+    def validate(self, plan: Plan):
+        count = 0
+        badcourses = []
+        donecourses = []
+        for course in self.options:
+            if course.code in plan.courses:
+                count += 2  # UPDATE UNITS
+                donecourses.append(course.code)
+            else:
+                badcourses.append(course.code)
+        if count < self.n:
+            return ValidateResult(Status.ERROR, None,
+                                  f"{count} units found in plan, "
+                                  f"but {self.n} required. Add from: "
+                                  f"{', '.join(badcourses)}", badcourses)
+        elif count > self.n:
+            return ValidateResult(Status.WARN, None,
+                                  f"{count} units found in plan, "
+                                  f"but {self.n} required. Remove from: "
+                                  f"{', '.join(donecourses)}", donecourses)
+        return ValidateResult(Status.OK, 100, "", [])
 
 
 @serde
