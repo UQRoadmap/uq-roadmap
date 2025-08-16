@@ -29,6 +29,16 @@ services:
       database:
         condition: service_healthy
         restart: true
+  frontend:
+    container_name: frontend
+    build:
+      context: frontend
+    restart: always
+    command: yarn dev
+    environment:
+      - BACKEND_URL=backend:8080
+    ports:
+      - 3000:3000
 
 volumes:
   db-data:
