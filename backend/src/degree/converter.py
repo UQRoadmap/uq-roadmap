@@ -488,24 +488,15 @@ def process_sr(parsed_sr: ParsedSelectionRule, rows: list[ComponentPayloadLeaf],
 
 
 def convert_degree(parsed_degree: ParsedDegree) -> FlatDegree:
-    """Convert the recursive scraper.degree structure to a flat Degree.
-
-    Walks the recursive ComponentPayload tree, threading the current `part`
-    downwards and, at each node with a selection rule, passes that node's
-    *sibling leaves* (only the immediate leaves at this level) to process_sr.
-    """
-
     flat_degree = FlatDegree()
     flat_degree.name = parsed_degree.title
     flat_degree.code = parsed_degree.params.code
     flat_degree.year = parsed_degree.params.year
 
-    # Collect everything here, then assign to flat_degree at the end.
     rule_logic: dict[str, str | None] = {}
     ars: list[AR] = []
     srs: list[SR] = []
 
-    # Recursive walker for ComponentPayload nodes
     def _walk(node: ComponentPayload, inherited_part: str) -> None:
         # part can be on any node; inherit if missing
         part = inherited_part
@@ -554,13 +545,12 @@ def convert_degree(parsed_degree: ParsedDegree) -> FlatDegree:
 
     flat_degree.aux = ars
     flat_degree.srs = srs
-    # rule_logic is available if/when you want to persist it later
 
     return flat_degree
 
 
 def main():
-    with open("../../data/course_reqs/details.json") as f:
+    with open("../data/program_details.json") as f:
         raw = f.read()
         details = json.loads(raw)["program_details"]
         components = {}

@@ -1,5 +1,6 @@
 """Seeding DB with initial data."""
 
+import json
 import logging
 from collections.abc import Generator
 from pathlib import Path
@@ -12,9 +13,15 @@ from api.courses.transformers import transform_scraped_course
 from api.degree.models import DegreeDBModel
 from scraper.courses.models import ScrapedCourse
 
+from serde.json import from_dict, to_dict, to_json
+
+from scraper.degree import Degree as ParsedDegree
+
+from degree.converter import convert_degree
+
 DATA_DIR = Path("data")
 COURSES_FILE = DATA_DIR / "complete_courses.json"
-DEGREES_FILE = DATA_DIR / "degrees.json"
+DEGREES_FILE = DATA_DIR / "program_details.json"
 
 
 log = logging.getLogger(__name__)
@@ -48,5 +55,18 @@ def load_courses_from_file() -> Generator[CourseDBModel]:
 
 def load_degrees_from_file() -> Generator[DegreeDBModel]:
     """Loads degrees from a JSON file and hydrates DegreeDBModel instances."""
-    if False:
-        yield
+    with Path.open(DEGREE_FILE, "rb") as f:
+        raw = f.read()
+        details = json.loads(raw)["program_details"]
+
+        for detail in details:
+            for year, data in detail["data"].items():
+                degree: ParsedDegree = from_dict(ParsedDegree | None, data)
+                if degree is None:
+                    continue
+
+                flat = convert_degree(degree)
+
+                degree_db_model = DegreeDBModel(degree_id=flat.code, title=flat.name, json=to_json(flat))
+
+                yield degree_db_model
