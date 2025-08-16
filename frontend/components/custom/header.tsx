@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { Dialog, DialogPanel } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
+import Link from 'next/link'
+import Logo from './logo'
 
 const navigation = [
 
@@ -19,9 +21,9 @@ export default function Header() {
     <header className="bg-[#51247a]">
       <nav aria-label="Global" className="mx-auto max-w-7xl flex items-center justify-between p-6 lg:px-8">
         <div className="flex lg:flex-1">
-          <a href="#" className="-m-1.5 p-1.5 text-white font-black">
-            UQ RoadMap
-          </a>
+          <Link href="/">
+            <Logo />
+          </Link>
         </div>
         <div className="flex lg:hidden">
           <button
