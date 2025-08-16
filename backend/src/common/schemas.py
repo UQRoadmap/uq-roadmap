@@ -1,4 +1,4 @@
-"""Base schema."""
+"""Base schemas."""
 
 import datetime as dt
 

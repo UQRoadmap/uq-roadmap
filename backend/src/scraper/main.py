@@ -6,14 +6,17 @@ import json
 import logging
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING
 
 from common.enums import LogLevel
 from common.logging import configure_logging
-from scraper.courses import scrape_courses
+from scraper.courses import iter_secat_info, scrape_courses
+from scraper.models import Program
 from scraper.programs import scrape_all_programs
-from scraper.program_details import scrape_all_program_details, fetch_programs
 
+if TYPE_CHECKING:
+    from scraper.courses.models import Course
+    from scraper.models import Program
 
 
 class ScrapeType(Enum):
@@ -21,6 +24,7 @@ class ScrapeType(Enum):
 
     PROGRAM = "program"
     COURSE = "course"
+    SECAT = "secat"
     DETAILS = "details"
 
 
@@ -39,33 +43,48 @@ def main() -> None:
     )
     parser.add_argument(
         "--output",
-        default="uq_data.json",
-        help="Output JSON file (default: uq_data.json)",
+        help="Output JSON file",
     )
     args = parser.parse_args()
+    output_file = args.output
 
     data: dict = {}
-    result: list[Any] = []
 
+    # getting the programs/degrees
     if args.mode == ScrapeType.PROGRAM:
-        result = scrape_all_programs()
-        data = {"programs": [r.model_dump(mode="json") for r in result]}
-        log.info(f"Scraped {len(data['programs'])} programs.")
-    elif args.mode == ScrapeType.COURSE:
-        result = asyncio.run(scrape_courses())
-        data = {"courses": [r.model_dump(mode="json") for r in result]}
-        log.info(f"Scraped {len(data['courses'])} courses.")
-    elif args.mode == ScrapeType.DETAILS:
-        programs = fetch_programs()
-        result = scrape_all_program_details(programs)
-        data = {"program_details": [r for r in result if r is not None]}
-        log.info(f"Scraped details for {len(data['program_details'])} programs.")
-    else:
-        raise ValueError("Invalid scrape mode selected.")
+        programs: list[Program] = scrape_all_programs()
+        data = {"programs": [r.model_dump(mode="json") for r in programs]}
+        with Path.open(output_file, "w") as f:
+            json.dump(data, f, indent=2)
+        log.info(f"Scraped {len(programs)} programs. Written to {output_file}")
+        return
 
-    output_file = args.output or "uq_data.json"
-    with Path.open(Path(output_file), "w") as f:
-        json.dump(data, f, indent=2)
+    # getting all the uq courses
+    if args.mode == ScrapeType.COURSE:
+        courses: list[Course] = asyncio.run(scrape_courses())
+        data = {"courses": [c.model_dump(mode="json") for c in courses]}
+        with Path.open(output_file, "w") as f:
+            json.dump(data, f, indent=2)
+        log.info(f"Scraped {len(courses)} courses. Written to {output_file}")
+        return
+
+    # getting all the secats
+    if args.mode == ScrapeType.SECAT:
+        count = 0
+
+        async def write_secat(output_file: str) -> None:
+            with Path.open(Path(output_file), "w") as f:
+                async for course_code, info in iter_secat_info():
+                    entry = {"course": course_code, **info.model_dump(mode="json")}
+                    f.write(json.dumps(entry) + "\n")
+                    nonlocal count
+                    count += 1
+
+        asyncio.run(write_secat(output_file))
+        log.info(f"Scraped secats for {count} courses. Written to {output_file}")
+        return
+
+    raise ValueError("Invalid scrape mode selected.")
 
 
 if __name__ == "__main__":
