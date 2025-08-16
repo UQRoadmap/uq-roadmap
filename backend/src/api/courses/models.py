@@ -48,8 +48,6 @@ class CourseOfferingDBModel(BaseDBModel):
 
     __tablename__ = "course_offering"
 
-    __table_args__ = (UniqueConstraint("course_id", "year", "semester", "mode", name="unique_course_offering"),)
-
     offering_id: Mapped[UUID] = mapped_column(default=uuid4, primary_key=True)
     course_id: Mapped[UUID] = mapped_column(ForeignKey("course.course_id"))
 
