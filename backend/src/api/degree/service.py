@@ -29,9 +29,11 @@ async def get_degree_by_id(session: AsyncSession, degree_id: UUID) -> DegreeDBMo
 
 async def get_degrees_summary(session: AsyncSession) -> list[DegreeSummary]:
     """Get summary."""
-    stmt = select(
-        DegreeDBModel.degree_code, DegreeDBModel.title, func.array_agg(DegreeDBModel.year).label("years")
-    ).group_by(DegreeDBModel.degree_code, DegreeDBModel.title)
+    stmt = (
+        select(DegreeDBModel.degree_code, DegreeDBModel.title, func.array_agg(DegreeDBModel.year).label("years"))
+        .group_by(DegreeDBModel.degree_code, DegreeDBModel.title)
+        .order_by(DegreeDBModel.title)
+    )
 
     result = (await session.execute(stmt)).all()
 
