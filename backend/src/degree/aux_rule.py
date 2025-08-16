@@ -1,19 +1,20 @@
 """Classes for auxiliary rules."""
 
-from serde import serde, AdjacentTagging
+from serde import AdjacentTagging, serde
 
-from degree.params import CourseRef, ProgramRef
-from degree.validate_result import ValidateResult, Status
 from api.plan import Plan
+from degree.params import CourseRef, ProgramRef
+from degree.validate_result import Status, ValidateResult
 
+from serde.json import from_dict
 
-@serde(tagging=AdjacentTagging("code", "data"))
+@serde
 class AR:
     # Part, e.g. A or A.1
     part: str
 
-    def validate(plan) -> ValidateResult:
-        return ValidateResult(Status.ERROR, None, "Should not be seeing this", [])
+    def validate(self, plan: Plan) -> ValidateResult:
+        return ValidateResult(Status.ERROR, None, "Should not be seeing this - validating abstract AR", plan.courses)
 
 
 @serde
@@ -23,6 +24,7 @@ class AR1(AR):
     n: int
     level: int
     or_higher: bool = True
+    type: str = "AR1"
 
     def validate(self, plan: Plan) -> ValidateResult:
         count = 0
@@ -34,14 +36,13 @@ class AR1(AR):
                 if course_level == self.level or (course_level > self.level and self.or_higher):
                     count += 2  # change to units (ask lucas)
             if count >= self.n:
-                return ValidateResult(Status.OK, 100, "", [])
-            else:
-                return ValidateResult(
-                    Status.ERROR,
-                    count / self.n * 100,
-                    f"Expected at least {self.n} units at level {self.level}{' or higher' if self.or_higher else ''}, found {count}.",
-                    plan.courses,
-                )
+                return ValidateResult(Status.OK, 100.0, "", [])
+            return ValidateResult(
+                Status.ERROR,
+                count / self.n * 100.0,
+                f"Expected at least {self.n} units at level {self.level}{' or higher' if self.or_higher else ''}, found {count}.",
+                plan.courses,
+            )
         except ValueError:
             return ValidateResult(Status.ERROR, None, "Invalid course level format", [exceptionCourse])
 
@@ -52,6 +53,7 @@ class AR2(AR):
 
     n: int
     level: int
+    type: str = "AR2"
 
     def validate(self, plan: Plan) -> ValidateResult:
         count = 0
@@ -65,14 +67,13 @@ class AR2(AR):
                     count += 2  # change to units (ask lucas)
                     badcourses.append(course)
             if count < self.n:
-                return ValidateResult(Status.OK, 100, "", [])
-            else:
-                return ValidateResult(
-                    Status.ERROR,
-                    count / self.n * 100,
-                    f"Expected at most {self.n} units at level {self.level}, found {count}.",
-                    badcourses,
-                )
+                return ValidateResult(Status.OK, 100.0, "", [])
+            return ValidateResult(
+                Status.ERROR,
+                count / self.n * 100.0,
+                f"Expected at most {self.n} units at level {self.level}, found {count}.",
+                badcourses,
+            )
         except ValueError:
             return ValidateResult(Status.ERROR, None, "Invalid course level format", [exceptionCourse])
 
@@ -84,6 +85,7 @@ class AR3(AR):
     n: int
     level: int
     or_higher: bool = True
+    type: str = "AR3"
 
     def validate(self, plan: Plan) -> ValidateResult:
         count = 0
@@ -97,14 +99,13 @@ class AR3(AR):
                     count += 2  # change to units (ask lucas)
                     badcourses.append(course)
             if count == self.n:
-                return ValidateResult(Status.OK, 100, "", [])
-            else:
-                return ValidateResult(
-                    Status.ERROR,
-                    count / self.n * 100,
-                    f"Expected at most {self.n} units at level {self.level}, found {count}.",
-                    badcourses,
-                )
+                return ValidateResult(Status.OK, 100.0, "", [])
+            return ValidateResult(
+                Status.ERROR,
+                count / self.n * 100.0,
+                f"Expected at most {self.n} units at level {self.level}, found {count}.",
+                badcourses,
+            )
         except ValueError:
             return ValidateResult(Status.ERROR, None, "Invalid course level format", [exceptionCourse])
 
@@ -117,6 +118,7 @@ class AR4(AR):
     m: int
     level: int
     or_higher: bool = True
+    type: str = "AR4"
 
     def validate(self, plan: Plan) -> ValidateResult:
         count = 0
@@ -130,21 +132,20 @@ class AR4(AR):
                     count += 2  # change to units (ask lucas)
                     badcourses.append(course)
             if count >= self.n and count <= self.m:
-                return ValidateResult(Status.OK, 100, "", [])
-            elif count < self.n:
+                return ValidateResult(Status.OK, 100.0, "", [])
+            if count < self.n:
                 return ValidateResult(
                     Status.ERROR,
-                    count / self.n * 100,
+                    count / self.n * 100.0,
                     f"Expected at least {self.n} units at level {self.level}, found {count}.",
                     badcourses,
                 )
-            else:
-                return ValidateResult(
-                    Status.ERROR,
-                    count / self.m * 100,
-                    f"Expected at most {self.m} units at level {self.level}, found {count}.",
-                    badcourses,
-                )
+            return ValidateResult(
+                Status.ERROR,
+                count / self.m * 100.0,
+                f"Expected at most {self.m} units at level {self.level}, found {count}.",
+                badcourses,
+            )
         except ValueError:
             return ValidateResult(Status.ERROR, None, "Invalid course level format", [exceptionCourse])
 
@@ -155,6 +156,7 @@ class AR5(AR):
 
     plan_list_1: list[ProgramRef]
     plan_list_2: list[ProgramRef]
+    type: str = "AR5"
 
     def validate(self, plan: Plan) -> ValidateResult:
         for plan_ref in self.plan_list_1:
@@ -167,8 +169,8 @@ class AR5(AR):
                     f"Expected {self.plan_list_1} to be with {self.plan_list_2}.",
                     plan.specialisations[self.part],
                 )
-            else:
-                return ValidateResult(Status.OK, 100, "", [])
+            return ValidateResult(Status.OK, 100.0, "", [])
+        return ValidateResult(Status.ERROR, None, "Unreachable", [])
 
 
 @serde
@@ -177,6 +179,7 @@ class AR6(AR):
 
     plan_list_1: list[ProgramRef]
     plan_list_2: list[ProgramRef]
+    type: str = "AR6"
 
     def validate(self, plan: Plan) -> ValidateResult:
         for plan_ref in self.plan_list_1:
@@ -189,8 +192,8 @@ class AR6(AR):
                         f"Expected {self.plan_list_1} to NOT be with {self.plan_list_2}.",
                         plan.specialisations[self.part],
                     )
-                else:
-                    return ValidateResult(Status.OK, 100, "", [])
+                return ValidateResult(Status.OK, 100.0, "", [])
+        return ValidateResult(Status.ERROR, None, "Unreachable", [])
 
 
 @serde
@@ -198,6 +201,7 @@ class AR7(AR):
     """No more than [N] units from same discipline descriptor."""
 
     n: int
+    type: str = "AR7"
 
     def validate(self, plan: Plan) -> ValidateResult:
         discipline_count = {}
@@ -212,9 +216,8 @@ class AR7(AR):
             greater_than_n = [d for d, count in discipline_count.items() if count > self.n]
             for discipline in greater_than_n:
                 badlist.extend(discipline_lists[discipline])
-            return ValidateResult(Status.ERROR, totalcount / self.n * 100, "", badlist)
-        else:
-            return ValidateResult(Status.OK, 100, "", [])
+            return ValidateResult(Status.ERROR, totalcount / self.n * 100.0, "", badlist)
+        return ValidateResult(Status.OK, 100.0, "", [])
 
 
 @serde
@@ -222,6 +225,7 @@ class AR9(AR):
     """No credit for [COURSE_LIST]."""
 
     course_list: list[CourseRef]
+    type: str = "AR9"
 
     def validate(self, plan: Plan) -> ValidateResult:
         badcourses = []
@@ -230,8 +234,7 @@ class AR9(AR):
                 badcourses.append(course)
         if badcourses:
             return ValidateResult(Status.ERROR, None, f"No credit for {self.course_list}.", badcourses)
-        else:
-            return ValidateResult(Status.OK, 100, "", [])
+        return ValidateResult(Status.OK, 100.0, "", [])
 
 
 @serde
@@ -240,6 +243,7 @@ class AR10(AR):
 
     course_list: list[CourseRef]
     plan_list: list[ProgramRef]
+    type: str = "AR10"
 
     def validate(self, plan: Plan) -> ValidateResult:
         for plan_ref in self.plan_list:
@@ -252,8 +256,8 @@ class AR10(AR):
                         f"No credit for {overlap} for students completing {plan_ref}.",
                         list(overlap),
                     )
-                else:
-                    return ValidateResult(Status.OK, 100, "", [])
+                return ValidateResult(Status.OK, 100.0, "", [])
+        return ValidateResult(Status.ERROR, None, "Unreachable", [])
 
 
 @serde
@@ -262,6 +266,7 @@ class AR11(AR):
 
     course_list: list[CourseRef]
     plan_list: list[ProgramRef]
+    type: str = "AR11"
 
     def validate(self, plan: Plan) -> ValidateResult:
         overlap = set(self.course_list) & set(plan.courses)
@@ -273,8 +278,8 @@ class AR11(AR):
                     f"No credit for {overlap} for students not completing {self.plan_list}.",
                     list(overlap),
                 )
-            else:
-                return ValidateResult(Status.OK, 100, "", [])
+            return ValidateResult(Status.OK, 100.0, "", [])
+        return ValidateResult(Status.ERROR, None, "Unreachable", [])
 
 
 @serde
@@ -284,6 +289,7 @@ class AR13(AR):
     plan_list: list[ProgramRef]
     course_list: list[CourseRef]
     program_plan_list: list[ProgramRef]
+    type: str = "AR13"
 
     # This is such a crazy edge case i'm just not gonna bother - it reads
     """
@@ -305,8 +311,7 @@ class AR13(AR):
                         f"Students completing {plan_ref} are exempt from {overlap} in {self.program_plan_list}.",
                         list(overlap),
                     )
-                else:
-                    return ValidateResult(Status.OK, 100, "", [])
+                return ValidateResult(Status.OK, 100.0, "", [])
 
 
 @serde
@@ -317,6 +322,7 @@ class AR15(AR):
     must: bool  # True=MUST, False=MAY
     program_plan_list: list[ProgramRef]
     lists: list[str]  # reference names/ids to course lists
+    type: str = "AR15"
 
     def validate(self, plan: Plan) -> ValidateResult:
         if self.must:
@@ -329,20 +335,17 @@ class AR15(AR):
                     f"Expected {self.course_list} to be substituted in {self.program_plan_list} by a course from {self.lists}.",
                     list(overlap),
                 )
-            else:
-                return ValidateResult(Status.OK, 100, "", [])
-        else:
-            # If it's a MAY, we don't need to check anything
-            overlap = set(self.course_list) & set(plan.courses)
-            if overlap:
-                return ValidateResult(
-                    Status.OK,
-                    100,
-                    f"{overlap} may be substituted in" + f"{self.program_plan_list} by a course from" + f"{self.lists}",
-                    overlap,
-                )
-            else:
-                return ValidateResult(Status.OK, 100, "", [])
+            return ValidateResult(Status.OK, 100.0, "", [])
+        # If it's a MAY, we don't need to check anything
+        overlap = set(self.course_list) & set(plan.courses)
+        if overlap:
+            return ValidateResult(
+                Status.OK,
+                100.0,
+                f"{overlap} may be substituted in" + f"{self.program_plan_list} by a course from" + f"{self.lists}",
+                overlap,
+            )
+        return ValidateResult(Status.OK, 100.0, "", [])
 
 
 @serde
@@ -354,6 +357,7 @@ class AR16(AR):
     must: bool
     course_list_2: list[CourseRef]
     program_plan_list: list[ProgramRef]
+    type: str = "AR16"
 
     def validate(self, plan: Plan) -> ValidateResult:
         if self.must:
@@ -365,22 +369,19 @@ class AR16(AR):
                     f"Expected {self.course_list_1} to be substituted in {self.plan_list} by a course from {self.course_list_2} in {self.program_plan_list}.",
                     list(overlap),
                 )
-            else:
-                return ValidateResult(Status.OK, 100, "", [])
-        else:
-            # If it's a MAY, we don't need to check anything
-            overlap = set(self.course_list_1) & set(plan.courses)
-            if overlap:
-                return ValidateResult(
-                    Status.OK,
-                    100,
-                    f"{overlap} may be substituted in"
-                    + f"{self.plan_list} by a course from"
-                    + f"{self.course_list_2} in {self.program_plan_list}",
-                    overlap,
-                )
-            else:
-                return ValidateResult(Status.OK, 100, "", [])
+            return ValidateResult(Status.OK, 100.0, "", [])
+        # If it's a MAY, we don't need to check anything
+        overlap = set(self.course_list_1) & set(plan.courses)
+        if overlap:
+            return ValidateResult(
+                Status.OK,
+                100.0,
+                f"{overlap} may be substituted in"
+                f"{self.plan_list} by a course from"
+                f"{self.course_list_2} in {self.program_plan_list}",
+                overlap,
+            )
+        return ValidateResult(Status.OK, 100.0, "", [])
 
 
 @serde
@@ -392,6 +393,7 @@ class AR17(AR):
     must: bool
     program_plan_list: list[ProgramRef]
     lists: list[str]
+    type: str = "AR17"
 
     def validate(self, plan: Plan) -> ValidateResult:
         if self.must:
@@ -403,22 +405,19 @@ class AR17(AR):
                     f"Expected {self.course_list} to be substituted in {self.plan_list} by a course from {self.lists} in {self.program_plan_list}.",
                     list(overlap),
                 )
-            else:
-                return ValidateResult(Status.OK, 100, "", [])
-        else:
-            # If it's a MAY, we don't need to check anything
-            overlap = set(self.course_list) & set(plan.courses)
-            if overlap:
-                return ValidateResult(
-                    Status.OK,
-                    100,
-                    f"{overlap} may be substituted in"
-                    + f"{self.plan_list} by a course from"
-                    + f"{self.lists} in {self.program_plan_list}",
-                    overlap,
-                )
-            else:
-                return ValidateResult(Status.OK, 100, "", [])
+            return ValidateResult(Status.OK, 100.0, "", [])
+        # If it's a MAY, we don't need to check anything
+        overlap = set(self.course_list) & set(plan.courses)
+        if overlap:
+            return ValidateResult(
+                Status.OK,
+                100.0,
+                f"{overlap} may be substituted in"
+                f"{self.plan_list} by a course from"
+                f"{self.lists} in {self.program_plan_list}",
+                overlap,
+            )
+        return ValidateResult(Status.OK, 100.0, "", [])
 
 
 @serde
@@ -427,6 +426,7 @@ class AR18(AR):
 
     course_list: list[CourseRef]
     program: ProgramRef
+    type: str = "AR18"
 
     def validate(self, plan: Plan) -> ValidateResult:
         for course in plan.courses:
@@ -438,7 +438,7 @@ class AR18(AR):
                         f"{course} can only be counted towards the {self.program.name} component of a dual.",
                         [course],
                     )
-        return ValidateResult(Status.OK, 100, "", [])
+        return ValidateResult(Status.OK, 100.0, "", [])
 
 
 @serde
@@ -448,6 +448,7 @@ class AR19(AR):
     plan_list: list[ProgramRef]
     course_list: list[CourseRef]
     program: ProgramRef
+    type: str = "AR19"
 
     def validate(self, plan: Plan) -> ValidateResult:
         for plan_ref in self.plan_list:
@@ -462,7 +463,7 @@ class AR19(AR):
                                 [course],
                             )
 
-        return ValidateResult(Status.OK, 100, "", [])
+        return ValidateResult(Status.OK, 100.0, "", [])
 
 
 @serde
@@ -473,6 +474,7 @@ class AR20(AR):
     plan_list_1: list[ProgramRef]
     course_list: list[CourseRef]
     plan_list_2: list[ProgramRef]
+    type: str = "AR20"
 
     def validate(self, plan: Plan) -> ValidateResult:
         if plan.degree == self.plan_1.code:
@@ -488,7 +490,7 @@ class AR20(AR):
                                     [course],
                                 )
 
-        return ValidateResult(Status.OK, 100, "", [])
+        return ValidateResult(Status.OK, 100.0, "", [])
 
 
 @serde
@@ -497,3 +499,34 @@ class ARUnknown(AR):
 
     text: str
     raw_params: list[dict]
+
+
+def create_ar_from_dict(data: dict) -> AR:
+    """Factory function to create correct AR subclass from dict."""
+    ar_type = data.get("type", "AR")
+    
+    type_map = {
+        "AR1": AR1,
+        "AR2": AR2,
+        "AR3": AR3,
+        "AR4": AR4,
+        "AR5": AR5,
+        "AR6": AR6,
+        "AR7": AR7,
+        "AR9": AR9,
+        "AR10": AR10,
+        "AR11": AR11,
+        "AR13": AR13,
+        "AR15": AR15,
+        "AR16": AR16,
+        "AR17": AR17,
+        "AR18": AR18,
+        "AR19": AR19,
+        "AR20": AR20,
+        "ARUnknown": ARUnknown,
+    }
+    
+    if ar_type in type_map:
+        return from_dict(type_map[ar_type], data)
+    else:
+        return from_dict(AR, data)

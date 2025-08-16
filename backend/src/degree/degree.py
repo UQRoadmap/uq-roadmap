@@ -1,12 +1,20 @@
 """Degree requirements representation."""
 
+from collections.abc import Awaitable, Callable
+
 from serde import serde
 
+from api.courses.models import CourseDBModel
+from api.degree.models import DegreeDBModel
 from api.plan import Plan
+from degree.params import CourseRef, ProgramRef
 from degree.aux_rule import AR
-from degree.srs_rule import SR
-from degree.validate_result import ValidateResult, Status
 from common.reqs_parsing import parse_requirement
+from degree.sr_rule import SR
+from degree.validate_result import ValidateResult, Status
+
+CourseCallback = Callable[[str], Awaitable[CourseDBModel | None]]
+DegreeCallback = Callable[[str, int], Awaitable[DegreeDBModel | None]]
 
 
 @serde
@@ -32,7 +40,11 @@ class Degree:
     # An entry might be A and B or A.1 OR B.1
     rule_logic: list[str]
 
-    def validate(self, plan: Plan) -> list[ValidateResult]:
+    def validate(
+        self, plan: Plan, course_getter: CourseCallback, degree_getter: DegreeCallback
+    ) -> list[ValidateResult]:
+        # Things to do:
+        # -
         results = []
         errored_parts = set()
         for aux in self.aux:
@@ -52,12 +64,15 @@ class Degree:
 
         return results
 
-    def __init__(self):
-        self.name = ""
-        self.code = ""
-        self.year = ""
-        self.sem = ""
-        self.aux = list()
-        self.srs = list()
-        self.part_references = dict()
-        self.rule_logic = list()
+    @staticmethod
+    def build() -> "Degree":
+        return Degree(
+            name="",
+            code="",
+            year="",
+            sem=1,
+            aux=list(),
+            srs=list(),
+            part_references=dict(),
+            rule_logic=list(),
+        )

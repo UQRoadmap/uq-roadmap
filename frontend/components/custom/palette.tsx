@@ -11,81 +11,34 @@ import {
 } from '@headlessui/react'
 import { Badge } from '@/components/badge'
 import  CourseCard from '@/components/custom/course-card'
-//import { StarIcon } from "@heroicons/react/20/solid"
+import { StarIcon } from "@heroicons/react/20/solid"
 
 import {DragOverlay} from '@dnd-kit/core';
 import Draggable from '@/components/draggable'
 import { useState } from 'react'
 
-import { Course } from '@/types/course'
+import { Course, DegreeReq } from '@/types/course'
 import { MagnifyingGlassIcon } from '@heroicons/react/16/solid';
 
-const courses: Course[] = [
-  {
-    code: "CSSE6400",
-    id: "meow1",
-    sem: "1",
-    name: 'Software Architecture',
-    units: 2,
-    secats: 4,
-    completed: false,
-    desc: "Software systems are often composed of a heterogeneous network of inter-related systems. In this course you will build upon the knowledge and skills you have developed so far to learn how to design complex systems. This will include how these systems communicate and coordinate their responsibilities. You will learn design techniques to manage the complexity of large systems. You will learn how to assess and manage software risks (e.g.security, scalability, availability, resilience, robustness). You will apply these techniques to build a system composed of heterogeneous computing devices (e.g. mobile devices, servers, cloud-hosted services). You will learn how to apply systems thinking to design large-scale cyber-physical systems." },
-  {
-    code: "CSSE3200",
-    id: "meow",
-    sem: "2",
-    name: 'Software Engineering Studio: Design, Implement and Test',
-    units: 2,
-    secats: 3,
-    completed: false,
-    desc: "Students work in teams on a studio-based software development project to gain an understanding of the processes, techniques and tools used to manage and deliver large, complex software systems. The course covers software engineering, design, project management and team work processes. Students will learn techniques and tools used to manage complex software projects. These techniques and tools will be applied to software design, verification and validation, configuration management and documentation." },
-  {
-    code: "CSSE3221",
-    id: "meow2",
-    sem: "1 & 2",
-    name: 'Software Engineering Studio: Design, Implement and Test',
-    units: 2,
-    secats: 1,
-    completed: false,
-    desc: "Students work in teams on a studio-based software development project to gain an understanding of the processes, techniques and tools used to manage and deliver large, complex software systems. The course covers software engineering, design, project management and team work processes. Students will learn techniques and tools used to manage complex software projects. These techniques and tools will be applied to software design, verification and validation, configuration management and documentation." },
-  {
-    code: "CSSE3211",
-    id: "meow3",
-    sem: "1 & 2",
-    name: 'Software Engineering Studio: Design, Implement and Test',
-    units: 2,
-    secats: 1,
-    completed: false,
-    desc: "Students work in teams on a studio-based software development project to gain an understanding of the processes, techniques and tools used to manage and deliver large, complex software systems. The course covers software engineering, design, project management and team work processes. Students will learn techniques and tools used to manage complex software projects. These techniques and tools will be applied to software design, verification and validation, configuration management and documentation." },
-  {
-    code: "CSSE3201",
-    id: "meow4",
-    sem: "1 & 2",
-    name: 'Software Engineering Studio: Design, Implement and Test',
-    units: 2,
-    secats: 1,
-    completed: false,
-    desc: "Students work in teams on a studio-based software development project to gain an understanding of the processes, techniques and tools used to manage and deliver large, complex software systems. The course covers software engineering, design, project management and team work processes. Students will learn techniques and tools used to manage complex software projects. These techniques and tools will be applied to software design, verification and validation, configuration management and documentation." },
-]
-
-const recent = [courses[0]]
-
-export default function CommandPalette({draggable, clickable, setActiveId, activeId, opened, sem, setPaletteOpen, onSelectCourse, stateCourses}:
+export default function CommandPalette({draggable, clickable, setActiveId, activeId, opened, sem,
+    setPaletteOpen, onSelectCourse, stateCourses, setDelete, courseReqs, courses}:
     {draggable?: boolean, clickable?: boolean, setActiveId: (open: string) => void,
         activeId: string, opened: boolean, sem?: string, setPaletteOpen: (open: boolean) => void,
-        onSelectCourse: (course: Course, id: string) => void, stateCourses: Course[][]}) {
+        onSelectCourse: (course: Course, id: string) => void, stateCourses: Course[][],
+     setDelete: (id: string, sem:string) => void, courseReqs:DegreeReq, courses: Course[] }) {
+
   const [query, setQuery] = useState('')
   const activeCourse = courses.find(c => c.id === activeId) as Course;
-  const filteredcourses: Course[] =
-    query === ''
-      ? []
-      : courses.filter((course) => {
-          const q = query.toLowerCase();
-          return (
-            course.name.toLowerCase().includes(q) ||
-            course.code.toLowerCase().includes(q)
-          );
-        });
+
+  const filteredcourses = courses.filter((course) => {
+      const q = query.toLowerCase();
+
+      // Check name and code
+      const matchesNameOrCode =
+          course.name.toLowerCase().includes(q) ||
+          course.code.toLowerCase().includes(q);
+      return matchesNameOrCode
+  });
 
     const handleClick = (course: Course) => {
       if (!clickable) return;
@@ -149,7 +102,7 @@ export default function CommandPalette({draggable, clickable, setActiveId, activ
             disabled={!draggable}
               >
             <li
-              className={`group ${clickable ? "cursor-pointer" : "cursor-grab"} rounded-md px-3 py-2 bg-black hover:bg-[#1f1f1f] transition-colors flex flex-col select-none`}
+              className={`group ${clickable ? "cursor-pointer" : "cursor-grab"} rounded-md px-3 py-2 backdrop-blur-md bg-[#1f1f1f] hover:bg-[#1f1f1f] transition-colors flex flex-col select-none`}
               onClick={() => handleClick(course)}
               style={{
                 opacity: activeId === course.id ? 0 : 1, // hide original while dragging
@@ -160,15 +113,24 @@ export default function CommandPalette({draggable, clickable, setActiveId, activ
                 <span className="ml-3 hidden flex-none text-gray-400 group-data-focus:inline">Add to planner</span>
               </div>
               <span className="ml-3 text-gray-400 text-sm">{course.desc.length > 180 ? course.desc.slice(0, 180) + '…' : course.desc}</span>
-              <span className="ml-3 text-gray-400 text-sm space-x-2">
-              <Badge color={course.sem == "2" ? "blue" : course.sem == "1" ? "red" : "purple"}>Semester {course.sem}</Badge>
-              <Badge color="pink">{course.units} Units</Badge>
-              <Badge color={course.secats > 3.5 ? "green" : course.secats > 2 ? "orange" : "red"}>
-                  <div className="flex items-center space-x-1 text-yellow-400">
-                stars to go here
-                  </div>
-              </Badge>
-              </span>
+            <div className="flex space-x-6 ml-3 text-gray-400 text-sm space-x-6 justify-between">
+              {/* Offering */}
+              <div>
+                <span className="font-semibold">Offerings: {course.sems?.join(', ')}</span>
+              </div>
+
+              {/* Units and Secats */}
+              <div className="flex items-center space-x-4">
+                <span>{course.units} Units</span>
+                <div className="flex items-center space-x-1 text-yellow-400">
+                  <span>{course.secats}</span>
+                  <StarIcon className="w-3 h-3" />
+                </div>
+              </div>
+
+            </div>
+
+
             </li>
               </Draggable>
             ))}
@@ -192,9 +154,9 @@ export default function CommandPalette({draggable, clickable, setActiveId, activ
         </DialogPanel>
       </div>
     </Dialog>
-<DragOverlay>
+<DragOverlay className="z-50">
   {activeId && (
-    <CourseCard {...stateCourses.flat().find(c => c.id === activeId)!} />
+    <CourseCard {...stateCourses.flat().find(c => c.id === activeId)!} deleteMeth={setDelete} degreeReq={courseReqs}/>
   )}
 </DragOverlay>
     </div>

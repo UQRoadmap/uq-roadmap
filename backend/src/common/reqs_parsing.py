@@ -116,7 +116,6 @@ def parse_requirement(text: str) -> RequirementRead:
     try:
         tree = parser.parse(text)
         return RequirementTransformer().transform(tree)
-    except LarkError as e:
+    except LarkError:
         log.warning(f"Couldn't parse requirements - {text}")
-        log.debug(e)
         return OtherRequirement(value=text)

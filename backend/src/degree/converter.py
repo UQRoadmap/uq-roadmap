@@ -4,9 +4,8 @@ from __future__ import annotations
 
 import json
 from pprint import pprint
-from typing import Iterable, Optional, Tuple
 
-from serde.json import from_dict, to_json
+from serde.json import from_dict
 
 from degree.aux_rule import (
     AR,
@@ -30,7 +29,7 @@ from degree.aux_rule import (
     ARUnknown,
 )
 from degree.degree import Degree as FlatDegree
-from degree.params import CourseRef, EquivalenceGroup, ProgramRef
+from degree.params import CourseRef, ProgramRef
 from degree.sr_rule import (
     SR,
     SR1,
@@ -46,21 +45,12 @@ from scraper.degree import (
     AuxiliaryRule as ParsedAuxRule,
 )
 from scraper.degree import (
-    Component,
     ComponentPayload,
-    ComponentPayloadHeader,
-    CurriculumReference,
-    WildCardItem,
     ComponentPayloadLeaf,
+    CurriculumReference,
 )
 from scraper.degree import (
     Degree as ParsedDegree,
-)
-from scraper.degree import (
-    EquivalenceGroup as ParsedEquivalenceGroup,
-)
-from scraper.degree import (
-    Param as ParsedParam,
 )
 from scraper.degree import (
     SelectionRule as ParsedSelectionRule,
@@ -229,8 +219,8 @@ def process_ar(parsed_ar: ParsedAuxRule, part: str) -> AR:
                     name=plan.get("name", ""),
                     abbreviation=plan.get("abbreviation", ""),
                 )
-            else:  # Direct plan object
-                return _to_program_ref(v)
+            # Direct plan object
+            return _to_program_ref(v)
 
         # Handle string (just a code)
         return ProgramRef(
@@ -526,8 +516,7 @@ def convert_degree(parsed_degree: ParsedDegree, raw_json: dict = None) -> FlatDe
 
     Also takes raw_json to extract course data when serde fails.
     """
-
-    flat_degree = FlatDegree()
+    flat_degree = FlatDegree.build()
     flat_degree.name = parsed_degree.title
     flat_degree.code = parsed_degree.params.code
     flat_degree.year = parsed_degree.params.year
