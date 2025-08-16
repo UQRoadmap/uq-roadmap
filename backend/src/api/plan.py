@@ -8,6 +8,8 @@ class Plan:
     plan_id: UUID
     auth: UUID
     # maps (year, sem) to list of chosen courses
-    courses: dict[tuple[int, int], list[str]]
+    course_dates: dict[tuple[int, int], list[str]]
+    course_reqs: dict[str, list[str]]
+    courses: list[str]
     degree: str
     specialisations: list[str]

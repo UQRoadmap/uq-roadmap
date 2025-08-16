@@ -52,7 +52,7 @@ def main():
                             if body2.header is not None and body2.header.selectionRule is not None:
                                 srs[body2.header.selectionRule.code] = body2.header.selectionRule.text
                                 for param in body2.header.selectionRule.params:
-                                    if param.name in sr_params:
+                                    if param.name not in sr_params:
                                         sr_params[param.name] = set()
                                     sr_params[param.name].add(param.type)
 
