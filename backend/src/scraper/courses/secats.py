@@ -9,14 +9,14 @@ from collections.abc import AsyncGenerator
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
 
-from scraper.courses.models import ScrapedSecatInfo, ScrapedSecatQuestion
+from common.schemas import SecatInfo, SecatQuestion
 
 log = logging.getLogger(__name__)
 # Urls
 SECAT_URL = "https://www.pbi.uq.edu.au/clientservices/SECaT/embedChart.aspx"
 
 
-def _extract_secat_questions(html: str, course_code: str) -> list[ScrapedSecatQuestion]:  # noqa: C901
+def _extract_secat_questions(html: str, course_code: str) -> list[SecatQuestion]:  # noqa: C901
     """Extract the question info from the secats."""
     """Extracts SECaT question distributions from the embedded JS."""
     soup = BeautifulSoup(html, "html.parser")
@@ -76,7 +76,7 @@ def _extract_secat_questions(html: str, course_code: str) -> list[ScrapedSecatQu
             grouped[qname]["s_disagree"] += percent
 
     return [
-        ScrapedSecatQuestion(
+        SecatQuestion(
             name=qname,
             s_agree=vals["s_agree"],
             agree=vals["agree"],
@@ -88,7 +88,7 @@ def _extract_secat_questions(html: str, course_code: str) -> list[ScrapedSecatQu
     ]
 
 
-async def iter_secat_info() -> AsyncGenerator[tuple[str, ScrapedSecatInfo]]:
+async def iter_secat_info() -> AsyncGenerator[tuple[str, SecatInfo]]:
     """Extracts course info from the secat, mapping a course code to the secat info."""
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
@@ -146,9 +146,7 @@ async def iter_secat_info() -> AsyncGenerator[tuple[str, ScrapedSecatInfo]]:
 
                 yield (
                     full_course_code,
-                    ScrapedSecatInfo(
-                        num_enrolled=enrolled, num_responses=responses, response_rate=rate, questions=questions
-                    ),
+                    SecatInfo(num_enrolled=enrolled, num_responses=responses, response_rate=rate, questions=questions),
                 )
 
         await browser.close()
