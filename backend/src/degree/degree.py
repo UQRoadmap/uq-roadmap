@@ -1,8 +1,11 @@
 """Degree requirements representation."""
 
 from serde import serde
+
+from api.plan import Plan
 from degree.aux_rule import AR
 from degree.srs_rule import SR
+from degree.validate_result import ValidateResult
 
 
 @serde
@@ -27,3 +30,12 @@ class Degree:
     # Rule logic that operates broadly on the categories.
     # An entry might be A and B or A.1 OR B.1
     rule_logic: list[str]
+
+    def validate(self, plan: Plan) -> list[ValidateResult]:
+        results = []
+        for aux in self.aux:
+            results.append(aux.validate(plan))
+        for srs in self.srs:
+            results.append(srs.validate(plan))
+
+        return results
