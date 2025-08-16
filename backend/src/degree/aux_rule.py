@@ -429,6 +429,18 @@ class AR18(AR):
     course_list: list[CourseRef]
     program: ProgramRef
 
+    def validate(self, plan: Plan) -> ValidateResult:
+        for course in plan.courses:
+            if course in self.course_list:
+                if self.program.code not in plan.specialisations[self.part]:
+                    return ValidateResult(
+                        Status.ERROR,
+                        0,
+                        f"{course} can only be counted towards the {self.program.name} component of a dual.",
+                        [course],
+                    )
+        return ValidateResult(Status.OK, 100, "", [])
+
 
 @serde
 class AR19(AR):
@@ -438,15 +450,46 @@ class AR19(AR):
     course_list: list[CourseRef]
     program: ProgramRef
 
+    def validate(self, plan: Plan) -> ValidateResult:
+        for plan_ref in self.plan_list: 
+            if plan_ref.code == plan.degree:
+                for course in plan.courses:
+                    if course in self.course_list:
+                        if self.program.code not in plan.specialisations[self.part]:
+                            return ValidateResult(
+                                Status.ERROR,
+                                0,
+                                f"{course} only counts towards the {self.program.name} component for students completing {plan_ref}",
+                                [course],
+                            )
+        
+        return ValidateResult(Status.OK, 100, "", [])
+
 
 @serde
 class AR20(AR):
     """For students completing [PLAN] and [PLAN_LIST_1], [COURSE_LIST] only counts towards [PLAN_LIST_2]."""
 
-    plan: ProgramRef
+    plan_1: ProgramRef
     plan_list_1: list[ProgramRef]
     course_list: list[CourseRef]
     plan_list_2: list[ProgramRef]
+
+    def validate(self, plan: Plan) -> ValidateResult:
+        if plan.degree == self.plan_1.code:
+            for plan_ref in self.plan_list_1:
+                if plan_ref.code in plan.specialisations[self.part]:
+                    for course in plan.courses:
+                        if course in self.course_list:
+                            if plan.specialisations[self.part] not in self.plan_list_2:
+                                return ValidateResult(
+                                    Status.ERROR,
+                                    0,
+                                    f"{course} only counts towards {self.plan_list_2} for students completing {plan_ref}.",
+                                    [course],
+                                )
+
+        return ValidateResult(Status.OK, 100, "", [])
 
 
 @serde
