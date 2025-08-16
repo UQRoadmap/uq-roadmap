@@ -2,6 +2,7 @@
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from api.courses.models import CourseDBModel
 from common.enums import CourseLevel
@@ -50,5 +51,9 @@ async def get_course_by_code(db: AsyncSession, course_code: str) -> CourseDBMode
     Returns:
         CourseDBModel | None: Course model if found, else None.
     """
-    result = await db.execute(select(CourseDBModel).where(CourseDBModel.full_code == course_code))
+    result = await db.execute(
+        select(CourseDBModel)
+        .options(selectinload(CourseDBModel.offerings))  # eagerly load offerings
+        .where(CourseDBModel.full_code == course_code)
+    )
     return result.scalar_one_or_none()

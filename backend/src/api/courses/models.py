@@ -104,8 +104,7 @@ class CourseDBModel(BaseDBModel):
     offerings: Mapped[list[CourseOfferingDBModel]] = relationship(CourseOfferingDBModel, cascade="all, delete-orphan")
 
     secat: Mapped[CourseSecatDBModel | None] = relationship(
-        CourseSecatDBModel,
-        cascade="all, delete-orphan",
+        CourseSecatDBModel, cascade="all, delete-orphan", lazy="joined"
     )
 
     assessment: Mapped[dict | None] = mapped_column(JSON)

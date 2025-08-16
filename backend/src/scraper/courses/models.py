@@ -1,10 +1,10 @@
 """Course models."""
 
 from common.enums import CourseLevel
-from scraper.models import UQScrapeModel
+from common.schemas import AssessmentItem, SecatInfo, UQRoadmapBase
 
 
-class ScrapedCourseOffering(UQScrapeModel):
+class ScrapedCourseOffering(UQRoadmapBase):
     """Course offering."""
 
     semester: str
@@ -13,43 +13,7 @@ class ScrapedCourseOffering(UQScrapeModel):
     profile_url: str | None = None
 
 
-class ScrapedSecatQuestion(UQScrapeModel):
-    """Secat question."""
-
-    name: str
-    s_agree: float
-    agree: float
-    middle: float
-    disagree: float
-    s_disagree: float
-
-
-class ScrapedSecatInfo(UQScrapeModel):
-    """Secat information for a course."""
-
-    num_enrolled: int
-    num_responses: int
-    response_rate: float
-    questions: list[ScrapedSecatQuestion]
-
-
-class ScrapedAssessment(UQScrapeModel):
-    """Scraped assessment info."""
-
-    task: str
-    category: str | None = None
-    description: str | None = None
-    weight: float | None = None
-    due_date: str | None = None
-    mode: str | None = None
-    learning_outcomes: list[str]
-
-    # Flags
-    hurdle: bool
-    identity_verified: bool
-
-
-class ScrapedCourse(UQScrapeModel):
+class ScrapedCourse(UQRoadmapBase):
     """Course data model."""
 
     # General info
@@ -70,9 +34,9 @@ class ScrapedCourse(UQScrapeModel):
     class_hours: str | None = None
     course_enquries: str | None = None
 
-    latest_assessment: list[ScrapedAssessment] | None = None
+    latest_assessment: list[AssessmentItem] | None = None
 
-    secat: ScrapedSecatInfo | None = None
+    secat: SecatInfo | None = None
 
     # Offerings
     current_offerings: list[ScrapedCourseOffering]

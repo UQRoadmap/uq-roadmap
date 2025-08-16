@@ -1,13 +1,11 @@
 """Base models."""
 
-from pydantic import BaseModel
+from common.schemas import UQRoadmapBase
 
 
-class UQScrapeModel(BaseModel):
-    """Base model for UQ scrape models."""
+class Program(UQRoadmapBase):
+    """Program schema."""
 
-
-class Program(UQScrapeModel):
     title: str
     url: str
     program_id: str

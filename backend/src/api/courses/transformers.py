@@ -5,12 +5,15 @@ import logging
 from api.courses.models import CourseDBModel, CourseOfferingDBModel, CourseSecatDBModel, CourseSecatQuestionsDBModel
 from common.enums import CourseMode
 from common.reqs_parsing import parse_requirement
-from scraper.courses.models import ScrapedCourse, ScrapedCourseOffering, ScrapedSecatInfo
+from common.schemas import SecatInfo
+from scraper.courses.models import ScrapedCourse, ScrapedCourseOffering
 
 log = logging.getLogger(__name__)
 
+ASSESSMENT_ITEMS_KEY = "items"
 
-def _transform_scraped_secat(scraped: ScrapedSecatInfo) -> CourseSecatDBModel:
+
+def _transform_scraped_secat(scraped: SecatInfo) -> CourseSecatDBModel:
     # hopefully when they're linked up to the course the pk will be identified
     return CourseSecatDBModel(
         questions=[
@@ -73,7 +76,7 @@ def transform_scraped_course(scraped: ScrapedCourse) -> CourseDBModel:
         course_enquries=scraped.course_enquries,
         offerings=offerings,
         secat=_transform_scraped_secat(scraped.secat) if scraped.secat else None,
-        assessment={"assessment": [a.model_dump(mode="python") for a in scraped.latest_assessment]}
+        assessment={ASSESSMENT_ITEMS_KEY: [a.model_dump(mode="python") for a in scraped.latest_assessment]}
         if scraped.latest_assessment
         else None,
     )

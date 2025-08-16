@@ -10,7 +10,7 @@ import curl_cffi
 from bs4 import BeautifulSoup
 
 from common.enums import CourseLevel
-from scraper.courses.models import ScrapedAssessment, ScrapedCourse, ScrapedCourseOffering
+from scraper.courses.models import AssessmentItem, ScrapedCourse, ScrapedCourseOffering
 
 log = logging.getLogger(__name__)
 
@@ -46,9 +46,9 @@ async def _get_webpage(session: curl_cffi.AsyncSession, url: str) -> str:
     return html
 
 
-def _extract_assessment_html(html: str) -> list[ScrapedAssessment] | None:
+def _extract_assessment_html(html: str) -> list[AssessmentItem] | None:
     soup = BeautifulSoup(html, "html.parser")
-    assessments: list[ScrapedAssessment] = []
+    assessments: list[AssessmentItem] = []
     # Extract assessment information from the soup
 
     sections = soup.select("#assessment-details h3")
@@ -89,7 +89,7 @@ def _extract_assessment_html(html: str) -> list[ScrapedAssessment] | None:
         weight_val = (float(weight) / 100 if weight.isnumeric() else None) if weight is not None else None
 
         assessments.append(
-            ScrapedAssessment(
+            AssessmentItem(
                 task=task,
                 category=category,
                 description=task_description,
@@ -105,7 +105,7 @@ def _extract_assessment_html(html: str) -> list[ScrapedAssessment] | None:
     return assessments
 
 
-async def _extract_assessment_info(session: curl_cffi.AsyncSession, profile_url: str) -> list[ScrapedAssessment] | None:
+async def _extract_assessment_info(session: curl_cffi.AsyncSession, profile_url: str) -> list[AssessmentItem] | None:
     html = await _get_webpage(session, profile_url)
 
     return _extract_assessment_html(html)
@@ -233,7 +233,7 @@ async def _extract_course_html(session: curl_cffi.AsyncSession, html: str, cours
     current_offerings = _parse_offerings("course-current-offerings")
     archived_offerings = _parse_offerings("course-archived-offerings")
 
-    asessment_info: list[ScrapedAssessment] | None = None
+    asessment_info: list[AssessmentItem] | None = None
     for offering in current_offerings:
         if not offering.profile_url:
             continue
