@@ -234,37 +234,19 @@ class AR10(AR):
     course_list: list[CourseRef]
     plan_list: list[ProgramRef]
 
-
     def validate(self, plan: Plan) -> ValidateResult:
         for plan_ref in self.plan_list: 
             if plan_ref.code in plan.specialisations[self.part]:
-                values = [item for sublist in plan.specialisations.values() for item in sublist]
-            if set(self.plan_list_2) & set(values):
-                return ValidateResult(
-                    Status.ERROR,
-                    None,
-                    f"Expected {self.plan_list_1} to NOT be with {self.plan_list_2}.",
-                    plan.specialisations[self.part],
-                )
-            else:
-                return ValidateResult(Status.OK, 100, "", [])
-        
-    
-    def validate(self, plan: Plan) -> ValidateResult:
-        
-        badcourses = []
-        for course in plan.courses:
-            if course in self.course_list and plan.program in self.plan_list:
-                badcourses.append(course)
-        if badcourses:
-            return ValidateResult(
-                Status.ERROR,
-                None,
-                f"No credit for {self.course_list} for students completing {self.plan_list}.",
-                badcourses
-            )
-        else:
-            return ValidateResult(Status.OK, 100, "", [])
+                overlap = set(self.course_list) & set(plan.courses)
+                if overlap:
+                    return ValidateResult(
+                        Status.ERROR,
+                        0,
+                        f"No credit for {overlap} for students completing {plan_ref}.",
+                        list(overlap),
+                    )
+                else:
+                    return ValidateResult(Status.OK, 100, "", [])
 
 
 @serde
