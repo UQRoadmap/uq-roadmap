@@ -8,8 +8,8 @@ import Pop from '@/components/custom/palette'
 import {DndContext, DragEndEvent} from '@dnd-kit/core';
 import { Course } from '@/types/course';
 
-function SemesterSection({ semester, courses, setPaletteOpen, setActiveId }:
-    { semester: number; courses?: Course[], setPaletteOpen: (open: boolean) => void,
+function SemesterSection({ semester, courses, activeId, setPaletteOpen, setActiveId }:
+    { semester: number; courses?: Course[], activeId: string, setPaletteOpen: (open: boolean) => void,
       setActiveId: (id: string) => void}) {
     const [collapsed, setCollapsed] = useState(false);
 
@@ -75,7 +75,7 @@ function SemesterSection({ semester, courses, setPaletteOpen, setActiveId }:
                           key={`${course ? course.id : "empty"}-${semester}-${i}`}
                           className={getColSpanClass(course ? course.units : 2)} // default empty to 2 units
                         >
-                          {course ? <CourseCard {...course} />
+                          {course ? <CourseCard {...course} activeId={activeId} />
                                 :
                                     <EmptyCourseCard id={`${semester}-${i}`} setPaletteOpen={setPaletteOpen} setActiveId={setActiveId}/>
                           }
@@ -207,6 +207,7 @@ export default function Courses() {
               courses={stateCourses[i]}
               setPaletteOpen={setPaletteOpen}
               setActiveId={setActiveId}
+              activeId={activeId}
             />
           ))}
         </div>

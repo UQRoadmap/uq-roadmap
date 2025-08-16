@@ -5,7 +5,7 @@ import { Badge } from '@/components/badge'
 
 import { Course } from '@/types/course'
 
-export default function CourseCard({id, name, units, sem, secats, desc, degreeReq, completed}: Course) {
+export default function CourseCard({id, name, units, sem, secats, desc, degreeReq, completed}: Course, activeId: string) {
     return (
       <div>
       <Draggable
@@ -16,6 +16,9 @@ export default function CourseCard({id, name, units, sem, secats, desc, degreeRe
         <div
             className="bg-white box-border h-30 flex flex-col justify-between rounded-lg border border-gray-400 shadow-md overflow-hidden"
             key={id}
+            style={{
+              opacity: activeId === id ? 0 : 1, // TODO: hide original while dragging
+            }}
         >
             <div className="bg-red-400 p-2 space-y-1 flex justify-between align-center h-9">
                 <div className="text-xs font-medium truncate">
@@ -47,7 +50,7 @@ export default function CourseCard({id, name, units, sem, secats, desc, degreeRe
 }
 
 export function EmptyCourseCard({degreeReq, id, setPaletteOpen,  setActiveId}:
-    {degreeReq?: string, id: number, setPaletteOpen: (open: boolean) => void,
+    {degreeReq?: string, id: string, setPaletteOpen: (open: boolean) => void,
      setActiveId: (targetId: string) => void }) {
     return (
         <Droppable key={id} id={id}
