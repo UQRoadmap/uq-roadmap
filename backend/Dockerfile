@@ -25,4 +25,4 @@ WORKDIR /app
 # Add to path
 ENV PATH="/app/.venv/bin:$PATH"
 
-CMD ["fastapi", "run", "--host", "0.0.0.0", "--port", "8080", "src/uqroadmap/main.py"]
+CMD ["fastapi", "run", "--host", "0.0.0.0", "--port", "8080", "src/api/main.py"]

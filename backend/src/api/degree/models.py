@@ -1,7 +1,7 @@
 """Degree db models."""
 
-from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import JSON
+from sqlalchemy.orm import Mapped, mapped_column
 
 from api.database.base import BaseDBModel
 
