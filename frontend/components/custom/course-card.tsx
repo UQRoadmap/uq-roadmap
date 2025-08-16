@@ -4,9 +4,20 @@ import Draggable from "@/components/draggable"
 import { Badge } from '@/components/badge'
 
 import { Course } from '@/types/course'
+import { useState } from "react";
 
-export default function CourseCard({id, code, name, units, sem, secats, desc, degreeReq, completed}: Course) {
-    console.log(units)
+export type CourseExtended = Course & {
+  deleteMeth: (id: string, sem: string) => void
+}
+
+export default function CourseCard({id, code, name, units, sem, secats, desc, degreeReq, completed, deleteMeth}: CourseExtended) {
+    const [popupOpen, setPopupOpen] = useState(false);
+
+    function handleDelete() {
+      console.log("Delete course:", id, sem);
+      deleteMeth(id, sem);
+      setPopupOpen(false);
+    }
     return (
       <Draggable
         id={id}
@@ -19,13 +30,27 @@ export default function CourseCard({id, code, name, units, sem, secats, desc, de
             className="hover:cursor-grab bg-white box-border h-30 flex flex-col justify-between rounded-lg border border-gray-400 shadow-md overflow-hidden"
             key={id}
             >
-                <div className="bg-red-400 p-2 space-y-1 flex justify-between align-center h-9">
+                <div className="bg-tertiary p-2 space-y-1 flex justify-between align-center h-9">
                     <div className="text-xs font-medium truncate">
                         {degreeReq}
                     </div>
-                    <div>
-                        <EllipsisVerticalIcon className="h-3"/>
+                <div className="relative">
+                  <EllipsisVerticalIcon
+                    className="h-4 text-white hover:cursor-pointer"
+                    data-no-dnd="true"
+                    onClick={(e) => { e.stopPropagation(); setPopupOpen((prev) => !prev);}}
+                  />
+                  {popupOpen && (
+                    <div className="absolute right-0 mt-2 w-24 bg-white border border-gray-300 rounded shadow-lg z-100">
+                      <button
+                        onClick={handleDelete}
+                        className="w-full text-left px-2 py-1 text-red-600 hover:bg-gray-100"
+                      >
+                        Delete
+                      </button>
                     </div>
+                  )}
+                </div>
                 </div>
                 <div className="text-xs font-medium truncate p-2" title={name}>
                     {name}
@@ -96,7 +121,13 @@ export function PaletteCourseCard({id, code, name, units, sem, secats, desc, deg
           </div>
           <span className="ml-3 text-gray-400 text-sm">{desc.length > 180 ? desc.slice(0, 180) + '…' : desc}</span>
           <span className="ml-3 text-gray-400 text-sm space-x-2">
-              <Badge color={sem == "2" ? "blue" : sem == "1" ? "red" : "purple"}>Semester {sem}</Badge>
+            {sem.map((sem) => {
+              return (
+                <Badge key={sem} color="purple">
+                  {sem}
+                </Badge>
+              );
+            })}
               <Badge color="pink">{units} Units</Badge>
               <Badge color={secats > 3.5 ? "green" : secats > 2 ? "orange" : "red"}>
                   <div className="flex items-center space-x-1 text-yellow-400">
