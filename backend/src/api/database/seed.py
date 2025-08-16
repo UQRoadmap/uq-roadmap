@@ -4,20 +4,18 @@ import json
 import logging
 from collections.abc import Generator
 from pathlib import Path
+from pprint import pprint
 
 import orjson
+from serde.json import from_dict, to_json
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.courses.models import CourseDBModel
 from api.courses.transformers import transform_scraped_course
 from api.degree.models import DegreeDBModel
-from scraper.courses.models import ScrapedCourse
-
-from serde.json import from_dict, to_dict, to_json
-
-from scraper.degree import Degree as ParsedDegree
-
 from degree.converter import convert_degree
+from scraper.courses.models import ScrapedCourse
+from scraper.degree import Degree as ParsedDegree
 
 DATA_DIR = Path("data")
 COURSES_FILE = DATA_DIR / "complete_courses.json"
@@ -58,15 +56,22 @@ def load_degrees_from_file() -> Generator[DegreeDBModel]:
     with Path.open(DEGREES_FILE, "rb") as f:
         raw = f.read()
         details = json.loads(raw)["program_details"]
+        stop: bool = False
 
         for detail in details:
-            for year, data in detail["data"].items():
+            for data in detail["data"].values():
                 degree: ParsedDegree = from_dict(ParsedDegree | None, data)
                 if degree is None:
                     continue
 
                 flat = convert_degree(degree)
 
-                degree_db_model = DegreeDBModel(degree_id=str(flat.code), title=flat.name, json=to_json(flat))
+                if len(flat.aux) > 10 and not stop:
+                    pprint(flat)
+                    stop = True
+
+                degree_db_model = DegreeDBModel(
+                    degree_id=str(flat.code), year=int(flat.year), title=flat.name, json=to_json(flat)
+                )
 
                 yield degree_db_model
