@@ -1,6 +1,5 @@
 """Seeding DB with initial data."""
 
-import json
 import logging
 from collections.abc import Generator
 from pathlib import Path
@@ -59,8 +58,7 @@ def load_degrees_from_file() -> Generator[DegreeDBModel]:
             degree_meta_map[meta["program_id"]] = (meta["title"], meta["url"])
 
     with Path.open(DEGREES_FILE, "rb") as f:
-        raw = f.read()
-        details = json.loads(raw)["program_details"]
+        details = orjson.loads(f.read())["program_details"]
 
         for detail in details:
             for data in detail["data"].values():
