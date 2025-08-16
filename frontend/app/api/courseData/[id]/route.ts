@@ -32,6 +32,6 @@ export async function POST(request: Request) {
   // return all plans or handle body as needed
   console.log(request);
   const body = await request.json();
-  console.log(body);
+  console.log("body:", body);
   return NextResponse.json(body.id);
 }

@@ -5,5 +5,6 @@ export type Plan = {
   plannedCompleteSem: string,
   unitsRemaining: number,
   startYear: number,
-  endYear: number
+  endYear: number,
+  id: string
 }
