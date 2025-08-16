@@ -1,0 +1,1 @@
+"""UQ Course Scraper."""

@@ -12,6 +12,8 @@ import { Course, DegreeReq } from '@/types/course';
 import { v4 as uuidv4 } from "uuid";
 import ProgressCircle from '@/components/custom/progressCircle';
 import { Plan } from '@/types/plan';
+import { Dialog, DialogBody, DialogTitle } from '@/components/dialog';
+import { Textarea } from '@/components/textarea';
 
 
 function SemesterSection({ semester, courses, setPaletteOpen, setActiveId, setDelete, courseReqs}:
@@ -133,6 +135,9 @@ export function PlanDetailClient({ plan: initialPlan }: { plan: Plan }) {
       useSensor(MouseSensor),
       useSensor(KeyboardSensor)
     );
+    const [isPlanDialogOpen, setIsPlanDialogOpen] = useState(false);
+    const [planDialogData, setPlanDialogData] = useState<string>("");
+
     function handleDragEnd(event: DragEndEvent) {
         const { active, over } = event;
 
@@ -261,6 +266,7 @@ export function PlanDetailClient({ plan: initialPlan }: { plan: Plan }) {
         } else {
             targetSemIndex = (year - plan.startYear) * 2 + (semNum - 1);
         }
+        const targetIndex = parseInt(targetIndexStr, 10);
 
         const targetIndex = parseInt(targetIndexStr, 10);
         setCourses(prevCourses => {
@@ -326,10 +332,22 @@ export function PlanDetailClient({ plan: initialPlan }: { plan: Plan }) {
             setCourses(newCourses);
         }
     }, [plan]);
-
+    
     async function DeletePlan() {
-        const status = await Promise.resolve({ status: "success" })
-        console.log(status);
+        if (typeof window === "undefined" || !plan) return;
+        const possibleKeys = [
+            `plan-${plan.id}`,
+        ].filter(Boolean) as string[];
+
+        possibleKeys.forEach((k) => {
+            try {
+                localStorage.removeItem(k);
+            } catch (e) {
+                console.warn("Failed to remove localStorage key", k, e);
+            }
+        });
+
+        console.log("Deleted localStorage keys:", possibleKeys);
     }
 
     function sort() {
@@ -337,6 +355,29 @@ export function PlanDetailClient({ plan: initialPlan }: { plan: Plan }) {
         setCourses(prevCourses => [...prevCourses].reverse());
         setIsReversed(prev => !prev);
     }
+
+    // Function to open the dialog with plan data
+    const openPlanDataDialog = () => {
+        setPlanDialogData(JSON.stringify(plan, null, 2));
+        setIsPlanDialogOpen(true);
+    };
+    
+    // Function to save changes from the dialog
+    const savePlanData = () => {
+        try {
+            const updatedPlan = JSON.parse(planDialogData);
+            setPlan(updatedPlan);
+            
+            // Update localStorage
+            if (plan && plan.id) {
+                localStorage.setItem(`plans_${plan.id}`, planDialogData);
+            }
+            
+            setIsPlanDialogOpen(false);
+        } catch (error) {
+            alert("Invalid JSON format. Please check your data.");
+        }
+    };
 
     return (
         <div>
@@ -356,8 +397,7 @@ export function PlanDetailClient({ plan: initialPlan }: { plan: Plan }) {
                                                 <ChevronDownIcon />
                                             </DropdownButton>
                                             <DropdownMenu>
-                                                <DropdownItem href="/users/1">View</DropdownItem>
-                                                <DropdownItem href="/users/1/edit">Edit</DropdownItem>
+                                                <DropdownItem onClick={() => openPlanDataDialog()}>Edit</DropdownItem>
                                                 <DropdownItem className="hover:cursor-pointer" onClick={() => sort()}>Reverse Sorting</DropdownItem>
                                                 <DropdownItem className="hover:cursor-pointer" onClick={async () => await DeletePlan()}>Delete</DropdownItem>
                                             </DropdownMenu>
@@ -436,7 +476,50 @@ export function PlanDetailClient({ plan: initialPlan }: { plan: Plan }) {
                     </div>
                 </DndContext>
             </div>
-        </div>
 
+            
+            {/* Dialog for Plan Data */}
+            <Dialog
+                open={isPlanDialogOpen}
+                onClose={(open: boolean) => {
+                    setIsPlanDialogOpen(open);
+                    if (!open) {
+                        // reset edits when dialog is closed without saving
+                        setPlanDialogData(plan ? JSON.stringify(plan, null, 2) : "");
+                    }
+                }}
+            >
+                <DialogTitle>Plan Data</DialogTitle>
+                <div className="text-sm text-gray-600 mt-2">
+                    Edit the raw plan JSON. Saving will overwrite the current plan and update localStorage.
+                </div>
+                <DialogBody className="sm:max-w-4xl bg-white shadow-lg border border-gray-200 opacity-100 mt-4">
+                    <div className="mt-2">
+                        <Textarea
+                            value={planDialogData}
+                            onChange={(e) => setPlanDialogData((e.target as HTMLTextAreaElement).value)}
+                            className="font-mono text-sm h-96 w-full"
+                        />
+                    </div>
+                    <div className="mt-4 flex justify-end gap-2">
+                        <button
+                            onClick={() => {
+                                setIsPlanDialogOpen(false);
+                                setPlanDialogData(plan ? JSON.stringify(plan, null, 2) : "");
+                            }}
+                            className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={savePlanData}
+                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                        >
+                            Save Changes
+                        </button>
+                    </div>
+                </DialogBody>
+            </Dialog>
+        </div>
     );
 }

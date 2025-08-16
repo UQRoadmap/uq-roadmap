@@ -1,0 +1,31 @@
+# Git
+.git
+*.log
+.gitignore
+.gitattributes
+.github
+
+# Docker
+docker-compose.yml
+Dockerfile
+.docker
+.dockerignore
+
+# Byte-compiled / optimized / DLL files
+**/__pycache__/
+**/*.py[cod]
+
+# Virtual environment
+.env
+.venv/
+venv/
+
+# Others
+.ruff_cache
+.mypy_cache
+.venv
+README.md
+.python-version
+
+# Projects bits
+tests
