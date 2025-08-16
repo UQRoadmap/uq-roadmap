@@ -111,6 +111,30 @@ class AR4(AR):
     level: int
     or_higher: bool = True
 
+    def validate(self, plan: Plan) -> ValidateResult:
+        count = 0
+        badcourses = []
+        exceptionCourse = ""
+        try:
+            for course in plan.courses:
+                exceptionCourse = course
+                course_level = int(course[4])
+                if course_level == self.level or \
+                        (course_level > self.level and self.or_higher):
+                    count += -1  # change to units (ask lucas)
+                    badcourses.append(course)
+            if count >= self.n and count <= self.m:
+                return ValidateResult(Status.OK, 100, "", [])
+            elif count < self.n:
+                return ValidateResult(Status.ERROR, count / self.n * 100,
+                                    f"Expected at least {self.n} units at level {self.level}, found {count}.", badcourses)
+            else:
+                return ValidateResult(Status.ERROR, count / self.m * 100,
+                                    f"Expected at most {self.m} units at level {self.level}, found {count}.", badcourses)
+        except ValueError:
+            return ValidateResult(Status.ERROR, None,
+                                  "Invalid course level format", [exceptionCourse])
+
 
 @serde
 class AR5(AR):
