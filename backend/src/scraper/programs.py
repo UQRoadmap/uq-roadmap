@@ -1,11 +1,7 @@
 """Programs scraping."""
 
-import asyncio
-
-import httpx
-from bs4 import BeautifulSoup
-
 import cloudscraper
+from bs4 import BeautifulSoup
 
 from scraper.models import Program
 
@@ -41,6 +37,7 @@ def extract_programs(html: str) -> list[Program]:
         programs.append(Program(title=full_title, url=full_url, program_id=program_id))
 
     return programs
+
 
 def fetch_page(page: int) -> list[Program]:
     scraper = cloudscraper.create_scraper()

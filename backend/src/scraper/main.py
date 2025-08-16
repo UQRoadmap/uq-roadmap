@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 from common.enums import LogLevel
 from common.logging import configure_logging
 from scraper.courses import iter_secat_info, scrape_courses
+from scraper.models import Program
 from scraper.programs import scrape_all_programs
 
 if TYPE_CHECKING:
@@ -24,6 +25,7 @@ class ScrapeType(Enum):
     PROGRAM = "program"
     COURSE = "course"
     SECAT = "secat"
+    DETAILS = "details"
 
 
 def main() -> None:
