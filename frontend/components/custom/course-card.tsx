@@ -5,20 +5,18 @@ import { Badge } from '@/components/badge'
 
 import { Course } from '@/types/course'
 
-export default function CourseCard({id, name, units, sem, secats, desc, degreeReq, completed}: Course, activeId: string) {
+export default function CourseCard({id, code, name, units, sem, secats, desc, degreeReq, completed}: Course, activeId) {
+    console.log(units)
     return (
-      <div>
       <Draggable
         id={id}
         key={id}
-        data={{id, name, units, sem, secats, desc, degreeReq, completed}}
+        data={{id, code, name, units, sem, secats, desc, degreeReq, completed}}
+        disabled={false}
       >
         <div
             className="bg-white box-border h-30 flex flex-col justify-between rounded-lg border border-gray-400 shadow-md overflow-hidden"
             key={id}
-            style={{
-              opacity: activeId === id ? 0 : 1, // TODO: hide original while dragging
-            }}
         >
             <div className="bg-red-400 p-2 space-y-1 flex justify-between align-center h-9">
                 <div className="text-xs font-medium truncate">
@@ -32,7 +30,7 @@ export default function CourseCard({id, name, units, sem, secats, desc, degreeRe
                 {name}
             </div>
             <div className="text-xs flex items-center justify-between w-full p-2">
-                <div className="truncate">{id}</div>
+                <div className="truncate">{code}</div>
                 <div>
                     {units} Units
                 </div>
@@ -45,11 +43,10 @@ export default function CourseCard({id, name, units, sem, secats, desc, degreeRe
             </div>
         </div>
       </Draggable>
-      </div>
     )
 }
 
-export function EmptyCourseCard({degreeReq, id, setPaletteOpen,  setActiveId}:
+export function EmptyCourseCard({degreeReq, id, setPaletteOpen, setActiveId, setSem}:
     {degreeReq?: string, id: string, setPaletteOpen: (open: boolean) => void,
      setActiveId: (targetId: string) => void }) {
     return (
@@ -85,13 +82,13 @@ export function EmptyCourseCard({degreeReq, id, setPaletteOpen,  setActiveId}:
     )
 }
 
-export function PaletteCourseCard({id, name, units, sem, secats, desc, degreeReq, completed}: Course) {
+export function PaletteCourseCard({id, code, name, units, sem, secats, desc, degreeReq, completed}: Course) {
     return (
         <li
           className="group cursor-move rounded-md px-3 py-2 bg-gray-800 hover:bg-gray-700 transition-colors flex flex-col select-none"
         >
           <div className="flex justify-between items-center">
-            <span className="ml-3 flex-auto truncate text-gray-300 text-lg">{id} - {name}</span>
+            <span className="ml-3 flex-auto truncate text-gray-300 text-lg">{code} - {name}</span>
             <span className="ml-3 hidden flex-none text-gray-400 group-data-focus:inline">Add to planner</span>
           </div>
           <span className="ml-3 text-gray-400 text-sm">{desc.length > 180 ? desc.slice(0, 180) + '…' : desc}</span>

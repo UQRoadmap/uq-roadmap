@@ -6,7 +6,7 @@ export default function Droppable({id, children}: {id: string, children: React.R
     id: id,
   });
   const style = {
-    color: isOver ? 'green' : 'red',
+    backgroundColor: isOver ? 'rgba(156,163,175,0.9)' : 'rgba(156,163,175,0.2)',
   };
 
 

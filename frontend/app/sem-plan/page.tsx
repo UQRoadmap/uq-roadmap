@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CourseCard, { EmptyCourseCard } from "@/components/custom/course-card";
 import { ArrowDownIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
 
@@ -7,10 +7,10 @@ import Pop from '@/components/custom/palette'
 
 import {DndContext, DragEndEvent} from '@dnd-kit/core';
 import { Course } from '@/types/course';
-
-function SemesterSection({ semester, courses, activeId, setPaletteOpen, setActiveId }:
-    { semester: number; courses?: Course[], activeId: string, setPaletteOpen: (open: boolean) => void,
-      setActiveId: (id: string) => void}) {
+import { v4 as uuidv4 } from "uuid";
+function SemesterSection({ semester, courses, setPaletteOpen, setActiveId, setSem }:
+    { semester: number; courses?: Course[], setPaletteOpen: (open: boolean) => void,
+      setActiveId: (id: string) => void, setSem: (sem: string) => void}) {
     const [collapsed, setCollapsed] = useState(false);
 
     const normalCourses: Course[] = [];
@@ -66,7 +66,7 @@ function SemesterSection({ semester, courses, activeId, setPaletteOpen, setActiv
                     {Array.from({ length: 4 }).map((_, i) => {
                       const course = normalCourses.find(c => {
                         if (!c) return false;
-                        const [sem, pos] = c.sem.split("-"); // "20251-2"
+                        const [_, pos] = c.sem.split("-"); // "20251-2"
                         return Number(pos) === i;
                       });
 
@@ -75,9 +75,10 @@ function SemesterSection({ semester, courses, activeId, setPaletteOpen, setActiv
                           key={`${course ? course.id : "empty"}-${semester}-${i}`}
                           className={getColSpanClass(course ? course.units : 2)} // default empty to 2 units
                         >
-                          {course ? <CourseCard {...course} activeId={activeId} />
+                          {course ?
+                            <CourseCard {...course} />
                                 :
-                                    <EmptyCourseCard id={`${semester}-${i}`} setPaletteOpen={setPaletteOpen} setActiveId={setActiveId}/>
+                            <EmptyCourseCard id={`${semester}-${i}`} setPaletteOpen={setPaletteOpen} setActiveId={setActiveId} setSem={setSem}/>
                           }
 
                         </div>
@@ -110,6 +111,7 @@ function SemesterSection({ semester, courses, activeId, setPaletteOpen, setActiv
 
 export default function Courses() {
     const [isPaletteOpen, setPaletteOpen] = useState(false);
+    const [sem, setSem] = useState(null);
     function handleDragEnd(event: DragEndEvent) {
       const { active, over } = event;
 
@@ -145,6 +147,7 @@ export default function Courses() {
         const updatedCourse = { ...dragCourse, sem: year.toString() + targetSemIndex.toString() + "-" + targetIndex };
         // Insert at target position
         newCourses[targetSemIndex].splice(targetIndex, 0, updatedCourse);
+        console.log("drag", newCourses)
         return newCourses;
       });
       setActiveId(undefined);
@@ -160,19 +163,22 @@ export default function Courses() {
       setCourses(prevCourses => {
         const newCourses = prevCourses.map(sem => [...sem]);
 
-        const updatedCourse = { ...course, sem: targetId };
+        const updatedCourse = { ...course, sem: targetId, id: uuidv4()};
         newCourses[targetSemIndex].splice(targetIndex, 1, updatedCourse); // replace empty card
 
+        console.log("insert", newCourses)
         return newCourses;
       });
-      console.log(stateCourses)
+      setActiveId(undefined);
     };
 
 
     const [activeId, setActiveId] = useState<string | undefined>(undefined);
     const startYear = 2024;
     const endYear = 2026; // example
-
+    useEffect(() => {
+        console.log("id change: ", activeId);
+    });
     const semesters: number[] = [];
     const tmpCourses: Course[][] = [];
     for (let year = startYear; year <= endYear; year++) {
@@ -189,16 +195,16 @@ export default function Courses() {
         onDragEnd={handleDragEnd}
       >
         <Pop
-          draggable={false}
-          clickable={true}
+          clickable
           setActiveId={setActiveId}
           activeId={activeId}
           opened={isPaletteOpen}
           setPaletteOpen={setPaletteOpen}
           onSelectCourse={handleInsertCourse}
-        >
+          sem={sem}
+          stateCourses={stateCourses}
+        />
 
-        </Pop>
         <div className="flex flex-col h-screen overflow-y-auto">
           {semesters.map((semester, i) => (
             <SemesterSection
@@ -207,7 +213,7 @@ export default function Courses() {
               courses={stateCourses[i]}
               setPaletteOpen={setPaletteOpen}
               setActiveId={setActiveId}
-              activeId={activeId}
+              setSem={setSem}
             />
           ))}
         </div>

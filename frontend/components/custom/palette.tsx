@@ -21,7 +21,8 @@ import { Course } from '@/types/course'
 
 const courses: Course[] = [
   {
-    id: "CSSE6400",
+    code: "CSSE6400",
+    id: "meow1",
     sem: "1",
     name: 'Software Architecture',
     units: 2,
@@ -29,7 +30,8 @@ const courses: Course[] = [
     completed: false,
     desc: "Software systems are often composed of a heterogeneous network of inter-related systems. In this course you will build upon the knowledge and skills you have developed so far to learn how to design complex systems. This will include how these systems communicate and coordinate their responsibilities. You will learn design techniques to manage the complexity of large systems. You will learn how to assess and manage software risks (e.g.security, scalability, availability, resilience, robustness). You will apply these techniques to build a system composed of heterogeneous computing devices (e.g. mobile devices, servers, cloud-hosted services). You will learn how to apply systems thinking to design large-scale cyber-physical systems." },
   {
-    id: "CSSE3200",
+    code: "CSSE3200",
+    id: "meow",
     sem: "2",
     name: 'Software Engineering Studio: Design, Implement and Test',
     units: 2,
@@ -37,7 +39,8 @@ const courses: Course[] = [
     completed: false,
     desc: "Students work in teams on a studio-based software development project to gain an understanding of the processes, techniques and tools used to manage and deliver large, complex software systems. The course covers software engineering, design, project management and team work processes. Students will learn techniques and tools used to manage complex software projects. These techniques and tools will be applied to software design, verification and validation, configuration management and documentation." },
   {
-    id: "CSSE3221",
+    code: "CSSE3221",
+    id: "meow2",
     sem: "1 & 2",
     name: 'Software Engineering Studio: Design, Implement and Test',
     units: 2,
@@ -45,7 +48,8 @@ const courses: Course[] = [
     completed: false,
     desc: "Students work in teams on a studio-based software development project to gain an understanding of the processes, techniques and tools used to manage and deliver large, complex software systems. The course covers software engineering, design, project management and team work processes. Students will learn techniques and tools used to manage complex software projects. These techniques and tools will be applied to software design, verification and validation, configuration management and documentation." },
   {
-    id: "CSSE3211",
+    code: "CSSE3211",
+    id: "meow3",
     sem: "1 & 2",
     name: 'Software Engineering Studio: Design, Implement and Test',
     units: 2,
@@ -53,7 +57,8 @@ const courses: Course[] = [
     completed: false,
     desc: "Students work in teams on a studio-based software development project to gain an understanding of the processes, techniques and tools used to manage and deliver large, complex software systems. The course covers software engineering, design, project management and team work processes. Students will learn techniques and tools used to manage complex software projects. These techniques and tools will be applied to software design, verification and validation, configuration management and documentation." },
   {
-    id: "CSSE3201",
+    code: "CSSE3201",
+    id: "meow4",
     sem: "1 & 2",
     name: 'Software Engineering Studio: Design, Implement and Test',
     units: 2,
@@ -64,12 +69,11 @@ const courses: Course[] = [
 
 const recent = [courses[0]]
 
-export default function CommandPalette({draggable, clickable, setActiveId, activeId, opened, setPaletteOpen, onSelectCourse}:
+export default function CommandPalette({draggable, clickable, setActiveId, activeId, opened, sem, setPaletteOpen, onSelectCourse, stateCourses}:
     {draggable?: boolean, clickable?: boolean, setActiveId: (open: string) => void,
-        activeId: string, opened: boolean, setPaletteOpen: (open: boolean) => void,
-        onSelectCourse: (course: Course, id: string) => void}) {
+        activeId: string, opened: boolean, sem?: string, setPaletteOpen: (open: boolean) => void,
+        onSelectCourse: (course: Course, id: string) => void, stateCourses: Courses[][]}) {
   const [query, setQuery] = useState('')
-
   const activeCourse = courses.find(c => c.id === activeId) as Course;
   const filteredcourses: Course[] =
     query === ''
@@ -78,18 +82,19 @@ export default function CommandPalette({draggable, clickable, setActiveId, activ
           const q = query.toLowerCase();
           return (
             course.name.toLowerCase().includes(q) ||
-            course.id.toLowerCase().includes(q)
+            course.code.toLowerCase().includes(q)
           );
         });
 
     const handleClick = (course: Course) => {
       if (!clickable) return;
       console.log(course)
-
+      course.sem = sem
+      console.log("active", activeCourse)
+      setActiveId(course.id)
       if (onSelectCourse) {
         onSelectCourse(course, activeId); // pass the course and the target slot id
       }
-
       setPaletteOpen(false);
       setQuery('');
     };
@@ -139,12 +144,12 @@ export default function CommandPalette({draggable, clickable, setActiveId, activ
                         <li
                           className="group cursor-move rounded-md px-3 py-2 bg-gray-800 hover:bg-gray-700 transition-colors flex flex-col select-none"
                           onClick={() => handleClick(course)}
-                        style={{
-                          opacity: activeId === course.id ? 0 : 1, // hide original while dragging
-                        }}
+                          style={{
+                            opacity: activeId === course.id ? 0 : 1, // hide original while dragging
+                          }}
                         >
                           <div className="flex justify-between items-center">
-                            <span className="ml-3 flex-auto truncate text-lg">{course.id} - {course.name}</span>
+                            <span className="ml-3 flex-auto truncate text-lg">{course.code} - {course.name}</span>
                             <span className="ml-3 hidden flex-none text-gray-400 group-data-focus:inline">Add to planner</span>
                           </div>
                           <span className="ml-3 text-gray-400 text-sm">{course.desc.length > 180 ? course.desc.slice(0, 180) + '…' : course.desc}</span>
@@ -180,11 +185,11 @@ export default function CommandPalette({draggable, clickable, setActiveId, activ
         </DialogPanel>
       </div>
     </Dialog>
-    <DragOverlay>
-      {activeId ? (
-            <CourseCard {...activeCourse}/>
-        ): null }
-    </DragOverlay>
+<DragOverlay>
+  {activeId && (
+    <CourseCard {...stateCourses.flat().find(c => c.id === activeId)!} />
+  )}
+</DragOverlay>
     </div>
   )
 }
