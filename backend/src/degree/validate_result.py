@@ -1,7 +1,6 @@
 from enum import Enum
 
 from serde import serde
-from serde.json import from_json, to_json
 
 
 class Status(Enum):
@@ -17,7 +16,7 @@ class ValidateResult:
     message: str
     relevant: list[str]
 
-    def __init__(self, status, percentage, message, relevant):
+    def __init__(self, status: Status, percentage: float | None, message: str, relevant: list[str]):
         self.status = status
         self.percentage = percentage
         self.message = message
