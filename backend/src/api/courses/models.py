@@ -36,6 +36,10 @@ class CourseSecatDBModel(BaseDBModel):
     secat_id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
     course_id: Mapped[UUID] = mapped_column(ForeignKey("course.course_id"))
 
+    num_enrolled: Mapped[int]
+    num_responses: Mapped[int]
+    response_rate: Mapped[float]
+
     questions: Mapped[list[CourseSecatQuestionsDBModel]] = relationship(
         CourseSecatQuestionsDBModel,
         cascade="all, delete-orphan",
@@ -90,6 +94,9 @@ class CourseDBModel(BaseDBModel):
     num_units: Mapped[float]
     incompatible: Mapped[dict | None] = mapped_column(JSON)
     prerequisite: Mapped[dict | None] = mapped_column(JSON)
+
+    active: Mapped[bool]
+    semesters_str: Mapped[str | None]  # comma seperated version of enums
 
     # Misc Info
     attendance_mode: Mapped[CourseMode]

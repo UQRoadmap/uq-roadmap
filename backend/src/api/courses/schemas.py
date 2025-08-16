@@ -37,7 +37,7 @@ class CourseRead(UQRoadmapBase):
     category: str
     code: str
 
-    @computed_field
+    @computed_field  # type: ignore[misc]
     @property
     def full_code(self) -> str:
         """Get full course code e.g., 'CSSE1001."""
@@ -48,6 +48,17 @@ class CourseRead(UQRoadmapBase):
     level: CourseLevel
     num_units: float
     attendance_mode: CourseMode
+
+    active: bool  # whether the course is active
+    semesters_str: str | None  # comma seperate enum of semesters
+
+    @computed_field  # type: ignore[misc]
+    @property
+    def semesters(self) -> list[CourseSemester]:
+        """Get recent possible semesters of courses."""
+        if self.semesters_str is None:
+            return []
+        return [CourseSemester(s) for s in self.semesters_str.split(",")]
 
     secat: SecatInfo | None
 

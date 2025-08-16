@@ -38,7 +38,7 @@ async def get_all_courses(
         query = query.where(CourseDBModel.active == is_active)
 
     result = await db.execute(query)
-    return list(result.scalars().all())
+    return list(result.scalars().unique().all())
 
 
 async def get_course_by_code(db: AsyncSession, course_code: str) -> CourseDBModel | None:
@@ -56,4 +56,4 @@ async def get_course_by_code(db: AsyncSession, course_code: str) -> CourseDBMode
         .options(selectinload(CourseDBModel.offerings))  # eagerly load offerings
         .where(CourseDBModel.full_code == course_code)
     )
-    return result.scalar_one_or_none()
+    return result.unique().scalar_one_or_none()

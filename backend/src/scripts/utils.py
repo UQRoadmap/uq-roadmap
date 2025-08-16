@@ -4,7 +4,8 @@ from pathlib import Path
 
 import orjson
 
-from scraper.courses.models import ScrapedCourse, ScrapedSecatInfo
+from common.schemas import SecatInfo
+from scraper.courses.models import ScrapedCourse
 from scripts.constants import COURSES_FILE_NAME, SECATS_FILE_NAME
 
 
@@ -16,7 +17,7 @@ def load_courses() -> list[ScrapedCourse]:
     return [ScrapedCourse(**course) for course in data["courses"]]
 
 
-def load_secats() -> dict[str, ScrapedSecatInfo]:
+def load_secats() -> dict[str, SecatInfo]:
     """Get all the unique modes."""
     result = {}
     with Path.open(Path(SECATS_FILE_NAME), "r", encoding="utf-8") as file:
@@ -25,7 +26,7 @@ def load_secats() -> dict[str, ScrapedSecatInfo]:
             if cleaned:
                 obj = orjson.loads(cleaned)
                 course_code = obj["course"]
-                secat = ScrapedSecatInfo(**obj)
+                secat = SecatInfo(**obj)
                 result[course_code] = secat
 
     return result
