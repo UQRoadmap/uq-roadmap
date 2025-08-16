@@ -12,4 +12,4 @@ class Plan:
     course_reqs: dict[str, list[str]]
     courses: list[str]
     degree: str
-    specialisations: list[str]
+    specialisations: dict[str, list[str]]
