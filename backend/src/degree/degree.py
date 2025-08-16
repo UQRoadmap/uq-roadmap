@@ -5,7 +5,8 @@ from serde import serde
 from api.plan import Plan
 from degree.aux_rule import AR
 from degree.srs_rule import SR
-from degree.validate_result import ValidateResult
+from degree.validate_result import ValidateResult, Status
+from common.reqs_parsing import parse_requirement
 
 
 @serde
@@ -32,13 +33,22 @@ class Degree:
     rule_logic: list[str]
 
     def validate(self, plan: Plan) -> list[ValidateResult]:
-        # Things to do:
-        # -
         results = []
+        errored_parts = set()
         for aux in self.aux:
             results.append(aux.validate(plan))
+            if results[-1].status == Status.ERROR:
+                # An error produced by aux means an error in the part I guess?
+                errored_parts.add(results[-1].part)
         for srs in self.srs:
             results.append(srs.validate(plan))
+            if results[-1].status == Status.ERROR:
+                errored_parts.add(results[-1].part)
+
+        for rule in self.rule_logic:
+            parsed = parse_requirement(rule)
+            # TODO use this
+            pass
 
         return results
 
