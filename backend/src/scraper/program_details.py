@@ -66,10 +66,3 @@ def scrape_all_program_details(programs: list[str]) -> list:
             "data": year_data
         })
     return all_programs
-
-
-if __name__ == "__main__":
-    programs = fetch_programs()
-    details = scrape_all_program_details(programs)
-    with open("program_details.json", "w") as f:
-        json.dump(details, f, indent=2)
