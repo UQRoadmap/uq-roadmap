@@ -29,8 +29,8 @@ def _extract_programs(html: str) -> list[Program]:
             continue
 
         href = link["href"]
-        full_url = PROGRAMS_PREFIX + href
-        program_id = href.strip("/").split("-")[-1]
+        full_url = PROGRAMS_PREFIX + str(href)
+        program_id = str(href).strip("/").split("-")[-1]
 
         if not program_id.isdigit():
             continue

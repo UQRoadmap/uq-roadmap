@@ -2,6 +2,7 @@
 
 import json
 import logging
+from collections.abc import Generator
 from pathlib import Path
 
 import orjson
@@ -26,7 +27,7 @@ log = logging.getLogger(__name__)
 
 async def seed_db(session: AsyncSession, populate_courses: bool, populate_degrees: bool) -> None:  # noqa: D103, FBT001
     log.info("Checking if database needs to be seeded")
-    if not populate_courses:
+    if populate_courses:
         log.info("Seeding courses from file: %s", COURSES_FILE)
         for course in load_courses_from_file():
             session.add(course)
@@ -49,10 +50,9 @@ def load_courses_from_file() -> list[CourseDBModel]:
     return [transform_scraped_course(c) for c in scraped_courses]
 
 
-def load_degrees_from_file() -> list[DegreeDBModel]:
+def load_degrees_from_file() -> Generator[DegreeDBModel]:
     """Loads degrees from a JSON file and hydrates DegreeDBModel instances."""
     degree_meta_map: dict[str, tuple[str, str]] = {}  # mapping degree_id to (name, degree_url)
-    result = []
     with Path.open(DEGREES_META_FILE, "rb") as f:
         data = orjson.loads(f.read())
         for meta in data:
@@ -83,9 +83,8 @@ def load_degrees_from_file() -> list[DegreeDBModel]:
 
                 yield degree_db_model
 
-    with open(PLANS_FILE) as f:
-        raw = f.read()
-        raw_json = json.loads(raw)
+    with Path.open(Path(PLANS_FILE), "rb") as f:
+        raw_json = orjson.loads(f.read())
 
         for plan in raw_json:
             plan_id = plan["plan_id"]
@@ -98,15 +97,13 @@ def load_degrees_from_file() -> list[DegreeDBModel]:
                 # Pass the raw JSON data to the converter
                 flat = convert_degree(degree, data)
 
+                code = str(flat.code)
                 degree_db_model = DegreeDBModel(
-                    degree_code=str(flat.code),
+                    degree_code=code,
                     year=int(flat.year),
-                    title=flat.name,
+                    title=code,
                     details=to_json(flat),
                     degree_url=None,
                 )
 
                 yield degree_db_model
-                result.append(degree_db_model)
-
-    return result
