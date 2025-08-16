@@ -39,7 +39,8 @@ class SR1(SR):
         elif badcourses:
             return ValidateResult(Status.ERROR, (self.n - len(badcourses)) / self.n * 100.0,
                                   f"{', '.join(badcourses)} need to be in the plan", badcourses)
-        return ValidateResult(Status.OK, 100.0, "", [])
+        options = [option.code for option in self.options]
+        return ValidateResult(Status.OK, 100.0, f"Complete {self.n} units for ALL of the following {options}", options)
 
 
 @serde
@@ -74,7 +75,8 @@ class SR2(SR):
         if badcourses:
             return ValidateResult(Status.ERROR, (self.n - len(badcourses)) / self.n * 100.0,
                                   f"{', '.join(badcourses)} need to be in the plan", badcourses)
-        return ValidateResult(Status.OK, 100.0, "", [])
+        options = [option.code for option in self.options]
+        return ValidateResult(Status.OK, 100.0, f"Complete {self.n} to {self.m} units for ALL of the following {options}", options)
 
 
 @serde
@@ -98,7 +100,8 @@ class SR3(SR):
                                   f"{count} units found in plan, "
                                   f"but {self.n} required. Add from: "
                                   f"{', '.join(badcourses)}", badcourses)
-        return ValidateResult(Status.OK, 100.0, "", [])
+        options = [option.code for option in self.options]
+        return ValidateResult(Status.OK, 100.0, f"Complete at least {self.n} units from the following {options}", options)
 
 
 
@@ -131,7 +134,8 @@ class SR4(SR):
                                   f"{count} units found in plan, "
                                   f"but {self.m} maximum. Remove from: "
                                   f"{', '.join(donecourses)}", donecourses)
-        return ValidateResult(Status.OK, 100.0, "", [])
+        options = [option.code for option in self.options]
+        return ValidateResult(Status.OK, 100.0, f"Complete {self.n} to {self.m} units from the following {options}", options)
 
 
 @serde
@@ -162,7 +166,8 @@ class SR5(SR):
                                   f"{count} units found in plan, "
                                   f"but {self.n} required. Remove from: "
                                   f"{', '.join(donecourses)}", donecourses)
-        return ValidateResult(Status.OK, 100.0, "", [])
+        options = [option.code for option in self.options]
+        return ValidateResult(Status.OK, 100.0, f"Complete exactly {self.n} units from the following", options)
 
 
 @serde
@@ -176,7 +181,8 @@ class SR6(SR):
     def validate(self, plan: Plan, course_getter, degree_getter):
         option_codes = [opt.code for opt in self.options]
         if any(code in option_codes for code in plan.specialisations.get(self.part, {})):
-            return ValidateResult(Status.OK, 100.0, "", [])
+            options = [option.code for option in options]
+            return ValidateResult(Status.OK, 100.0, f"Complete one {self.plan_type} from the following", options)
         else:
             return ValidateResult(Status.ERROR, None,
                                   f"No {self.plan_type} found in plan. "
@@ -206,7 +212,8 @@ class SR7(SR):
                                   f"{count} {self.plan_types} found in plan, "
                                   f"but {self.n} required. Remove from: "
                                   f"{', '.join(option_codes)}", option_codes)
-        return ValidateResult(Status.OK, 100.0, "", [])
+        options = [option.code for option in self.options]
+        return ValidateResult(Status.OK, 100.0, f"Complete exactly {self.n} {self.plan_types} from the following {options}", options)
 
 
 @serde
@@ -233,7 +240,8 @@ class SR8(SR):
                                   f"{count} {self.plan_types} found in plan, "
                                   f"but {self.m} maximum. Remove from: "
                                   f"{', '.join(option_codes)}", option_codes)
-        return ValidateResult(Status.OK, 100.0, "", [])
+        options = [option.code for option in self.options]
+        return ValidateResult(Status.OK, 100.0, f"Complete {self.n} to {self.m} {self.plan_types} from the following {options}", options)
     
 
 def create_sr_from_dict(data: dict) -> SR:
