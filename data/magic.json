@@ -1,0 +1,1299 @@
+{
+  "title": "my.UQ - The University of Queensland, Australia",
+  "params": {
+    "type": "program",
+    "code": "5592",
+    "year": "2023"
+  },
+  "status": {
+    "noLongerOffered": false,
+    "alternate": null,
+    "domestic": {
+      "suspension": false,
+      "available": true
+    }
+  },
+  "programRequirements": {
+    "coPDF": {
+      "src": "https://objectstorage.ap-sydney-1.oraclecloud.com/p/lS0Pwws6CpbhE58gf9Fe4MyDEPz5dWJOg8iNbgZzrkfLppBEltOTjWYrivTTB9A_/n/ax7hzzupr0lq/b/UQ-PROD-STORAGE/o/Master-of-Applied-Linguistics-5592-3",
+      "extraData": null
+    },
+    "code": "5592",
+    "applicablePeriod": {
+      "toYear": "2023",
+      "toTerm": "Semester 3",
+      "fromYear": "2023",
+      "fromTerm": "Semester 1"
+    },
+    "publishInstanceID": 32713,
+    "type": "ProgramRules",
+    "orgParent": "The University of Queensland",
+    "authorLastName": "Taylor",
+    "subtype": "Postgraduate Program",
+    "payload": {
+      "components": [
+        {
+          "internalComponentIdentifier": 8,
+          "componentIntegrationIdentifier": "SEPARATOR_PROGRAM_RULES",
+          "payload": {
+            "header": null,
+            "body": null
+          },
+          "name": "2 - Program Requirements",
+          "type": "SEPARATOR"
+        },
+        {
+          "internalComponentIdentifier": 1,
+          "componentIntegrationIdentifier": "PROGRAM_RULES",
+          "payload": {
+            "header": {
+              "title": "Master of Applied Linguistics (MAppLing)",
+              "summaryDescription": "<p><strong>Complete 32 units for one of the following:</strong></p><ul><li class=\"ql-indent-1\"><strong>32</strong> units for <strong>MAppLing - 2 year full-time duration</strong>, or</li><li class=\"ql-indent-1\"><strong>32</strong> units for <strong>MAppLing - 1.5 year full-time duration (24 units of study and 8 units for prior learning)</strong>, or</li><li class=\"ql-indent-1\"><strong>32</strong> units for <strong>MAppLing - 1 year full time duration (16 units of study and 16 units for prior learning)</strong></li></ul>",
+              "ruleLogic": "Part A OR Part B OR Part C",
+              "auxiliaryRules": []
+            },
+            "body": [
+              {
+                "header": {
+                  "partUID": "1d98de67-7b83-5faa-1573-00abefc89ba7",
+                  "ruleLogic": "Part A.1 AND Part A.2 AND ( Part A.3 OR Part A.4 )",
+                  "partReference": "A",
+                  "unitsMin": 32,
+                  "auxiliaryRules": [
+                    {
+                      "code": "AR1",
+                      "text": "Selected courses must include at least [N] units at level [LEVEL][OR_HIGHER].",
+                      "params": [
+                        {
+                          "name": "N",
+                          "type": "NUMBER",
+                          "value": 8
+                        },
+                        {
+                          "name": "LEVEL",
+                          "type": "LEVEL",
+                          "value": 7
+                        },
+                        {
+                          "name": "OR_HIGHER",
+                          "type": "OR_HIGHER",
+                          "value": "No"
+                        }
+                      ]
+                    },
+                    {
+                      "code": "AR1",
+                      "text": "Selected courses must include at least [N] units at level [LEVEL][OR_HIGHER].",
+                      "params": [
+                        {
+                          "name": "N",
+                          "type": "NUMBER",
+                          "value": 12
+                        },
+                        {
+                          "name": "LEVEL",
+                          "type": "LEVEL",
+                          "value": 6
+                        },
+                        {
+                          "name": "OR_HIGHER",
+                          "type": "OR_HIGHER",
+                          "value": "Yes"
+                        }
+                      ]
+                    },
+                    {
+                      "code": "AR2",
+                      "text": "Selected courses must include at most [N] units at level [LEVEL].",
+                      "params": [
+                        {
+                          "name": "N",
+                          "type": "NUMBER",
+                          "value": 8
+                        },
+                        {
+                          "name": "LEVEL",
+                          "type": "LEVEL",
+                          "value": 3
+                        }
+                      ]
+                    },
+                    {
+                      "code": "AR2",
+                      "text": "Selected courses must include at most [N] units at level [LEVEL].",
+                      "params": [
+                        {
+                          "name": "N",
+                          "type": "NUMBER",
+                          "value": 20
+                        },
+                        {
+                          "name": "LEVEL",
+                          "type": "LEVEL",
+                          "value": 4
+                        }
+                      ]
+                    }
+                  ],
+                  "title": "MAppLing - 2 year full-time duration",
+                  "summaryDescription": "<p><strong>Complete 32 units comprising:</strong></p><ul><li class=\"ql-indent-1\"><strong>8</strong> units for <strong>MAppLing Foundational Courses</strong>, and</li><li class=\"ql-indent-1\"><strong>8</strong> units for all <strong>MAppLing Core Courses</strong>, and</li><li class=\"ql-indent-1\"><strong>Either:</strong></li><li class=\"ql-indent-2\"><strong>16</strong> units for <strong>MAppLing Dissertation Option</strong>, or</li><li class=\"ql-indent-2\"><strong>16</strong> units for <strong>MAppLing Portfolio Option</strong></li></ul>",
+                  "partType": "SubRule",
+                  "unitsMax": 32
+                },
+                "body": [
+                  {
+                    "header": {
+                      "partUUID": null,
+                      "notes": null,
+                      "partReference": "A.1",
+                      "auxiliaryRules": [],
+                      "selectionRule": null,
+                      "title": "MAppLing Foundational Courses",
+                      "partType": "SubRule"
+                    },
+                    "body": [
+                      {
+                        "rowType": null,
+                        "orderNumber": null,
+                        "notes": null,
+                        "curriculumReference": null,
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      },
+                      {
+                        "rowType": null,
+                        "orderNumber": null,
+                        "notes": null,
+                        "curriculumReference": null,
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      }
+                    ]
+                  },
+                  {
+                    "header": {
+                      "partUUID": null,
+                      "notes": null,
+                      "partReference": "A.2",
+                      "auxiliaryRules": [],
+                      "selectionRule": {
+                        "code": "SR1",
+                        "text": "Complete [N] units for ALL of the following:",
+                        "params": [
+                          {
+                            "name": "N",
+                            "type": "NUMBER",
+                            "value": 8
+                          }
+                        ]
+                      },
+                      "title": "MAppLing Core Courses",
+                      "partType": "SelectionList"
+                    },
+                    "body": [
+                      {
+                        "rowType": "CurriculumReference",
+                        "orderNumber": 1,
+                        "notes": null,
+                        "curriculumReference": {
+                          "unitsMaximum": 2,
+                          "code": "SLAT7805",
+                          "orgName": "Languages & Cultures School",
+                          "type": "Course",
+                          "version": {
+                            "major": 1,
+                            "minor": 1
+                          },
+                          "subtype": "Course",
+                          "fromYear": "2021",
+                          "latestVersion": false,
+                          "unitsMinimum": 2,
+                          "orgCode": "LCCS",
+                          "name": "Second Language Acquisition",
+                          "fromTerm": "Semester 1",
+                          "state": "Published"
+                        },
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      },
+                      {
+                        "rowType": "CurriculumReference",
+                        "orderNumber": 2,
+                        "notes": null,
+                        "curriculumReference": {
+                          "unitsMaximum": 2,
+                          "code": "SLAT7806",
+                          "orgName": "Languages & Cultures School",
+                          "type": "Course",
+                          "version": {
+                            "major": 1,
+                            "minor": 2
+                          },
+                          "subtype": "Course",
+                          "fromYear": "2021",
+                          "latestVersion": false,
+                          "unitsMinimum": 2,
+                          "orgCode": "LCCS",
+                          "name": "Research Methods",
+                          "fromTerm": "Semester 1",
+                          "state": "Published"
+                        },
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      },
+                      {
+                        "rowType": "CurriculumReference",
+                        "orderNumber": 3,
+                        "notes": null,
+                        "curriculumReference": {
+                          "unitsMaximum": 2,
+                          "code": "SLAT7826",
+                          "orgName": "Languages & Cultures School",
+                          "type": "Course",
+                          "version": {
+                            "major": 1,
+                            "minor": 1
+                          },
+                          "subtype": "Course",
+                          "fromYear": "2021",
+                          "latestVersion": false,
+                          "unitsMinimum": 2,
+                          "orgCode": "LCCS",
+                          "name": "Teaching Languages in a Global Context",
+                          "fromTerm": "Semester 1",
+                          "state": "Published"
+                        },
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      },
+                      {
+                        "rowType": "CurriculumReference",
+                        "orderNumber": 4,
+                        "notes": null,
+                        "curriculumReference": {
+                          "unitsMaximum": 2,
+                          "code": "SLAT7860",
+                          "orgName": "Languages & Cultures School",
+                          "type": "Course",
+                          "version": {
+                            "major": 1,
+                            "minor": 1
+                          },
+                          "subtype": "Course",
+                          "fromYear": "2021",
+                          "latestVersion": false,
+                          "unitsMinimum": 2,
+                          "orgCode": "LCCS",
+                          "name": "Language and Technology",
+                          "fromTerm": "Semester 1",
+                          "state": "Published"
+                        },
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      }
+                    ]
+                  },
+                  {
+                    "header": {
+                      "partUUID": null,
+                      "notes": null,
+                      "partReference": "A.3",
+                      "auxiliaryRules": [],
+                      "selectionRule": null,
+                      "title": "MAppLing Dissertation Option",
+                      "partType": "SubRule"
+                    },
+                    "body": [
+                      {
+                        "rowType": null,
+                        "orderNumber": null,
+                        "notes": null,
+                        "curriculumReference": null,
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      },
+                      {
+                        "rowType": null,
+                        "orderNumber": null,
+                        "notes": null,
+                        "curriculumReference": null,
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      },
+                      {
+                        "rowType": null,
+                        "orderNumber": null,
+                        "notes": null,
+                        "curriculumReference": null,
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      }
+                    ]
+                  },
+                  {
+                    "header": {
+                      "partUUID": null,
+                      "notes": null,
+                      "partReference": "A.4",
+                      "auxiliaryRules": [],
+                      "selectionRule": null,
+                      "title": "MAppLing Portfolio Option",
+                      "partType": "SubRule"
+                    },
+                    "body": [
+                      {
+                        "rowType": null,
+                        "orderNumber": null,
+                        "notes": null,
+                        "curriculumReference": null,
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      },
+                      {
+                        "rowType": null,
+                        "orderNumber": null,
+                        "notes": null,
+                        "curriculumReference": null,
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      },
+                      {
+                        "rowType": null,
+                        "orderNumber": null,
+                        "notes": null,
+                        "curriculumReference": null,
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "header": {
+                  "partUID": "406985b8-39f1-04e5-0f8c-57928efaebf5",
+                  "ruleLogic": "Part B.1 AND ( Part B.2 OR Part B.3 ) AND Part B.4",
+                  "partReference": "B",
+                  "unitsMin": 32,
+                  "auxiliaryRules": [
+                    {
+                      "code": "AR9",
+                      "text": "No credit will be given for [COURSE_LIST].",
+                      "params": [
+                        {
+                          "name": "COURSE_LIST",
+                          "type": "COURSE_LIST_OR",
+                          "value": [
+                            {
+                              "unitsMaximum": 2,
+                              "code": "SLAT7001",
+                              "orgName": "Languages & Cultures School",
+                              "subtype": "Course",
+                              "fromYear": "2021",
+                              "unitsMinimum": 2,
+                              "orgCode": "LCCS",
+                              "name": "Introduction to Second Language Learning and Teaching",
+                              "fromTerm": "Semester 1",
+                              "state": "Published",
+                              "type": "Course",
+                              "version": {
+                                "major": 1,
+                                "minor": 2
+                              }
+                            },
+                            {
+                              "unitsMaximum": 2,
+                              "code": "SLAT7705",
+                              "orgName": "Languages & Cultures School",
+                              "subtype": "Course",
+                              "fromYear": "2021",
+                              "unitsMinimum": 2,
+                              "orgCode": "LCCS",
+                              "name": "Structure of Language",
+                              "fromTerm": "Semester 1",
+                              "state": "Published",
+                              "type": "Course",
+                              "version": {
+                                "major": 1,
+                                "minor": 3
+                              }
+                            },
+                            {
+                              "unitsMaximum": 2,
+                              "code": "SLAT7706",
+                              "orgName": "Languages & Cultures School",
+                              "subtype": "Course",
+                              "fromYear": "2021",
+                              "unitsMinimum": 2,
+                              "orgCode": "LCCS",
+                              "name": "Concepts in Applied Linguistics",
+                              "fromTerm": "Semester 1",
+                              "state": "Published",
+                              "type": "Course",
+                              "version": {
+                                "major": 1,
+                                "minor": 3
+                              }
+                            },
+                            {
+                              "unitsMaximum": 2,
+                              "code": "WRIT6001",
+                              "orgName": "Languages & Cultures School",
+                              "subtype": "Course",
+                              "fromYear": "2021",
+                              "unitsMinimum": 2,
+                              "orgCode": "LCCS",
+                              "name": "Academic English & Thesis Writing for International Students",
+                              "fromTerm": "Semester 1",
+                              "state": "Published",
+                              "type": "Course",
+                              "version": {
+                                "major": 1,
+                                "minor": 4
+                              }
+                            },
+                            {
+                              "unitsMaximum": 2,
+                              "code": "PHIL7111",
+                              "orgName": "Historical & Philosophical Inq",
+                              "subtype": "Course",
+                              "fromYear": "2021",
+                              "unitsMinimum": 2,
+                              "orgCode": "HPRC",
+                              "name": "Critical Reasoning (Graduate)",
+                              "fromTerm": "Semester 1",
+                              "state": "Published",
+                              "type": "Course",
+                              "version": {
+                                "major": 1,
+                                "minor": 3
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "code": "AR1",
+                      "text": "Selected courses must include at least [N] units at level [LEVEL][OR_HIGHER].",
+                      "params": [
+                        {
+                          "name": "N",
+                          "type": "NUMBER",
+                          "value": 8
+                        },
+                        {
+                          "name": "LEVEL",
+                          "type": "LEVEL",
+                          "value": 7
+                        },
+                        {
+                          "name": "OR_HIGHER",
+                          "type": "OR_HIGHER",
+                          "value": "No"
+                        }
+                      ]
+                    },
+                    {
+                      "code": "AR1",
+                      "text": "Selected courses must include at least [N] units at level [LEVEL][OR_HIGHER].",
+                      "params": [
+                        {
+                          "name": "N",
+                          "type": "NUMBER",
+                          "value": 12
+                        },
+                        {
+                          "name": "LEVEL",
+                          "type": "LEVEL",
+                          "value": 6
+                        },
+                        {
+                          "name": "OR_HIGHER",
+                          "type": "OR_HIGHER",
+                          "value": "Yes"
+                        }
+                      ]
+                    },
+                    {
+                      "code": "AR2",
+                      "text": "Selected courses must include at most [N] units at level [LEVEL].",
+                      "params": [
+                        {
+                          "name": "N",
+                          "type": "NUMBER",
+                          "value": 6
+                        },
+                        {
+                          "name": "LEVEL",
+                          "type": "LEVEL",
+                          "value": 3
+                        }
+                      ]
+                    },
+                    {
+                      "code": "AR2",
+                      "text": "Selected courses must include at most [N] units at level [LEVEL].",
+                      "params": [
+                        {
+                          "name": "N",
+                          "type": "NUMBER",
+                          "value": 12
+                        },
+                        {
+                          "name": "LEVEL",
+                          "type": "LEVEL",
+                          "value": 4
+                        }
+                      ]
+                    }
+                  ],
+                  "title": "MAppLing - 1.5 year full-time duration (24 units of study and 8 units for prior learning)",
+                  "summaryDescription": "<p><strong>Complete 32 units comprising:</strong></p><ul><li class=\"ql-indent-1\"><strong>8</strong> units for all <strong>MAppLing Core Courses </strong>, and</li><li class=\"ql-indent-1\"><strong>Either:</strong></li><li class=\"ql-indent-2\"><strong>16</strong> units for <strong>MAppLing Dissertation Option</strong>, or</li><li class=\"ql-indent-2\"><strong>16</strong> units for <strong>MAppLing Portfolio Option</strong>, and</li><li class=\"ql-indent-1\"><strong>8</strong> units for all <strong>Approved recognised prior study and/or work experience</strong></li></ul>",
+                  "partType": "SubRule",
+                  "unitsMax": 32
+                },
+                "body": [
+                  {
+                    "header": {
+                      "partUUID": null,
+                      "notes": null,
+                      "partReference": "B.1",
+                      "auxiliaryRules": [],
+                      "selectionRule": {
+                        "code": "SR1",
+                        "text": "Complete [N] units for ALL of the following:",
+                        "params": [
+                          {
+                            "name": "N",
+                            "type": "NUMBER",
+                            "value": 8
+                          }
+                        ]
+                      },
+                      "title": "MAppLing Core Courses ",
+                      "partType": "SelectionList"
+                    },
+                    "body": [
+                      {
+                        "rowType": "CurriculumReference",
+                        "orderNumber": 1,
+                        "notes": null,
+                        "curriculumReference": {
+                          "unitsMaximum": 2,
+                          "code": "SLAT7805",
+                          "orgName": "Languages & Cultures School",
+                          "type": "Course",
+                          "version": {
+                            "major": 1,
+                            "minor": 1
+                          },
+                          "subtype": "Course",
+                          "fromYear": "2021",
+                          "latestVersion": false,
+                          "unitsMinimum": 2,
+                          "orgCode": "LCCS",
+                          "name": "Second Language Acquisition",
+                          "fromTerm": "Semester 1",
+                          "state": "Published"
+                        },
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      },
+                      {
+                        "rowType": "CurriculumReference",
+                        "orderNumber": 2,
+                        "notes": null,
+                        "curriculumReference": {
+                          "unitsMaximum": 2,
+                          "code": "SLAT7806",
+                          "orgName": "Languages & Cultures School",
+                          "type": "Course",
+                          "version": {
+                            "major": 1,
+                            "minor": 2
+                          },
+                          "subtype": "Course",
+                          "fromYear": "2021",
+                          "latestVersion": false,
+                          "unitsMinimum": 2,
+                          "orgCode": "LCCS",
+                          "name": "Research Methods",
+                          "fromTerm": "Semester 1",
+                          "state": "Published"
+                        },
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      },
+                      {
+                        "rowType": "CurriculumReference",
+                        "orderNumber": 3,
+                        "notes": null,
+                        "curriculumReference": {
+                          "unitsMaximum": 2,
+                          "code": "SLAT7826",
+                          "orgName": "Languages & Cultures School",
+                          "type": "Course",
+                          "version": {
+                            "major": 1,
+                            "minor": 1
+                          },
+                          "subtype": "Course",
+                          "fromYear": "2021",
+                          "latestVersion": false,
+                          "unitsMinimum": 2,
+                          "orgCode": "LCCS",
+                          "name": "Teaching Languages in a Global Context",
+                          "fromTerm": "Semester 1",
+                          "state": "Published"
+                        },
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      },
+                      {
+                        "rowType": "CurriculumReference",
+                        "orderNumber": 4,
+                        "notes": null,
+                        "curriculumReference": {
+                          "unitsMaximum": 2,
+                          "code": "SLAT7860",
+                          "orgName": "Languages & Cultures School",
+                          "type": "Course",
+                          "version": {
+                            "major": 1,
+                            "minor": 1
+                          },
+                          "subtype": "Course",
+                          "fromYear": "2021",
+                          "latestVersion": false,
+                          "unitsMinimum": 2,
+                          "orgCode": "LCCS",
+                          "name": "Language and Technology",
+                          "fromTerm": "Semester 1",
+                          "state": "Published"
+                        },
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      }
+                    ]
+                  },
+                  {
+                    "header": {
+                      "partUUID": null,
+                      "notes": null,
+                      "partReference": "B.2",
+                      "auxiliaryRules": [],
+                      "selectionRule": null,
+                      "title": "MAppLing Dissertation Option",
+                      "partType": "SubRule"
+                    },
+                    "body": [
+                      {
+                        "rowType": null,
+                        "orderNumber": null,
+                        "notes": null,
+                        "curriculumReference": null,
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      },
+                      {
+                        "rowType": null,
+                        "orderNumber": null,
+                        "notes": null,
+                        "curriculumReference": null,
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      },
+                      {
+                        "rowType": null,
+                        "orderNumber": null,
+                        "notes": null,
+                        "curriculumReference": null,
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      }
+                    ]
+                  },
+                  {
+                    "header": {
+                      "partUUID": null,
+                      "notes": null,
+                      "partReference": "B.3",
+                      "auxiliaryRules": [],
+                      "selectionRule": null,
+                      "title": "MAppLing Portfolio Option",
+                      "partType": "SubRule"
+                    },
+                    "body": [
+                      {
+                        "rowType": null,
+                        "orderNumber": null,
+                        "notes": null,
+                        "curriculumReference": null,
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      },
+                      {
+                        "rowType": null,
+                        "orderNumber": null,
+                        "notes": null,
+                        "curriculumReference": null,
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      },
+                      {
+                        "rowType": null,
+                        "orderNumber": null,
+                        "notes": null,
+                        "curriculumReference": null,
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      }
+                    ]
+                  },
+                  {
+                    "header": {
+                      "partUUID": null,
+                      "notes": null,
+                      "partReference": "B.4",
+                      "auxiliaryRules": [],
+                      "selectionRule": {
+                        "code": "SR1",
+                        "text": "Complete [N] units for ALL of the following:",
+                        "params": [
+                          {
+                            "name": "N",
+                            "type": "NUMBER",
+                            "value": 8
+                          }
+                        ]
+                      },
+                      "title": "Approved recognised prior study and/or work experience",
+                      "partType": "SelectionList"
+                    },
+                    "body": [
+                      {
+                        "rowType": "CurriculumReference",
+                        "orderNumber": 1,
+                        "notes": null,
+                        "curriculumReference": {
+                          "unitsMaximum": 8,
+                          "code": "RPDCR7008",
+                          "orgName": "The University of Queensland",
+                          "type": "Course",
+                          "version": {
+                            "major": 1,
+                            "minor": 1
+                          },
+                          "subtype": "Course",
+                          "fromYear": "2023",
+                          "latestVersion": false,
+                          "unitsMinimum": 8,
+                          "orgCode": "UQUNI",
+                          "name": "Prior Learning (8)",
+                          "fromTerm": "Semester 1",
+                          "state": "Published"
+                        },
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "header": {
+                  "partUID": "9f3e9bde-f339-c343-c4ef-f0825c1fc2af",
+                  "ruleLogic": "Part C.1 AND ( Part C.2 OR Part C.3 ) AND Part C.4",
+                  "partReference": "C",
+                  "unitsMin": 32,
+                  "auxiliaryRules": [
+                    {
+                      "code": "AR9",
+                      "text": "No credit will be given for [COURSE_LIST].",
+                      "params": [
+                        {
+                          "name": "COURSE_LIST",
+                          "type": "COURSE_LIST_OR",
+                          "value": [
+                            {
+                              "unitsMaximum": 2,
+                              "code": "SLAT7001",
+                              "orgName": "Languages & Cultures School",
+                              "subtype": "Course",
+                              "fromYear": "2021",
+                              "unitsMinimum": 2,
+                              "orgCode": "LCCS",
+                              "name": "Introduction to Second Language Learning and Teaching",
+                              "fromTerm": "Semester 1",
+                              "state": "Published",
+                              "type": "Course",
+                              "version": {
+                                "major": 1,
+                                "minor": 2
+                              }
+                            },
+                            {
+                              "unitsMaximum": 2,
+                              "code": "SLAT7705",
+                              "orgName": "Languages & Cultures School",
+                              "subtype": "Course",
+                              "fromYear": "2021",
+                              "unitsMinimum": 2,
+                              "orgCode": "LCCS",
+                              "name": "Structure of Language",
+                              "fromTerm": "Semester 1",
+                              "state": "Published",
+                              "type": "Course",
+                              "version": {
+                                "major": 1,
+                                "minor": 3
+                              }
+                            },
+                            {
+                              "unitsMaximum": 2,
+                              "code": "SLAT7706",
+                              "orgName": "Languages & Cultures School",
+                              "subtype": "Course",
+                              "fromYear": "2021",
+                              "unitsMinimum": 2,
+                              "orgCode": "LCCS",
+                              "name": "Concepts in Applied Linguistics",
+                              "fromTerm": "Semester 1",
+                              "state": "Published",
+                              "type": "Course",
+                              "version": {
+                                "major": 1,
+                                "minor": 3
+                              }
+                            },
+                            {
+                              "unitsMaximum": 2,
+                              "code": "WRIT6001",
+                              "orgName": "Languages & Cultures School",
+                              "subtype": "Course",
+                              "fromYear": "2021",
+                              "unitsMinimum": 2,
+                              "orgCode": "LCCS",
+                              "name": "Academic English & Thesis Writing for International Students",
+                              "fromTerm": "Semester 1",
+                              "state": "Published",
+                              "type": "Course",
+                              "version": {
+                                "major": 1,
+                                "minor": 4
+                              }
+                            },
+                            {
+                              "unitsMaximum": 2,
+                              "code": "PHIL7111",
+                              "orgName": "Historical & Philosophical Inq",
+                              "subtype": "Course",
+                              "fromYear": "2021",
+                              "unitsMinimum": 2,
+                              "orgCode": "HPRC",
+                              "name": "Critical Reasoning (Graduate)",
+                              "fromTerm": "Semester 1",
+                              "state": "Published",
+                              "type": "Course",
+                              "version": {
+                                "major": 1,
+                                "minor": 3
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "code": "AR1",
+                      "text": "Selected courses must include at least [N] units at level [LEVEL][OR_HIGHER].",
+                      "params": [
+                        {
+                          "name": "N",
+                          "type": "NUMBER",
+                          "value": 8
+                        },
+                        {
+                          "name": "LEVEL",
+                          "type": "LEVEL",
+                          "value": 7
+                        },
+                        {
+                          "name": "OR_HIGHER",
+                          "type": "OR_HIGHER",
+                          "value": "No"
+                        }
+                      ]
+                    },
+                    {
+                      "code": "AR1",
+                      "text": "Selected courses must include at least [N] units at level [LEVEL][OR_HIGHER].",
+                      "params": [
+                        {
+                          "name": "N",
+                          "type": "NUMBER",
+                          "value": 12
+                        },
+                        {
+                          "name": "LEVEL",
+                          "type": "LEVEL",
+                          "value": 6
+                        },
+                        {
+                          "name": "OR_HIGHER",
+                          "type": "OR_HIGHER",
+                          "value": "Yes"
+                        }
+                      ]
+                    },
+                    {
+                      "code": "AR2",
+                      "text": "Selected courses must include at most [N] units at level [LEVEL].",
+                      "params": [
+                        {
+                          "name": "N",
+                          "type": "NUMBER",
+                          "value": 4
+                        },
+                        {
+                          "name": "LEVEL",
+                          "type": "LEVEL",
+                          "value": 4
+                        }
+                      ]
+                    }
+                  ],
+                  "title": "MAppLing - 1 year full time duration (16 units of study and 16 units for prior learning)",
+                  "summaryDescription": "<p><strong>Complete 32 units comprising:</strong></p><ul><li class=\"ql-indent-1\"><strong>8</strong> units for all <strong>MAppLing Core Courses</strong>, and</li><li class=\"ql-indent-1\"><strong>Either:</strong></li><li class=\"ql-indent-2\"><strong>8</strong> units for <strong>MAppLing Fields of Study Option</strong>, or</li><li class=\"ql-indent-2\"><strong>8</strong> units for <strong>MAppLing No Field of Study Option</strong>, and</li><li class=\"ql-indent-1\"><strong>16</strong> units for all <strong>Approved recognised prior study and/or work experience</strong></li></ul>",
+                  "partType": "SubRule",
+                  "unitsMax": 32
+                },
+                "body": [
+                  {
+                    "header": {
+                      "partUUID": null,
+                      "notes": null,
+                      "partReference": "C.1",
+                      "auxiliaryRules": [],
+                      "selectionRule": {
+                        "code": "SR1",
+                        "text": "Complete [N] units for ALL of the following:",
+                        "params": [
+                          {
+                            "name": "N",
+                            "type": "NUMBER",
+                            "value": 8
+                          }
+                        ]
+                      },
+                      "title": "MAppLing Core Courses",
+                      "partType": "SelectionList"
+                    },
+                    "body": [
+                      {
+                        "rowType": "CurriculumReference",
+                        "orderNumber": 1,
+                        "notes": null,
+                        "curriculumReference": {
+                          "unitsMaximum": 2,
+                          "code": "SLAT7805",
+                          "orgName": "Languages & Cultures School",
+                          "type": "Course",
+                          "version": {
+                            "major": 1,
+                            "minor": 1
+                          },
+                          "subtype": "Course",
+                          "fromYear": "2021",
+                          "latestVersion": false,
+                          "unitsMinimum": 2,
+                          "orgCode": "LCCS",
+                          "name": "Second Language Acquisition",
+                          "fromTerm": "Semester 1",
+                          "state": "Published"
+                        },
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      },
+                      {
+                        "rowType": "CurriculumReference",
+                        "orderNumber": 2,
+                        "notes": null,
+                        "curriculumReference": {
+                          "unitsMaximum": 2,
+                          "code": "SLAT7806",
+                          "orgName": "Languages & Cultures School",
+                          "type": "Course",
+                          "version": {
+                            "major": 1,
+                            "minor": 2
+                          },
+                          "subtype": "Course",
+                          "fromYear": "2021",
+                          "latestVersion": false,
+                          "unitsMinimum": 2,
+                          "orgCode": "LCCS",
+                          "name": "Research Methods",
+                          "fromTerm": "Semester 1",
+                          "state": "Published"
+                        },
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      },
+                      {
+                        "rowType": "CurriculumReference",
+                        "orderNumber": 3,
+                        "notes": null,
+                        "curriculumReference": {
+                          "unitsMaximum": 2,
+                          "code": "SLAT7826",
+                          "orgName": "Languages & Cultures School",
+                          "type": "Course",
+                          "version": {
+                            "major": 1,
+                            "minor": 1
+                          },
+                          "subtype": "Course",
+                          "fromYear": "2021",
+                          "latestVersion": false,
+                          "unitsMinimum": 2,
+                          "orgCode": "LCCS",
+                          "name": "Teaching Languages in a Global Context",
+                          "fromTerm": "Semester 1",
+                          "state": "Published"
+                        },
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      },
+                      {
+                        "rowType": "CurriculumReference",
+                        "orderNumber": 4,
+                        "notes": null,
+                        "curriculumReference": {
+                          "unitsMaximum": 2,
+                          "code": "SLAT7860",
+                          "orgName": "Languages & Cultures School",
+                          "type": "Course",
+                          "version": {
+                            "major": 1,
+                            "minor": 1
+                          },
+                          "subtype": "Course",
+                          "fromYear": "2021",
+                          "latestVersion": false,
+                          "unitsMinimum": 2,
+                          "orgCode": "LCCS",
+                          "name": "Language and Technology",
+                          "fromTerm": "Semester 1",
+                          "state": "Published"
+                        },
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      }
+                    ]
+                  },
+                  {
+                    "header": {
+                      "partUUID": null,
+                      "notes": null,
+                      "partReference": "C.2",
+                      "auxiliaryRules": [],
+                      "selectionRule": null,
+                      "title": "MAppLing Fields of Study Option",
+                      "partType": "SubRule"
+                    },
+                    "body": [
+                      {
+                        "rowType": null,
+                        "orderNumber": null,
+                        "notes": null,
+                        "curriculumReference": null,
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      }
+                    ]
+                  },
+                  {
+                    "header": {
+                      "partUUID": null,
+                      "notes": null,
+                      "partReference": "C.3",
+                      "auxiliaryRules": [],
+                      "selectionRule": null,
+                      "title": "MAppLing No Field of Study Option",
+                      "partType": "SubRule"
+                    },
+                    "body": [
+                      {
+                        "rowType": null,
+                        "orderNumber": null,
+                        "notes": null,
+                        "curriculumReference": null,
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      }
+                    ]
+                  },
+                  {
+                    "header": {
+                      "partUUID": null,
+                      "notes": null,
+                      "partReference": "C.4",
+                      "auxiliaryRules": [],
+                      "selectionRule": {
+                        "code": "SR1",
+                        "text": "Complete [N] units for ALL of the following:",
+                        "params": [
+                          {
+                            "name": "N",
+                            "type": "NUMBER",
+                            "value": 16
+                          }
+                        ]
+                      },
+                      "title": "Approved recognised prior study and/or work experience",
+                      "partType": "SelectionList"
+                    },
+                    "body": [
+                      {
+                        "rowType": "CurriculumReference",
+                        "orderNumber": 1,
+                        "notes": null,
+                        "curriculumReference": {
+                          "unitsMaximum": 16,
+                          "code": "RPDCR7016",
+                          "orgName": "The University of Queensland",
+                          "type": "Course",
+                          "version": {
+                            "major": 1,
+                            "minor": 1
+                          },
+                          "subtype": "Course",
+                          "fromYear": "2023",
+                          "latestVersion": false,
+                          "unitsMinimum": 16,
+                          "orgCode": "UQUNI",
+                          "name": "Prior Learning (16)",
+                          "fromTerm": "Semester 1",
+                          "state": "Published"
+                        },
+                        "equivalenceGroup": null,
+                        "wildCardItem": null
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "name": "Rules",
+          "type": "PROGRAM_RULE"
+        },
+        {
+          "internalComponentIdentifier": 34,
+          "componentIntegrationIdentifier": "SEPARATOR_SPECIAL_RULES",
+          "payload": {
+            "header": null,
+            "body": null
+          },
+          "name": "3 - Special Rules",
+          "type": "SEPARATOR"
+        },
+        {
+          "internalComponentIdentifier": 35,
+          "componentIntegrationIdentifier": "DESCRIPTION_SPECIAL_RULES",
+          "payload": {
+            "header": null,
+            "body": null
+          },
+          "name": "Detail any special rules which are to be applied:",
+          "type": "MULTI_LINE_TEXT"
+        },
+        {
+          "internalComponentIdentifier": 38,
+          "componentIntegrationIdentifier": "Program-Requirements.Overlap-Rule",
+          "payload": {
+            "header": null,
+            "body": null
+          },
+          "name": "Course Overlap Rules Options",
+          "type": "CHECK_BOX"
+        }
+      ]
+    },
+    "orgCode": "HSS",
+    "externalSystemIdentifiers": [
+      {
+        "systemCode": "TRIM",
+        "id": "159530434"
+      }
+    ],
+    "state": "PublishRequest",
+    "unitsMaximum": 32,
+    "orgName": "Humanities, Arts and Social Sciences",
+    "baseVersion": {
+      "major": 3,
+      "minor": 3
+    },
+    "workflowName": "Prog Req - Simple Amendment",
+    "version": {
+      "major": 3,
+      "minor": 4
+    },
+    "editDate": "2025-01-22T22:16:48Z",
+    "previousState": "Approved",
+    "swaggerVersion": {
+      "major": 1,
+      "minor": 33
+    },
+    "templateName": "Program Requirements",
+    "unitsMinimum": 32,
+    "templateIntegrationIdentifier": "ProgReq,ProgReq",
+    "yearApplied": "2023",
+    "authorGivenName": "Olivia",
+    "name": "Master of Applied Linguistics",
+    "templateVersion": 3
+  },
+  "yearOptions": [
+    "2026",
+    "2025",
+    "2024",
+    "2023",
+    "2022",
+    "2021",
+    "2020",
+    "2019",
+    "2018",
+    "2017",
+    "2016",
+    "2015"
+  ],
+  "routes": {
+    "jac": {
+      "program": {
+        "list": "/requirements/program/{code}/{year}"
+      },
+      "plan": {
+        "list": "/requirements/plan/{code}/{year}"
+      },
+      "redirect": "/requirements/redirect?type={type}&code={code}&year={year}"
+    },
+    "sinet": {
+      "home": "/index.html",
+      "program": {
+        "detail": "/program.html?acad_prog={code}&year={year}",
+        "list": "/program_list.html?acad_prog={code}&year={year}"
+      },
+      "plan": {
+        "detail": "/plan.html?acad_plan={code}&year={year}",
+        "list": "/plan_display.html?acad_plan={code}&year={year}"
+      },
+      "course": {
+        "detail": "/course.html?course_code={code}"
+      },
+      "search": "/search.html?keywords={keywords}&searchType=coursecode&year={year}",
+      "wildsearch": "/index.html?searchType=coursecode"
+    }
+  }
+}
