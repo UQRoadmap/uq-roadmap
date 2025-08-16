@@ -3,14 +3,15 @@ import Droppable from "@/components/droppable"
 import Draggable from "@/components/draggable"
 import { Badge } from '@/components/badge'
 
-export default function CourseCard({name, id, units, degreeReq}: {name: string, id: string, units: number, degreeReq: string}) {
-    const course = { units, name, id, degreeReq }
+import { Course } from '@/types/course'
+
+export default function CourseCard({id, name, units, sem, secats, desc, degreeReq, completed}: Course) {
     return (
       <div>
       <Draggable
         id={id}
         key={id}
-        data={{name, id, units, degreeReq}}
+        data={{id, name, units, sem, secats, desc, degreeReq, completed}}
       >
         <div
             className="bg-white box-border h-30 flex flex-col justify-between rounded-lg border border-gray-400 shadow-md overflow-hidden"
@@ -33,7 +34,7 @@ export default function CourseCard({name, id, units, degreeReq}: {name: string, 
                     {units} Units
                 </div>
                 <div className="flex items-center space-x-1 text-yellow-400">
-                    <span>4.77</span>
+                    <span>{secats}</span>
                     <StarIcon className="w-3 h-3" />
                 </div>
             </div>
@@ -84,13 +85,13 @@ export function EmptyCourseCard({degreeReq, id}: {degreeReq?: string, id: number
     )
 }
 
-export function PaletteCourseCard({sem, secats, units, desc, code, name}) {
+export function PaletteCourseCard({id, name, units, sem, secats, desc, degreeReq, completed}: Course) {
     return (
         <li
           className="group cursor-move rounded-md px-3 py-2 bg-gray-800 hover:bg-gray-700 transition-colors flex flex-col select-none"
         >
           <div className="flex justify-between items-center">
-            <span className="ml-3 flex-auto truncate text-gray-300 text-lg">{code} - {name}</span>
+            <span className="ml-3 flex-auto truncate text-gray-300 text-lg">{id} - {name}</span>
             <span className="ml-3 hidden flex-none text-gray-400 group-data-focus:inline">Add to planner</span>
           </div>
           <span className="ml-3 text-gray-400 text-sm">{desc.length > 180 ? desc.slice(0, 180) + '…' : desc}</span>
@@ -99,7 +100,8 @@ export function PaletteCourseCard({sem, secats, units, desc, code, name}) {
               <Badge color="pink">{units} Units</Badge>
               <Badge color={secats > 3.5 ? "green" : secats > 2 ? "orange" : "red"}>
                   <div className="flex items-center space-x-1 text-yellow-400">
-                    stars to go here
+                    <span>{secats}</span>
+                    <StarIcon className="w-3 h-3" />
                   </div>
               </Badge>
           </span>

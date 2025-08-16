@@ -17,13 +17,16 @@ import {DragOverlay} from '@dnd-kit/core';
 import Draggable from '@/components/draggable'
 import { useState } from 'react'
 
-const courses = [
+import { Course } from '@/types/course'
+
+const courses: Course[] = [
   {
     id: "CSSE6400",
     sem: "1",
     name: 'Software Architecture',
     units: 2,
     secats: 4,
+    completed: false,
     desc: "Software systems are often composed of a heterogeneous network of inter-related systems. In this course you will build upon the knowledge and skills you have developed so far to learn how to design complex systems. This will include how these systems communicate and coordinate their responsibilities. You will learn design techniques to manage the complexity of large systems. You will learn how to assess and manage software risks (e.g.security, scalability, availability, resilience, robustness). You will apply these techniques to build a system composed of heterogeneous computing devices (e.g. mobile devices, servers, cloud-hosted services). You will learn how to apply systems thinking to design large-scale cyber-physical systems." },
   {
     id: "CSSE3200",
@@ -31,6 +34,7 @@ const courses = [
     name: 'Software Engineering Studio: Design, Implement and Test',
     units: 2,
     secats: 3,
+    completed: false,
     desc: "Students work in teams on a studio-based software development project to gain an understanding of the processes, techniques and tools used to manage and deliver large, complex software systems. The course covers software engineering, design, project management and team work processes. Students will learn techniques and tools used to manage complex software projects. These techniques and tools will be applied to software design, verification and validation, configuration management and documentation." },
   {
     id: "CSSE3221",
@@ -38,6 +42,7 @@ const courses = [
     name: 'Software Engineering Studio: Design, Implement and Test',
     units: 2,
     secats: 1,
+    completed: false,
     desc: "Students work in teams on a studio-based software development project to gain an understanding of the processes, techniques and tools used to manage and deliver large, complex software systems. The course covers software engineering, design, project management and team work processes. Students will learn techniques and tools used to manage complex software projects. These techniques and tools will be applied to software design, verification and validation, configuration management and documentation." },
   {
     id: "CSSE3211",
@@ -45,6 +50,7 @@ const courses = [
     name: 'Software Engineering Studio: Design, Implement and Test',
     units: 2,
     secats: 1,
+    completed: false,
     desc: "Students work in teams on a studio-based software development project to gain an understanding of the processes, techniques and tools used to manage and deliver large, complex software systems. The course covers software engineering, design, project management and team work processes. Students will learn techniques and tools used to manage complex software projects. These techniques and tools will be applied to software design, verification and validation, configuration management and documentation." },
   {
     id: "CSSE3201",
@@ -52,17 +58,18 @@ const courses = [
     name: 'Software Engineering Studio: Design, Implement and Test',
     units: 2,
     secats: 1,
+    completed: false,
     desc: "Students work in teams on a studio-based software development project to gain an understanding of the processes, techniques and tools used to manage and deliver large, complex software systems. The course covers software engineering, design, project management and team work processes. Students will learn techniques and tools used to manage complex software projects. These techniques and tools will be applied to software design, verification and validation, configuration management and documentation." },
 ]
 
 const recent = [courses[0]]
 
-export default function CommandPalette({draggable, clickable, activeId}: {draggable?: boolean, clickable?: boolean, activeId?: number}) {
+export default function CommandPalette({draggable, clickable, activeId}: {draggable?: boolean, clickable?: boolean, activeId?: string}) {
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(true)
 
-  const activeCourse = courses.find(c => c.id === activeId)
-  const filteredcourses =
+  const activeCourse = courses.find(c => c.id === activeId) as Course;
+  const filteredcourses: Course[] =
     query === ''
       ? []
       : courses.filter((course) => {
@@ -123,7 +130,7 @@ export default function CommandPalette({draggable, clickable, activeId}: {dragga
                           className="group cursor-move rounded-md px-3 py-2 bg-gray-800 hover:bg-gray-700 transition-colors flex flex-col select-none"
                           onClick={() => handleClick()}
                         style={{
-                          opacity: activeId === course.id ? 0 : 1, // hide original while dragging
+                          opacity: activeId === +course.id ? 0 : 1, // hide original while dragging
                         }}
                         >
                           <div className="flex justify-between items-center">
@@ -165,7 +172,7 @@ export default function CommandPalette({draggable, clickable, activeId}: {dragga
     </Dialog>
     <DragOverlay>
       {activeId ? (
-            <CourseCard secats={activeCourse.secats} units={activeCourse.units} desc={activeCourse.desc} id={activeCourse.id} name={activeCourse.name}/>
+            <CourseCard {...activeCourse}/>
         ): null }
     </DragOverlay>
     </div>

@@ -5,15 +5,15 @@ import { ArrowDownIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
 
 import Pop from '@/components/custom/palette'
 
-import {DndContext} from '@dnd-kit/core';
-type CourseInfo = { name: string; id: string; units: number; degreeReq: string; sem: number; completed: boolean };
+import {DndContext, DragEndEvent} from '@dnd-kit/core';
+import { Course } from '@/types/course';
 
-function SemesterSection({ semester, courses }: { semester: number; courses: CourseInfo[] }) {
+function SemesterSection({ semester, courses }: { semester: number; courses: Course[] }) {
     const [collapsed, setCollapsed] = useState(false);
 
     let usedUnits = 0;
-    const normalCourses: CourseInfo[] = [];
-    const overloadCourses: CourseInfo[] = [];
+    const normalCourses: Course[] = [];
+    const overloadCourses: Course[] = [];
     courses.forEach(course => {
         if (usedUnits + course.units <= 8) {
             normalCourses.push(course);
@@ -92,25 +92,24 @@ function SemesterSection({ semester, courses }: { semester: number; courses: Cou
 }
 
 export default function Courses() {
-    function handleDragEnd(event) {
+    function handleDragEnd(event: DragEndEvent) {
       const {active, over} = event;
-
-      console.log("Drag ended")
-      console.log(event)
-      console.log(active.data.current)
-      console.log("Drag over")
-      const dragCourse = active.data.current;
-      dragCourse.sem = over?.id;
-      setCourses((prevCourses) => [
-        ...prevCourses.filter(c => c.id !== dragCourse.id),
-        dragCourse
-      ]);
-      console.log("set courses")
-      setActiveId(null);
+      console.log(active)
+      if (over) {
+        const dragCourse = active.data.current as Course;
+        if (dragCourse) {
+          const updatedCourse = { ...dragCourse, sem: over.id.toString()};
+          setCourses((prevCourses) => [
+            ...prevCourses.filter(c => c.id !== dragCourse.id),
+            updatedCourse
+          ]);
+        }
+      }
+      setActiveId(undefined);
     }
 
-    const [activeId, setActiveId] = useState<number | null>(null);
-    const [stateCourses, setCourses] = useState([]);
+    const [activeId, setActiveId] = useState<string | undefined>(undefined);
+    const [stateCourses, setCourses] = useState<Course[]>([]);
 
     const startYear = 2024;
     const endYear = 2026; // example
@@ -123,7 +122,7 @@ export default function Courses() {
 
     return (
       <DndContext
-        onDragStart={({ active }) => setActiveId(active.id)}
+        onDragStart={({ active }) => setActiveId(active.id as string)}
         onDragEnd={handleDragEnd}
       >
         <Pop draggable activeId={activeId}></Pop>
@@ -132,7 +131,7 @@ export default function Courses() {
             <SemesterSection
               key={semester}
               semester={semester}
-              courses={stateCourses.filter(c => c.sem === semester)}
+              courses={stateCourses.filter(c => +c.sem === semester)}
             />
           ))}
         </div>
