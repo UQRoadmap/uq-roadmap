@@ -9,7 +9,6 @@ from api.plan import Plan
 
 @serde(tagging=AdjacentTagging("code", "data"))
 class AR:
-
     def validate(plan) -> ValidateResult:
         return ValidateResult(Status.ERROR, None, "Should not be seeing this", [])
 
@@ -33,11 +32,15 @@ class AR1(AR):
             if count >= self.n:
                 return ValidateResult(Status.OK, 100, "", [])
             else:
-                return ValidateResult(Status.ERROR, count / self.n * 100,
-                                    f"Expected at least {self.n} units at level {self.level}{' or higher' if self.or_higher else ''}, found {count}.", plan.courses)
+                return ValidateResult(
+                    Status.ERROR,
+                    count / self.n * 100,
+                    f"Expected at least {self.n} units at level {self.level}{' or higher' if self.or_higher else ''}, found {count}.",
+                    plan.courses,
+                )
         except ValueError:
-            return ValidateResult(Status.ERROR, None,
-                                  "Invalid course level format", plan.courses)
+            return ValidateResult(Status.ERROR, None, "Invalid course level format", plan.courses)
+
 
 @serde
 class AR2(AR):

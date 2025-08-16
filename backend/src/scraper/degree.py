@@ -50,8 +50,6 @@ def main():
                                         ar_params.add(param.type)
 
                             if body2.header is not None and body2.header.selectionRule is not None:
-                                if body2.header.auxiliaryRules is not None and len(body2.header.auxiliaryRules) > 0:
-                                    return
                                 srs[body2.header.selectionRule.code] = body2.header.selectionRule.text
                                 for param in body2.header.selectionRule.params:
                                     if param.name not in sr_params:
