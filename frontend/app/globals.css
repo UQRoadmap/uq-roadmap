@@ -14,14 +14,6 @@
   --color-accent: var(--accent)
 }
 
-/* TODO undo when dark mode */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #ffffff;
-    --foreground: #171717;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);

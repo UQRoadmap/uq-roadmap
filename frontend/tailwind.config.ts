@@ -1,5 +1,11 @@
-module.exports = {
-  content: [ "./app/**/*.{js,jsx,ts,tsx}" ],
+import type { Config } from "tailwindcss"
+
+const config: Config = {
+  content: [
+    "./app/**/*.{js,jsx,ts,tsx}",
+    "./components/**/*.{js,jsx,ts,tsx}",
+  ],
+  darkMode: false,
   theme: {
     extend: {
       colors: {
@@ -9,3 +15,5 @@ module.exports = {
   },
   plugins: [],
 }
+
+export default config
