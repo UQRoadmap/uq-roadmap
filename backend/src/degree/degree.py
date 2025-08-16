@@ -4,7 +4,7 @@ from serde import serde
 
 from api.plan import Plan
 from degree.aux_rule import AR
-from degree.srs_rule import SR
+from backend.src.degree.sr_rule import SR
 from degree.validate_result import ValidateResult
 
 
