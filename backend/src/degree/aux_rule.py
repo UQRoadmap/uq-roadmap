@@ -392,6 +392,35 @@ class AR17(AR):
     program_plan_list: list[ProgramRef]
     lists: list[str]
 
+    def validate(self, plan: Plan) -> ValidateResult:
+        
+        if self.must:
+            overlap = set(self.course_list) & set(plan.courses)
+            if not overlap:
+                return ValidateResult(
+                    Status.ERROR,
+                    0,
+                    f"Expected {self.course_list} to be substituted in {self.plan_list} by a course from {self.lists} in {self.program_plan_list}.",
+                    list(overlap),
+                )
+            else:
+                return ValidateResult(Status.OK, 100, "", [])
+        else:
+            # If it's a MAY, we don't need to check anything
+            overlap = set(self.course_list) & set(plan.courses)
+            if overlap:
+                return ValidateResult(Status.OK, 100,
+                                  f"{overlap} may be substituted in" +
+                                  f"{self.plan_list} by a course from"
+                                  + f"{self.lists} in {self.program_plan_list}", overlap)
+            else:
+                return ValidateResult(
+                    Status.OK,
+                    100,
+                    "",
+                    []
+                )
+
 
 @serde
 class AR18(AR):
