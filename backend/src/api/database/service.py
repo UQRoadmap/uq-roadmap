@@ -50,7 +50,7 @@ async def get_db() -> AsyncGenerator[AsyncSession]:
 async def setup_database(engine: AsyncEngine) -> None:
     """Initialise database."""
     # Importing as now sqlalchemy will know about them when creating the schema
-    from api.courses.models import CourseDBModel, CourseOfferingDBModel, CourseSecatDBModel, CourseSecatQuestionsDBModel
+    from api.course.models import CourseDBModel, CourseOfferingDBModel, CourseSecatDBModel, CourseSecatQuestionsDBModel
     from api.database.base import BaseDBModel
     from api.degree.models import DegreeDBModel
 

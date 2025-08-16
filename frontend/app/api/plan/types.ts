@@ -1,5 +1,5 @@
 import { UUID } from "@/types/common";
-import { APIDegreeRead } from "../degrees/types";
+import { APIDegreeRead } from "../degree/types";
 
 export interface APIPlanRead {
     plan_id: UUID

@@ -4,7 +4,7 @@ import { BACKEND_BASE_URL } from "../../common";
 
 export async function GET() {
     try {
-        const res = await fetch(`${BACKEND_BASE_URL}/degrees/summary`)
+        const res = await fetch(`${BACKEND_BASE_URL}/degree/summary`)
 
         if (!res.ok) {
             const errorText = await res.text();

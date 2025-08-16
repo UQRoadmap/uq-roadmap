@@ -5,10 +5,9 @@ import { Field, FieldGroup, Fieldset, Label } from '@/components/fieldset'
 import { Button } from '@/components/button'
 
 import { Textarea } from "@/components/textarea";
-import ValidateSection from "./validate";
-import { APIDegreeRead, DegreeSummary } from "../api/degrees/types";
+import { APIDegreeRead, DegreeSummary } from "../api/degree/types";
 import BetterDropdown from "../../components/custom/Dropdown";
-import { APIPlanCreateUpdate, APIPlanRead } from "../api/plans/types";
+import { APIPlanCreateUpdate, APIPlanRead } from "../api/plan/types";
 import { useRouter } from "next/navigation";
 
 export default function Home() {

@@ -4,10 +4,9 @@ from collections.abc import Awaitable, Callable
 
 from serde import serde
 
-from api.courses.models import CourseDBModel
+from api.course.models import CourseDBModel
 from api.degree.models import DegreeDBModel
-from api.plan import Plan
-from degree.params import CourseRef, ProgramRef
+from api.plan.plan import Plan
 from degree.aux_rule import AR
 from degree.sr_rule import SR
 from degree.validate_result import ValidateResult

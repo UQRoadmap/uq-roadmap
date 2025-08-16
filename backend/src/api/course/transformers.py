@@ -3,7 +3,7 @@
 import datetime
 import logging
 
-from api.courses.models import CourseDBModel, CourseOfferingDBModel, CourseSecatDBModel, CourseSecatQuestionsDBModel
+from api.course.models import CourseDBModel, CourseOfferingDBModel, CourseSecatDBModel, CourseSecatQuestionsDBModel
 from common.enums import CourseMode
 from common.reqs_parsing import parse_requirement
 from common.schemas import SecatInfo

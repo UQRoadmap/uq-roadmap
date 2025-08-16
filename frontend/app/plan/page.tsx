@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/button";
 import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from "@/components/dropdown";
@@ -24,43 +24,6 @@ export default function PlanPage() {
     const [plans, setPlans] = useState<Array<{ key: string; id: string; data: PlanData | null }>>([]);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [deleteKey, setDeleteKey] = useState<string | null>(null);
-
-    useEffect(() => {
-        if (typeof window === "undefined") return;
-
-        const loadAll = () => {
-            const list: Array<{ key: string; id: string; data: PlanData | null }> = [];
-            for (let i = 0; i < localStorage.length; i++) {
-                const k = localStorage.key(i);
-                if (!k || !k.startsWith('plans_')) continue;
-                const id = k.replace('plans_', '');
-                const value = localStorage.getItem(k);
-                let data = null;
-                try {
-                    data = value ? JSON.parse(value) as PlanData : null;
-                } catch {
-                    console.error("Failed to parse plan data for", id);
-                }
-                list.push({ key: k, id, data });
-            }
-            setPlans(list);
-        };
-
-        loadAll();
-        const onStorage = () => loadAll();
-        window.addEventListener("storage", onStorage);
-        return () => window.removeEventListener("storage", onStorage);
-    }, []);
-
-    const calculateProgress = (plan: PlanData | null): number => {
-        if (!plan || typeof plan.unitsRemaining !== 'number') return 0;
-
-        // Assume the original total units is stored in the plan
-        const totalUnits = plan.unitsRemaining;
-        const completedUnits = 0; // We would need actual completed units data
-
-        return Math.max(0, Math.min(100, (completedUnits / totalUnits) * 100));
-    };
 
     const handleDelete = (key: string | null) => {
         if (!key) return;
@@ -110,7 +73,9 @@ export default function PlanPage() {
                                 </div>
                                 <div className="flex space-x-2">
                                     <Button
-                                        onClick={() => router.push(`/plan/${encodeURIComponent(id)}`)}
+                                        onClick={() => {
+                                            console.log("")
+                                        }}
                                         accent
                                         className="px-3 py-1"
                                     >
@@ -118,12 +83,7 @@ export default function PlanPage() {
                                     </Button>
                                     <Button
                                         onClick={() => {
-                                            const value = localStorage.getItem(key);
-                                            let newData = null;
-                                            try {
-                                                newData = value ? JSON.parse(value) as PlanData : null;
-                                            } catch { }
-                                            setPlans(prev => prev.map(p => p.key === key ? { ...p, data: newData } : p));
+                                            console.info("WHY")
                                         }}
                                         className="px-3 py-1 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300"
                                     >

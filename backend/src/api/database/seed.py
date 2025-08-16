@@ -9,8 +9,8 @@ from serde import to_dict
 from serde.json import from_dict
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.courses.models import CourseDBModel
-from api.courses.transformers import transform_scraped_course
+from api.course.models import CourseDBModel
+from api.course.transformers import transform_scraped_course
 from api.degree.models import DegreeDBModel
 from degree.converter import convert_degree
 from scraper.courses.models import ScrapedCourse

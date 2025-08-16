@@ -14,7 +14,7 @@ export async function GET(request: Request) {
       );
     }
 
-    const backendUrl = `${BACKEND_BASE_URL}/degrees/simple?degree_code=${degree_code}&year=${year}`;
+    const backendUrl = `${BACKEND_BASE_URL}/degree/simple?degree_code=${degree_code}&year=${year}`;
     const res = await fetch(backendUrl);
 
     if (!res.ok) {

@@ -7,9 +7,9 @@ from serde import to_dict
 
 from api.database.deps import DbSession
 from api.degree.service import get_degree_by_id
-from api.plans.model import PlanDBModel
-from api.plans.schemas import PlanCreateUpdate, PlanRead
-from api.plans.service import create_plan, get_plan, get_plans, update_plan, validate_plan
+from api.plan.model import PlanDBModel
+from api.plan.schemas import PlanCreateUpdate, PlanRead
+from api.plan.service import create_plan, get_plan, get_plans, update_plan, validate_plan
 
 r = router = APIRouter()
 
