@@ -1,25 +1,32 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CourseCard, { EmptyCourseCard } from "@/components/custom/course-card";
 import { ArrowDownIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
 
-type CourseInfo = { name: string; id: string; units: number; degreeReq: string; sem: number; completed: boolean };
+import Pop from '@/components/custom/palette'
 
-function SemesterSection({ semester, courses }: { semester: number; courses: CourseInfo[] }) {
+import {DndContext, DragEndEvent} from '@dnd-kit/core';
+import { Course } from '@/types/course';
+import { v4 as uuidv4 } from "uuid";
+function SemesterSection({ semester, courses, setPaletteOpen, setActiveId }:
+    { semester: number; courses?: Course[], setPaletteOpen: (open: boolean) => void,
+      setActiveId: (id: string) => void}) {
     const [collapsed, setCollapsed] = useState(false);
-    let usedUnits = 0;
-    const normalCourses: CourseInfo[] = [];
-    const overloadCourses: CourseInfo[] = [];
-    courses.forEach(course => {
-        if (usedUnits + course.units <= 8) {
-            normalCourses.push(course);
-            usedUnits += course.units;
-        } else {
-            overloadCourses.push(course);
-        }
-    });
-    const emptySlots = Math.floor((8 - usedUnits) / 2);
 
+    const normalCourses: Course[] = [];
+    const overloadCourses: Course[] = [];
+    let usedUnits = 0;
+
+    if (courses && courses.length > 0) {
+      courses.forEach((course) => {
+        if (usedUnits + (course?.units ?? 0) <= 8) {
+          normalCourses.push(course);
+          usedUnits += course?.units ?? 0;
+        } else {
+          overloadCourses.push(course);
+        }
+      });
+    }
 
     const getSemesterLabel = (sem: number) => {
         const year = Math.floor(sem / 10);
@@ -28,7 +35,7 @@ function SemesterSection({ semester, courses }: { semester: number; courses: Cou
     };
 
     const getColSpanClass = (units: number) => {
-        switch (units) {
+        switch (Math.floor(units)) {
             case 8:
                 return 'col-span-8';
             case 4:
@@ -45,7 +52,7 @@ function SemesterSection({ semester, courses }: { semester: number; courses: Cou
     return (
         <div key={semester} className="flex flex-col items-stretch justify-start gap-4 w-full p-4">
             <div
-                className="flex justify-between items-center cursor-pointer" 
+                className="flex justify-between items-center cursor-pointer"
             >
                 <div>{getSemesterLabel(semester)}</div>
                 <ChevronDownIcon
@@ -55,18 +62,30 @@ function SemesterSection({ semester, courses }: { semester: number; courses: Cou
             </div>
             {!collapsed && (
                 <>
-                    <div className="grid grid-cols-8 w-full gap-2">
-                        {normalCourses.map((course, idx) => (
-                            <div key={`${course.id}-${semester}-${idx}`} className={getColSpanClass(course.units)}>
-                                <CourseCard {...course} />
-                            </div>
-                        ))}
-                        {emptySlots > 0 && Array.from({ length: emptySlots }).map((_, i) => (
-                            <div key={`empty-${semester}-${i}`} className={getColSpanClass(2)}>
-                                <EmptyCourseCard />
-                            </div>
-                        ))}
-                    </div>
+                  <div className="grid grid-cols-8 w-full gap-2">
+                    {Array.from({ length: 4 }).map((_, i) => {
+                      const course = normalCourses.find(c => {
+                        if (!c) return false;
+                        const [_, pos] = c.sem.split("-"); // "20251-2"
+                        return Number(pos) === i;
+                      });
+
+                      return (
+                        <div
+                          key={`${course ? course.id : "empty"}-${semester}-${i}`}
+                          className={getColSpanClass(course ? course.units : 2)} // default empty to 2 units
+                        >
+                          {course ?
+                            <CourseCard {...course} />
+                                :
+                            <EmptyCourseCard id={`${semester}-${i}`} setPaletteOpen={setPaletteOpen} setActiveId={setActiveId} />
+                          }
+
+                        </div>
+                      );
+                    })}
+                  </div>
+
                     {overloadCourses.length > 0 && (
                         <div className="my-4 w-full rounded border-t-2 border-red-500 border-dotted">
                             <div className="space-y-2 mt-4">
@@ -91,31 +110,112 @@ function SemesterSection({ semester, courses }: { semester: number; courses: Cou
 }
 
 export default function Courses() {
-    const courses = [
-        {name: "Computer Systems Principles and Programming", id: "CSSE2310", units: 2, degreeReq: "Software Engineering Core Courses", sem: 20252, completed: false},
-        {name: "Database Systems", id: "CSSE2002", units: 2, degreeReq: "Software Engineering Core Courses", sem: 20252, completed: false},
-        {name: "Software Engineering", id: "CSSE2003", units: 2, degreeReq: "Software Engineering Core Courses", sem: 20252, completed: false},
-        {name: "Algorithms and Data Structures", id: "CSSE2004", units: 2, degreeReq: "Software Engineering Core Courses", sem: 20252, completed: false},
-        {name: "Operating Systems", id: "CSSE2310", units: 2, degreeReq: "Software Engineering Core Courses", sem: 20261, completed: false},
-        {name: "Advanced Programming", id: "CSSE2002", units: 4, degreeReq: "Software Engineering Core Courses", sem: 20261, completed: false},
-        {name: "Mathematics", id: "MATH1001", units: 2, degreeReq: "Software Engineering Core Courses", sem: 20261, completed: false},
-        {name: "Mathematics", id: "MATH1001", units: 1, degreeReq: "Software Engineering Core Courses", sem: 20261, completed: false},
-        {name: "Mathematics", id: "MATH1001", units: 2, degreeReq: "Software Engineering Core Courses", sem: 20262, completed: false},
-    ]
+    const [isPaletteOpen, setPaletteOpen] = useState(false);
+    const [sem, setSem] = useState(undefined);
+    function handleDragEnd(event: DragEndEvent) {
+      const { active, over } = event;
 
-    const coursesBySemester = courses.reduce((acc, course) => {
-        if (!acc[course.sem]) {
-            acc[course.sem] = [];
+      if (!over) return;
+
+      const dragCourse = active.data.current as Course;
+      if (!dragCourse) return;
+
+      const [targetSemIndexStr, targetIndexStr] = over.id.toString().split("-");
+      const year = Math.floor(Number(targetSemIndexStr) / 10);
+      const semNum = Number(targetSemIndexStr) % 10;
+      const targetSemIndex = (year - startYear) * 2 + (semNum - 1);
+      const targetIndex = parseInt(targetIndexStr, 10);
+
+      setCourses((prevCourses) => {
+        // Deep copy
+        const newCourses = prevCourses.map((sem) => [...sem]);
+
+        // Check if course already exists in any semester
+       const currentSemIndex = newCourses.findIndex((sem) => sem &&
+         sem.some((c) => c.id === dragCourse.id)
+       );
+
+        // If it exists, remove from old semester
+        if (currentSemIndex !== -1) {
+          const courseIndex = newCourses[currentSemIndex].findIndex(
+            (c) => c && c.id === dragCourse.id
+          );
+          newCourses[currentSemIndex].splice(courseIndex, 1);
         }
-        acc[course.sem].push(course);
-        return acc;
-    }, {} as Record<number, CourseInfo[]>);
+
+        // Update semester property (optional)
+        const updatedCourse = { ...dragCourse, sem: year.toString() + targetSemIndex.toString() + "-" + targetIndex };
+        // Insert at target position
+        newCourses[targetSemIndex].splice(targetIndex, 0, updatedCourse);
+        console.log("drag", newCourses)
+        return newCourses;
+      });
+      setActiveId("");
+    }
+
+    const handleInsertCourse = (course: Course, targetId: string) => {
+      const [targetSemStr, targetIndexStr] = targetId.split("-");
+      const year = Math.floor(Number(targetSemStr) / 10);
+      const semNum = Number(targetSemStr) % 10;
+      const targetSemIndex = (year - startYear) * 2 + (semNum - 1);
+      const targetIndex = parseInt(targetIndexStr, 10);
+
+      setCourses(prevCourses => {
+        const newCourses = prevCourses.map(sem => [...sem]);
+
+        const updatedCourse = { ...course, sem: targetId, id: uuidv4()};
+        newCourses[targetSemIndex].splice(targetIndex, 1, updatedCourse); // replace empty card
+
+        console.log("insert", newCourses)
+        return newCourses;
+      });
+      setActiveId("");
+    };
+
+
+    const [activeId, setActiveId] = useState<string>("");
+    const startYear = 2024;
+    const endYear = 2026; // example
+    useEffect(() => {
+        console.log("id change: ", activeId);
+    });
+    const semesters: number[] = [];
+    const tmpCourses: Course[][] = [];
+    for (let year = startYear; year <= endYear; year++) {
+      semesters.push(Number(`${year}1`));
+      semesters.push(Number(`${year}2`));
+      tmpCourses.push([]);
+      tmpCourses.push([]);
+    }
+    const [stateCourses, setCourses] = useState<Course[][]>(tmpCourses);
 
     return (
+      <DndContext
+        onDragStart={({ active }) => setActiveId(active.id as string)}
+        onDragEnd={handleDragEnd}
+      >
+        <Pop
+          clickable
+          setActiveId={setActiveId}
+          activeId={activeId}
+          opened={isPaletteOpen}
+          setPaletteOpen={setPaletteOpen}
+          onSelectCourse={handleInsertCourse}
+          sem={sem}
+          stateCourses={stateCourses}
+        />
+
         <div className="flex flex-col h-screen overflow-y-auto">
-            {Object.entries(coursesBySemester).map(([key, cs]) => (
-                <SemesterSection key={key} semester={+key} courses={cs} />
-            ))}
+          {semesters.map((semester, i) => (
+            <SemesterSection
+              key={semester}
+              semester={semester}
+              courses={stateCourses[i]}
+              setPaletteOpen={setPaletteOpen}
+              setActiveId={setActiveId}
+            />
+          ))}
         </div>
+      </DndContext>
     );
 }
