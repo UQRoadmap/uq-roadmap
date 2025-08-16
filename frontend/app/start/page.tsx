@@ -53,7 +53,7 @@ export default function Home() {
 
   const handleClick = () => {
     if (selectedDegree) {
-      router.push("/courses"); // redirect to new page
+      router.push("/sem-plan"); // redirect to new page
     }
   };
   return (
