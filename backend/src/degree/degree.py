@@ -46,9 +46,9 @@ class Degree:
         # -
         results = []
         for aux in self.aux:
-            results.append(aux.validate(plan))
+            results.append(aux.validate(plan, course_getter, degree_getter))
         for srs in self.srs:
-            results.append(srs.validate(plan))
+            results.append(srs.validate(plan, course_getter, degree_getter))
 
         return results
 

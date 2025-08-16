@@ -23,7 +23,7 @@ class SR1(SR):
     options: list[CourseRef]
     type: str = "SR1"
 
-    def validate(self, plan: Plan):
+    def validate(self, plan: Plan, course_getter, degree_getter):
         count = 0
         badcourses = []
         for option in self.options:
@@ -32,14 +32,14 @@ class SR1(SR):
             else:
                 count += 2  # UPDATE UNITS
         if count != self.n:
-            return ValidateResult(Status.ERROR, count / self.n * 100,
+            return ValidateResult(Status.ERROR, count / self.n * 100.0,
                                   f"{count} units found in plan, "
                                   f"but {self.n} required. Add from: "
                                   f"{', '.join(badcourses)}", badcourses)
         elif badcourses:
-            return ValidateResult(Status.ERROR, (self.n - len(badcourses)) / self.n * 100,
+            return ValidateResult(Status.ERROR, (self.n - len(badcourses)) / self.n * 100.0,
                                   f"{', '.join(badcourses)} need to be in the plan", badcourses)
-        return ValidateResult(Status.OK, 100, "", [])
+        return ValidateResult(Status.OK, 100.0, "", [])
 
 
 @serde
@@ -51,7 +51,7 @@ class SR2(SR):
     options: list[CourseRef]
     type: str = "SR2"
 
-    def validate(self, plan: Plan):
+    def validate(self, plan: Plan, course_getter, degree_getter):
         count = 0
         badcourses = []
         donecourses = []
@@ -62,19 +62,19 @@ class SR2(SR):
             else:
                 badcourses.append(course.code)
         if count < self.n:
-            return ValidateResult(Status.ERROR, count / self.n * 100,
+            return ValidateResult(Status.ERROR, count / self.n * 100.0,
                                   f"{count} units found in plan, "
                                   f"but {self.n} required. Add from: "
                                   f"{', '.join(badcourses)}", badcourses)
         elif count > self.m:
-            return ValidateResult(Status.WARN, count / self.m * 100,
+            return ValidateResult(Status.WARN, count / self.m * 100.0,
                                   f"{count} units found in plan, "
                                   f"but {self.m} maximum. Remove from: "
                                   f"{', '.join(donecourses)}", donecourses)
         if badcourses:
-            return ValidateResult(Status.ERROR, (self.n - len(badcourses)) / self.n * 100,
+            return ValidateResult(Status.ERROR, (self.n - len(badcourses)) / self.n * 100.0,
                                   f"{', '.join(badcourses)} need to be in the plan", badcourses)
-        return ValidateResult(Status.OK, 100, "", [])
+        return ValidateResult(Status.OK, 100.0, "", [])
 
 
 @serde
@@ -85,7 +85,7 @@ class SR3(SR):
     options: list[CourseRef]
     type: str = "SR3"
 
-    def validate(self, plan: Plan):
+    def validate(self, plan: Plan, course_getter, degree_getter):
         count = 0
         badcourses = []
         for course in self.options:
@@ -94,11 +94,11 @@ class SR3(SR):
             else:
                 badcourses.append(course.code)
         if count < self.n:
-            return ValidateResult(Status.ERROR, count / self.n * 100,
+            return ValidateResult(Status.ERROR, count / self.n * 100.0,
                                   f"{count} units found in plan, "
                                   f"but {self.n} required. Add from: "
                                   f"{', '.join(badcourses)}", badcourses)
-        return ValidateResult(Status.OK, 100, "", [])
+        return ValidateResult(Status.OK, 100.0, "", [])
 
 
 
@@ -111,7 +111,7 @@ class SR4(SR):
     options: list[CourseRef]
     type: str = "SR4"
 
-    def validate(self, plan: Plan):
+    def validate(self, plan: Plan, course_getter, degree_getter):
         count = 0
         badcourses = []
         donecourses = []
@@ -122,16 +122,16 @@ class SR4(SR):
             else:
                 badcourses.append(course.code)
         if count < self.n:
-            return ValidateResult(Status.ERROR, count / self.n * 100,
+            return ValidateResult(Status.ERROR, count / self.n * 100.0,
                                   f"{count} units found in plan, "
                                   f"but {self.n} required. Add from: "
                                   f"{', '.join(badcourses)}", badcourses)
         elif count > self.m:
-            return ValidateResult(Status.WARN, count / self.m * 100,
+            return ValidateResult(Status.WARN, count / self.m * 100.0,
                                   f"{count} units found in plan, "
                                   f"but {self.m} maximum. Remove from: "
                                   f"{', '.join(donecourses)}", donecourses)
-        return ValidateResult(Status.OK, 100, "", [])
+        return ValidateResult(Status.OK, 100.0, "", [])
 
 
 @serde
@@ -142,7 +142,7 @@ class SR5(SR):
     options: list[CourseRef]
     type: str = "SR5"
 
-    def validate(self, plan: Plan):
+    def validate(self, plan: Plan, course_getter, degree_getter):
         count = 0
         badcourses = []
         donecourses = []
@@ -153,16 +153,16 @@ class SR5(SR):
             else:
                 badcourses.append(course.code)
         if count < self.n:
-            return ValidateResult(Status.ERROR, count / self.n * 100,
+            return ValidateResult(Status.ERROR, count / self.n * 100.0,
                                   f"{count} units found in plan, "
                                   f"but {self.n} required. Add from: "
                                   f"{', '.join(badcourses)}", badcourses)
         elif count > self.n:
-            return ValidateResult(Status.WARN, count / self.n * 100,
+            return ValidateResult(Status.WARN, count / self.n * 100.0,
                                   f"{count} units found in plan, "
                                   f"but {self.n} required. Remove from: "
                                   f"{', '.join(donecourses)}", donecourses)
-        return ValidateResult(Status.OK, 100, "", [])
+        return ValidateResult(Status.OK, 100.0, "", [])
 
 
 @serde
@@ -173,10 +173,10 @@ class SR6(SR):
     options: list[ProgramRef]
     type: str = "SR6"
 
-    def validate(self, plan: Plan):
+    def validate(self, plan: Plan, course_getter, degree_getter):
         option_codes = [opt.code for opt in self.options]
-        if any(code in option_codes for code in plan.specialisations[self.part]):
-            return ValidateResult(Status.OK, 100, "", [])
+        if any(code in option_codes for code in plan.specialisations.get(self.part, {})):
+            return ValidateResult(Status.OK, 100.0, "", [])
         else:
             return ValidateResult(Status.ERROR, None,
                                   f"No {self.plan_type} found in plan. "
@@ -192,9 +192,9 @@ class SR7(SR):
     options: list[ProgramRef]
     type: str = "SR7"
 
-    def validate(self, plan: Plan):
+    def validate(self, plan: Plan, course_getter, degree_getter):
         option_codes = [opt.code for opt in self.options]
-        count = sum(1 for code in plan.specialisations[self.part]
+        count = sum(1 for code in plan.specialisations.get(self.part, {})
                     if code in option_codes)
         if count < self.n:
             return ValidateResult(Status.ERROR, None,
@@ -206,7 +206,7 @@ class SR7(SR):
                                   f"{count} {self.plan_types} found in plan, "
                                   f"but {self.n} required. Remove from: "
                                   f"{', '.join(option_codes)}", option_codes)
-        return ValidateResult(Status.OK, 100, "", [])
+        return ValidateResult(Status.OK, 100.0, "", [])
 
 
 @serde
@@ -219,9 +219,9 @@ class SR8(SR):
     options: list[ProgramRef]
     type: str = "SR8"
 
-    def validate(self, plan: Plan):
+    def validate(self, plan: Plan, course_getter, degree_getter):
         option_codes = [opt.code for opt in self.options]
-        count = sum(1 for code in plan.specialisations[self.part]
+        count = sum(1 for code in plan.specialisations.get(self.part, {})
                     if code in option_codes)
         if count < self.n:
             return ValidateResult(Status.ERROR, None,
@@ -233,7 +233,7 @@ class SR8(SR):
                                   f"{count} {self.plan_types} found in plan, "
                                   f"but {self.m} maximum. Remove from: "
                                   f"{', '.join(option_codes)}", option_codes)
-        return ValidateResult(Status.OK, 100, "", [])
+        return ValidateResult(Status.OK, 100.0, "", [])
     
 
 def create_sr_from_dict(data: dict) -> SR:
@@ -251,7 +251,6 @@ def create_sr_from_dict(data: dict) -> SR:
         "SR8": SR8,
     }
     
-    print(sr_type)
     if sr_type in type_map:
         return from_dict(type_map[sr_type], data)
     else:
