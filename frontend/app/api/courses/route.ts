@@ -10,7 +10,7 @@ function mapToCourse(apiCourse: ApiCourse): Course {
     units: apiCourse.num_units,
     sem: "filler",
     sems: apiCourse.semesters,
-    secats: 3.2,
+    secats: apiCourse.score ?? 0,
     desc: apiCourse.description,
 
     degreeReq: { filler: ["filler"] },
