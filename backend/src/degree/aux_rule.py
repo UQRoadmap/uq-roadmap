@@ -256,6 +256,19 @@ class AR11(AR):
     course_list: list[CourseRef]
     plan_list: list[ProgramRef]
 
+    def validate(self, plan: Plan) -> ValidateResult:
+        overlap = set(self.course_list) & set(plan.courses)
+        if overlap:
+            if all(plan_ref.code not in plan.specialisations[self.part] for plan_ref in self.plan_list):
+                return ValidateResult(
+                    Status.ERROR,
+                    0,
+                    f"No credit for {overlap} for students not completing {self.plan_list}.",
+                    list(overlap),
+                )
+            else:
+                return ValidateResult(Status.OK, 100, "", [])
+
 
 @serde
 class AR13(AR):
