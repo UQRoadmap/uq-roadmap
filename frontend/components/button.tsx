@@ -6,7 +6,7 @@ import { Link } from './link'
 const styles = {
   base: [
     // Base
-    'relative isolate inline-flex items-baseline justify-center gap-x-2 rounded-lg border text-base/6 font-semibold',
+    'relative isolate inline-flex items-baseline justify-center gap-x-2 rounded-lg hover:cursor-pointer text-base/6 font-semibold',
     // Sizing
     'px-[calc(--spacing(3.5)-1px)] py-[calc(--spacing(2.5)-1px)] sm:px-[calc(--spacing(3)-1px)] sm:py-[calc(--spacing(1.5)-1px)] sm:text-sm/6',
     // Focus
@@ -34,7 +34,7 @@ const styles = {
   ],
   outline: [
     // Base
-    'border-zinc-950/10 text-zinc-950 data-active:bg-zinc-950/2.5 data-hover:bg-zinc-950/2.5',
+    'border-white border-solid border-1 text-white data-active:bg-zinc-950/2.5 data-hover:bg-zinc-950/2.5',
     // Icon
     '[--btn-icon:var(--color-zinc-500)] data-active:[--btn-icon:var(--color-zinc-700)] data-hover:[--btn-icon:var(--color-zinc-700)]',
   ],
@@ -47,7 +47,7 @@ const styles = {
 
   accent: [
     // Base: gentle lighten on hover
-    'rounded-md bg-accent px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:filter hover:brightness-150 ',
+    'rounded-md bg-tertiary px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:filter hover:brightness-150',
   ],
 }
 
