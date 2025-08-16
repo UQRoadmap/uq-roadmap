@@ -9,6 +9,9 @@ from api.plan import Plan
 
 @serde(tagging=AdjacentTagging("code", "data"))
 class AR:
+    # Part, e.g. A or A.1
+    part: str
+
     def validate(plan) -> ValidateResult:
         return ValidateResult(Status.ERROR, None, "Should not be seeing this", [])
 

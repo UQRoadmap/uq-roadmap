@@ -6,8 +6,8 @@ from degree.params import ProgramRef, CourseRef
 
 @serde
 class SR:
-    # Reference, e.g. A or A.1
-    ref: str
+    # Part, e.g. A or A.1
+    part: str
 
     def validate(plan) -> ValidateResult:
         return ValidateResult(Status.OK, None, "", [])
