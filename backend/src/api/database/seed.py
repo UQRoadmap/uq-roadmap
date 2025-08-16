@@ -20,6 +20,7 @@ from scraper.degree import Degree as ParsedDegree
 DATA_DIR = Path("data")
 COURSES_FILE = DATA_DIR / "complete_courses.json"
 DEGREES_FILE = DATA_DIR / "program_details.json"
+PLANS_FILE = DATA_DIR / "plans.json"
 
 
 log = logging.getLogger(__name__)
@@ -69,6 +70,27 @@ def load_degrees_from_file() -> Generator[DegreeDBModel]:
                 if len(flat.aux) > 10 and not stop:
                     pprint(flat)
                     stop = True
+
+                degree_db_model = DegreeDBModel(
+                    degree_id=str(flat.code), year=int(flat.year), title=flat.name, json=to_json(flat)
+                )
+
+                yield degree_db_model
+
+    with open(PLANS_FILE) as f:
+        raw = f.read()
+        raw_json = json.loads(raw)
+
+        for plan in raw_json:
+            plan_id = plan["plan_id"]
+            data = plan["data"]
+            for year, data in data.items():
+                degree: ParsedDegree = from_dict(ParsedDegree | None, data)
+                if degree is None:
+                    continue
+
+                # Pass the raw JSON data to the converter
+                flat = convert_degree(degree, data)
 
                 degree_db_model = DegreeDBModel(
                     degree_id=str(flat.code), year=int(flat.year), title=flat.name, json=to_json(flat)

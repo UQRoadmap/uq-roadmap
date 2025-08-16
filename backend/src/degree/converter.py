@@ -31,7 +31,7 @@ from degree.aux_rule import (
 )
 from degree.degree import Degree as FlatDegree
 from degree.params import CourseRef, EquivalenceGroup, ProgramRef
-from degree.srs_rule import (
+from degree.sr_rule import (
     SR,
     SR1,
     SR2,
@@ -167,56 +167,55 @@ def process_ar(parsed_ar: ParsedAuxRule, part: str) -> AR:
                     # Handle PLAN_WITH_PARENT structure in lists
                     if "plan" in item:
                         plan = item["plan"]
-                        out.append(ProgramRef(
-                            units_max=plan.get("unitsMaximum"),
-                            units_min=plan.get("unitsMinimum"),
-                            code=plan.get("code", ""),
-                            org_name=plan.get("orgName", ""),
-                            org_code=plan.get("orgCode", ""),
-                            name=plan.get("name", ""),
-                            abbreviation=plan.get("abbreviation", "")
-                        ))
+                        out.append(
+                            ProgramRef(
+                                units_max=plan.get("unitsMaximum"),
+                                units_min=plan.get("unitsMinimum"),
+                                code=plan.get("code", ""),
+                                org_name=plan.get("orgName", ""),
+                                org_code=plan.get("orgCode", ""),
+                                name=plan.get("name", ""),
+                                abbreviation=plan.get("abbreviation", ""),
+                            )
+                        )
                     else:
                         # Direct plan object
                         out.append(_to_program_ref(item))
                 else:
-                    out.append(ProgramRef(
-                        units_max=None,
-                        units_min=None,
-                        code=str(item),
-                        org_name="",
-                        org_code="",
-                        name="",
-                        abbreviation="",
-                    ))
+                    out.append(
+                        ProgramRef(
+                            units_max=None,
+                            units_min=None,
+                            code=str(item),
+                            org_name="",
+                            org_code="",
+                            name="",
+                            abbreviation="",
+                        )
+                    )
             return out
         if isinstance(v, dict):
             return [_single_program(v)]  # Use _single_program for consistency
-        return [ProgramRef(
-            units_max=None,
-            units_min=None,
-            code=str(v),
-            org_name="",
-            org_code="",
-            name="",
-            abbreviation="",
-        )]
+        return [
+            ProgramRef(
+                units_max=None,
+                units_min=None,
+                code=str(v),
+                org_name="",
+                org_code="",
+                name="",
+                abbreviation="",
+            )
+        ]
 
-# ...existing code...
-
+    # ...existing code...
 
     def _single_program(v) -> ProgramRef:
         if v is None:
             return ProgramRef(
-                units_max=None,
-                units_min=None,
-                code="", 
-                org_name="", 
-                org_code="", 
-                name="", 
-                abbreviation=""
+                units_max=None, units_min=None, code="", org_name="", org_code="", name="", abbreviation=""
             )
-        
+
         # Handle nested structure like {"parentProgram": {...}, "plan": {...}}
         if isinstance(v, dict):
             if "plan" in v:  # PLAN_WITH_PARENT structure
@@ -228,22 +227,15 @@ def process_ar(parsed_ar: ParsedAuxRule, part: str) -> AR:
                     org_name=plan.get("orgName", ""),
                     org_code=plan.get("orgCode", ""),
                     name=plan.get("name", ""),
-                    abbreviation=plan.get("abbreviation", "")
+                    abbreviation=plan.get("abbreviation", ""),
                 )
             else:  # Direct plan object
                 return _to_program_ref(v)
-        
+
         # Handle string (just a code)
         return ProgramRef(
-            units_max=None,
-            units_min=None,
-            code=str(v), 
-            org_name="", 
-            org_code="", 
-            name="", 
-            abbreviation=""
+            units_max=None, units_min=None, code=str(v), org_name="", org_code="", name="", abbreviation=""
         )
-
 
     # index params by name for convenience
     params = {p.name: p for p in (parsed_ar.params or [])}
@@ -433,7 +425,6 @@ def process_sr(parsed_sr: ParsedSelectionRule, rows: list[ComponentPayloadLeaf],
             abbreviation=d.get("abbreviation") or "",
         )
 
-
     def _collect_options() -> tuple[list[CourseRef], list[ProgramRef]]:
         # Gather options from the sibling leaves of this SR node.
         courses: list[CourseRef] = []
@@ -483,7 +474,6 @@ def process_sr(parsed_sr: ParsedSelectionRule, rows: list[ComponentPayloadLeaf],
 
         return dedup_courses, dedup_programs
 
-
     # index params by name for convenience
     params = {p.name: p for p in (parsed_sr.params or [])}
     get = lambda key, default=None: (params.get(key).value if key in params else default)
@@ -527,14 +517,16 @@ def process_sr(parsed_sr: ParsedSelectionRule, rows: list[ComponentPayloadLeaf],
     # unknown future SR type: keep part so it still validates as a no-op SR
     return SR(part=part)
 
+
 # Replace the convert_degree function with this version that uses raw JSON:
+
 
 def convert_degree(parsed_degree: ParsedDegree, raw_json: dict = None) -> FlatDegree:
     """Convert the recursive scraper.degree structure to a flat Degree.
-    
+
     Also takes raw_json to extract course data when serde fails.
     """
-    
+
     flat_degree = FlatDegree()
     flat_degree.name = parsed_degree.title
     flat_degree.code = parsed_degree.params.code
@@ -553,21 +545,17 @@ def convert_degree(parsed_degree: ParsedDegree, raw_json: dict = None) -> FlatDe
         """Extract course data from raw JSON when serde fails."""
         if not raw_json:
             return []
-            
+
         leaves = []
-        
+
         def find_part_in_json(obj, target_part: str):
             if isinstance(obj, dict):
                 # Check if this is a header with our target part
-                if (obj.get("header", {}).get("partReference") == target_part and 
-                    "body" in obj):
-                    
+                if obj.get("header", {}).get("partReference") == target_part and "body" in obj:
                     for body_item in obj.get("body", []):
-                        if (body_item.get("rowType") == "CurriculumReference" and 
-                            "curriculumReference" in body_item):
-                            
+                        if body_item.get("rowType") == "CurriculumReference" and "curriculumReference" in body_item:
                             cr_data = body_item["curriculumReference"]
-                            
+
                             # Create a proper CurriculumReference object using the actual class
                             curriculum_ref = CurriculumReference(
                                 unitsMaximum=cr_data.get("unitsMaximum"),
@@ -582,9 +570,9 @@ def convert_degree(parsed_degree: ParsedDegree, raw_json: dict = None) -> FlatDe
                                 orgCode=cr_data.get("orgCode", ""),
                                 name=cr_data.get("name", ""),
                                 fromTerm=cr_data.get("fromTerm"),
-                                state=cr_data.get("state")
+                                state=cr_data.get("state"),
                             )
-                            
+
                             # Create ComponentPayloadLeaf manually
                             leaf = ComponentPayloadLeaf(
                                 rowType=body_item.get("rowType"),
@@ -592,9 +580,9 @@ def convert_degree(parsed_degree: ParsedDegree, raw_json: dict = None) -> FlatDe
                                 notes=body_item.get("notes"),
                                 curriculumReference=curriculum_ref,
                                 equivalenceGroup=None,
-                                wildCardItem=None
+                                wildCardItem=None,
                             )
-                            
+
                             leaves.append(leaf)
                 # Recurse through all values
                 for value in obj.values():
@@ -602,7 +590,7 @@ def convert_degree(parsed_degree: ParsedDegree, raw_json: dict = None) -> FlatDe
             elif isinstance(obj, list):
                 for item in obj:
                     find_part_in_json(item, target_part)
-        
+
         find_part_in_json(raw_json, part)
         return leaves
 
@@ -640,7 +628,7 @@ def convert_degree(parsed_degree: ParsedDegree, raw_json: dict = None) -> FlatDe
 
         def collect_all_leaves(n: ComponentPayload) -> list[ComponentPayloadLeaf]:
             leaves = []
-            
+
             if getattr(n, "body", None) is not None:
                 for child in n.body:
                     if isinstance(child, ComponentPayloadLeaf):
@@ -648,7 +636,7 @@ def convert_degree(parsed_degree: ParsedDegree, raw_json: dict = None) -> FlatDe
                     else:
                         # Recurse to find any properly deserialized leaves deeper
                         leaves.extend(collect_all_leaves(child))
-            
+
             return leaves
 
         # Only attach SR when this very header declares a concrete part AND
@@ -657,14 +645,14 @@ def convert_degree(parsed_degree: ParsedDegree, raw_json: dict = None) -> FlatDe
             sr_code = getattr(header.selectionRule, "code", None)
             if sr_code:  # skip empty selection rules
                 current_part = header.partReference
-                
+
                 # First try serde-deserialized leaves
                 all_leaves = collect_all_leaves(node)
-                
+
                 # If serde failed, extract from raw JSON
                 if len(all_leaves) == 0:
                     all_leaves = extract_courses_from_raw_json_for_part(current_part)
-                
+
                 srs.append(process_sr(header.selectionRule, all_leaves, current_part))
 
         # Recurse
@@ -691,7 +679,7 @@ def convert_degree(parsed_degree: ParsedDegree, raw_json: dict = None) -> FlatDe
 
 
 def main():
-    with open("../../data/course_reqs/details.json") as f:
+    with open("../data/program_details.json") as f:
         raw = f.read()
         details = json.loads(raw)["program_details"]
 
@@ -707,6 +695,24 @@ def main():
                 if len(flat.aux) > 10:
                     pprint(flat)
                     return
+
+    # with open("../data/plans.json") as f:
+    #     raw = f.read()
+    #     raw_json = json.loads(raw)
+
+    #     for plan in raw_json:
+    #         plan_id = plan["plan_id"]
+    #         data = plan["data"]
+    #         for year, data in data.items():
+    #             degree: ParsedDegree = from_dict(ParsedDegree | None, data)
+    #             if degree is None:
+    #                 continue
+
+    #             # Pass the raw JSON data to the converter
+    #             flat = convert_degree(degree, data)
+
+    #             pprint(flat)
+    #             return
 
 
 # testing by printing to a file, it works

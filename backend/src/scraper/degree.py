@@ -111,7 +111,7 @@ class ComponentPayloadHeader:
 
 @serde
 class CurriculumReference:
-    unitsMaximum: int
+    unitsMaximum: int | None
     code: str | None
     orgName: str
     type: str
@@ -119,7 +119,7 @@ class CurriculumReference:
     subtype: str | None
     fromYear: str | None
     latestVersion: bool | None
-    unitsMinimum: int
+    unitsMinimum: int | None
     orgCode: str
     name: str
     fromTerm: str | None
@@ -225,7 +225,7 @@ class ProgramRequirements:
     orgCode: str
     externalSystemIdentifiers: list
     state: str
-    unitsMaximum: int
+    unitsMaximum: int | None
     orgName: str
     baseVersion: dict
     workflowName: str
@@ -234,7 +234,7 @@ class ProgramRequirements:
     previousState: str
     swaggerVersion: dict | None
     templateName: str
-    unitsMinimum: int
+    unitsMinimum: int | None
     templateIntegrationIdentifier: str
     yearApplied: str
     authorGivenName: str
