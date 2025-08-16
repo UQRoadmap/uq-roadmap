@@ -14,6 +14,8 @@ from scraper.courses import iter_secat_info, scrape_courses
 from scraper.models import Program
 from scraper.programs import scrape_all_programs
 from scraper.plans import scrape_all_plans, fetch_plans
+
+
 if TYPE_CHECKING:
     from scraper.courses.models import Course
     from scraper.models import Program
@@ -84,6 +86,12 @@ def main() -> None:
         asyncio.run(write_secat(output_file))
         log.info(f"Scraped secats for {count} courses. Written to {output_file}")
         return
+    
+    if args.mode == ScrapeType.PLANS:
+        plans = fetch_plans()
+        result = scrape_all_plans(plans)
+        data = {"plans": [r for r in result if r is not None]}
+        log.info(f"Scraped details for {len(data['program_details'])} programs.")
 
     raise ValueError("Invalid scrape mode selected.")
 
