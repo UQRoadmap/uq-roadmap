@@ -2,9 +2,7 @@
 
 import json
 import logging
-from collections.abc import Generator
 from pathlib import Path
-from pprint import pprint
 
 import orjson
 from serde.json import from_dict, to_json
@@ -20,14 +18,14 @@ from scraper.degree import Degree as ParsedDegree
 DATA_DIR = Path("data")
 COURSES_FILE = DATA_DIR / "complete_courses.json"
 DEGREES_FILE = DATA_DIR / "program_details.json"
-
+DEGREES_META_FILE = DATA_DIR / "program_meta.json"
 
 log = logging.getLogger(__name__)
 
 
 async def seed_db(session: AsyncSession, populate_courses: bool, populate_degrees: bool) -> None:  # noqa: D103, FBT001
     log.info("Checking if database needs to be seeded")
-    if populate_courses:
+    if not populate_courses:
         log.info("Seeding courses from file: %s", COURSES_FILE)
         for course in load_courses_from_file():
             session.add(course)
@@ -40,23 +38,28 @@ async def seed_db(session: AsyncSession, populate_courses: bool, populate_degree
     await session.commit()
 
 
-def load_courses_from_file() -> Generator[CourseDBModel]:
+def load_courses_from_file() -> list[CourseDBModel]:
     """Loads courses from a JSON file and hydrates CourseDBModel instances."""
     with Path.open(COURSES_FILE, "rb") as f:
         data = orjson.loads(f.read())
 
     scraped_courses = [ScrapedCourse(**course) for course in data["courses"]]
 
-    for course in scraped_courses:
-        yield transform_scraped_course(course)
+    return [transform_scraped_course(c) for c in scraped_courses]
 
 
-def load_degrees_from_file() -> Generator[DegreeDBModel]:
+def load_degrees_from_file() -> list[DegreeDBModel]:
     """Loads degrees from a JSON file and hydrates DegreeDBModel instances."""
+    degree_meta_map: dict[str, tuple[str, str]] = {}  # mapping degree_id to (name, degree_url)
+    result = []
+    with Path.open(DEGREES_META_FILE, "rb") as f:
+        data = orjson.loads(f.read())
+        for meta in data:
+            degree_meta_map[meta["program_id"]] = (meta["title"], meta["url"])
+
     with Path.open(DEGREES_FILE, "rb") as f:
         raw = f.read()
         details = json.loads(raw)["program_details"]
-        stop: bool = False
 
         for detail in details:
             for data in detail["data"].values():
@@ -66,12 +69,17 @@ def load_degrees_from_file() -> Generator[DegreeDBModel]:
 
                 flat = convert_degree(degree)
 
-                if len(flat.aux) > 10 and not stop:
-                    pprint(flat)
-                    stop = True
+                if flat.code not in degree_meta_map:
+                    # thanks UQ :)
+                    continue
+
+                degree_title, degree_url = degree_meta_map[flat.code]
+                year = int(flat.year)
 
                 degree_db_model = DegreeDBModel(
-                    degree_id=str(flat.code), year=int(flat.year), title=flat.name, json=to_json(flat)
+                    degree_code=flat.code, year=year, title=degree_title, details=to_json(flat), degree_url=degree_url
                 )
 
-                yield degree_db_model
+                result.append(degree_db_model)
+
+    return result
