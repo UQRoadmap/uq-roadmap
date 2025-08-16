@@ -22,7 +22,8 @@ COPY --from=builder --chown=app:app /app /app
 
 WORKDIR /app
 
-# Add to path
+COPY data /app/data
+
 ENV PATH="/app/.venv/bin:$PATH"
 
 CMD ["fastapi", "run", "--host", "0.0.0.0", "--port", "8080", "src/api/main.py"]

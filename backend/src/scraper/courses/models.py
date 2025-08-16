@@ -1,7 +1,5 @@
 """Course models."""
 
-from pydantic import computed_field
-
 from common.enums import CourseLevel
 from scraper.models import UQScrapeModel
 
@@ -81,7 +79,9 @@ class ScrapedCourse(UQScrapeModel):
     archived_offerings: list[ScrapedCourseOffering]
 
     @property
-    @computed_field
-    def active(self) -> bool:
-        """Whether the course is active or not."""
-        return bool(self.current_offerings)
+    def code_parts(self) -> tuple[str, str]:
+        """Split the course code up (e.g., CSSE2310 -> "CSSE", "2310")."""
+        for i, ch in enumerate(self.code):
+            if ch.isdigit():
+                return self.code[:i], self.code[i:]
+        return self.code, ""
