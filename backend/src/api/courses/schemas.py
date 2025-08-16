@@ -62,6 +62,12 @@ class CourseRead(UQRoadmapBase):
 
     secat: SecatInfo | None
 
+    @computed_field  # type: ignore[misc]
+    @property
+    def score(self) -> float | None:
+        """Get score out of 100% for course based on secats."""
+        return self.secat.get_avg_score() if self.secat else None
+
     assessment: CourseAssessment | None
 
 

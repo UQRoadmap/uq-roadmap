@@ -9,9 +9,15 @@ from api.database.deps import DbSession
 from api.degree.service import get_degree_by_id
 from api.plans.model import PlanDBModel
 from api.plans.schemas import PlanCreateUpdate, PlanRead
-from api.plans.service import create_plan, get_plan, update_plan, validate_plan
+from api.plans.service import create_plan, get_plan, get_plans, update_plan, validate_plan
 
 r = router = APIRouter()
+
+
+@r.get("", response_model=list[PlanRead])
+async def get_all(db: DbSession) -> list[PlanDBModel]:
+    """Get all plans."""
+    return await get_plans(db)
 
 
 @r.get("/{plan_id}", response_model=PlanRead)
