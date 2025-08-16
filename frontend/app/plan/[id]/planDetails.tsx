@@ -266,7 +266,6 @@ export function PlanDetailClient({ plan: initialPlan }: { plan: Plan }) {
         } else {
             targetSemIndex = (year - plan.startYear) * 2 + (semNum - 1);
         }
-        const targetIndex = parseInt(targetIndexStr, 10);
 
         const targetIndex = parseInt(targetIndexStr, 10);
         setCourses(prevCourses => {
@@ -332,7 +331,7 @@ export function PlanDetailClient({ plan: initialPlan }: { plan: Plan }) {
             setCourses(newCourses);
         }
     }, [plan]);
-    
+
     async function DeletePlan() {
         if (typeof window === "undefined" || !plan) return;
         const possibleKeys = [
@@ -361,18 +360,18 @@ export function PlanDetailClient({ plan: initialPlan }: { plan: Plan }) {
         setPlanDialogData(JSON.stringify(plan, null, 2));
         setIsPlanDialogOpen(true);
     };
-    
+
     // Function to save changes from the dialog
     const savePlanData = () => {
         try {
             const updatedPlan = JSON.parse(planDialogData);
             setPlan(updatedPlan);
-            
+
             // Update localStorage
             if (plan && plan.id) {
                 localStorage.setItem(`plans_${plan.id}`, planDialogData);
             }
-            
+
             setIsPlanDialogOpen(false);
         } catch (error) {
             alert("Invalid JSON format. Please check your data.");
@@ -477,7 +476,7 @@ export function PlanDetailClient({ plan: initialPlan }: { plan: Plan }) {
                 </DndContext>
             </div>
 
-            
+
             {/* Dialog for Plan Data */}
             <Dialog
                 open={isPlanDialogOpen}

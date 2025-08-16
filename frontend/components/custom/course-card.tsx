@@ -127,8 +127,6 @@ export default function CourseCard({id, code, name, units, sems, sem, secats, de
                             <StarIcon className="w-3 h-3" />
                         </div>
                     </div>
-                <div className="text-xs mt-2 truncate flex justify-between w-full" title={degreeReq}>
-                </div>
             </div>
         </Droppable>
 
@@ -172,7 +170,7 @@ export function EmptyCourseCard({degreeReq, id, setPaletteOpen, setActiveId}:
     )
 }
 
-export function PaletteCourseCard({id, code, name, units, sem, secats, desc, degreeReq, completed}: Course) {
+export function PaletteCourseCard({id, code, name, units, sem, sems, secats, desc, degreeReq, completed}: Course) {
     return (
         <li
           className="group cursor-move rounded-md px-3 py-2 bg-gray-800 hover:bg-gray-700 transition-colors flex flex-col select-none z-[9999]"
@@ -183,7 +181,7 @@ export function PaletteCourseCard({id, code, name, units, sem, secats, desc, deg
           </div>
           <span className="ml-3 text-gray-400 text-sm">{desc.length > 180 ? desc.slice(0, 180) + '…' : desc}</span>
           <span className="ml-3 text-gray-400 text-sm space-x-2">
-            {sem.map((sem) => {
+            {sems.map((sem) => {
               return (
                 <Badge key={sem} color="purple">
                   {sem}
