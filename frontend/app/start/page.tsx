@@ -9,8 +9,77 @@ import { Button } from '@/components/button'
 import MajorSelect from './major-comp'
 import { v4 } from "uuid";
 import { Textarea } from "@/components/textarea";
-
+import ValidateSection from "./validate";
 type Degree = { name: string; offerings: string[], id: string };
+const checks = [
+  {
+    "status": 2,
+    "percentage": 0,
+    "message": "0 units found in plan, but 8 required. Add from: ENGG1100",
+    "relevant": [
+      "ENGG1100"
+    ]
+  },
+  {
+    "status": 2,
+    "percentage": null,
+    "message": "No Field of Study found in plan. Add from: CHEMIX2350, CBIOMX2350, CBIOPX2350, CHENVX2350, CHMETX2350, CIVENX2350, CIENVX2350, ELENGX2350, ELEBEX2350, ELECEX2350, MECENX2350, MECAEX2350, MECMEX2350, MECTRX2350, SOFTEX2350",
+    "relevant": [
+      "CHEMIX2350",
+      "CBIOMX2350",
+      "CBIOPX2350",
+      "CHENVX2350",
+      "CHMETX2350",
+      "CIVENX2350",
+      "CIENVX2350",
+      "ELENGX2350",
+      "ELEBEX2350",
+      "ELECEX2350",
+      "MECENX2350",
+      "MECAEX2350",
+      "MECMEX2350",
+      "MECTRX2350",
+      "SOFTEX2350"
+    ]
+  },
+  {
+    "status": 0,
+    "percentage": 100,
+    "message": "Complete 0 to 4 units from the following ['CHEM1090', 'PHYS1171', 'MATH1050']",
+    "relevant": [
+      "CHEM1090",
+      "PHYS1171",
+      "MATH1050"
+    ]
+  },
+  {
+    "status": 0,
+    "percentage": 100,
+    "message": "Complete 0 to 4 units from the following ['BIOE1001', 'BIOL1040', 'CHEM1100', 'DSGN1500', 'ERTH1501', 'ENGG2000', 'PHYS1002']",
+    "relevant": [
+      "BIOE1001",
+      "BIOL1040",
+      "CHEM1100",
+      "DSGN1500",
+      "ERTH1501",
+      "ENGG2000",
+      "PHYS1002"
+    ]
+  },
+  {
+    "status": 0,
+    "percentage": 100,
+    "message": "Complete 0 to 6 units from the following []",
+    "relevant": []
+  },
+  {
+    "status": 0,
+    "percentage": 100,
+    "message": "Complete 0 to 6 units from the following []",
+    "relevant": []
+  }
+]
+
 
 const degrees: Degree[] = [
     {
@@ -49,7 +118,7 @@ export default function Home() {
   const [graduationYear, setGraduationYear] = useState<string | null>(null);
   const [graduationSem, setGraduationSem] = useState<string | null>(null);
   const [planName, setPlanName] = useState<string>("");
-  
+
   const router = useRouter();
 
   // Set default selections when degree changes
@@ -59,7 +128,7 @@ export default function Home() {
       if (selectedDegree.offerings && selectedDegree.offerings.length > 0) {
         setSelectedOffering(selectedDegree.offerings[0]);
       }
-      
+
       // Set major and minor to null by default
       setSelectedMajor(null);
       setSelectedMinor(null);
@@ -74,7 +143,7 @@ export default function Home() {
     //         // Calculate the earliest graduation year based on units
     //         const earliestGradYear = offerYear + (selectedDegree.units > 0 ? Math.floor(selectedDegree.units / 16) : 0);
     //         setGraduationYear(String(earliestGradYear));
-            
+
     //         // Set earliest graduation semester
     //         setGraduationSem("Semester 1");
     //       }
@@ -96,7 +165,7 @@ export default function Home() {
         const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
         const id = v4();
         const offeringYear = parseInt(selectedOffering || "0", 10);
-        
+
         // Create the payload object to match the DegreeDBModel structure
         const payload = {
           id: id,
@@ -110,11 +179,11 @@ export default function Home() {
             planName: planName || `${selectedDegree.name} Plan` // Default name if none provided
           }
         };
-        
-        
+
+
         // Store data in localStorage with plans_ prefix
         localStorage.setItem(`plans_${id}`, JSON.stringify(payload));
-        
+
         const result = await fetch(`${baseUrl}/plan/${id}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -134,6 +203,7 @@ export default function Home() {
 
   return (
     <div className="font-sans grid mt-2grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 max-w-7xl mx-auto px-4">
+        <ValidateSection checks={checks} />
         <form onSubmit={handleSubmit}>
         <Fieldset>
             <h1 className="text-3xl"> Start Your UQ Journey </h1>
