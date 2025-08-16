@@ -44,7 +44,7 @@ export default function CourseCard({id, code, name, units, sem, secats, desc, de
                 </div>
             </div>
         </Droppable>
-        
+
       </Draggable>
     )
 }
