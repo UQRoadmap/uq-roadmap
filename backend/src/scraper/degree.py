@@ -3,8 +3,9 @@ from pprint import pprint
 from serde import serde, AdjacentTagging
 from serde.json import to_json, from_json
 from serde import coerce
-from serde import from_dict
+from serde import from_dict, Untagged
 from json import loads
+from typing import Union
 
 
 def main():
@@ -96,16 +97,16 @@ class SelectionRule:
 class ComponentPayloadHeader:
     partUID: str | None
     ruleLogic: str | None
-    partReference: str
+    partReference: str | None
     unitsMin: int | None
     auxiliaryRules: list[AuxiliaryRule]
     title: str
     summaryDescription: str | None
-    partType: str
+    partType: str | None
     unitsMax: int | None
     notes: str | None
     selectionRule: SelectionRule | None
-    partType: str
+    partType: str | None
 
 
 @serde
@@ -152,13 +153,13 @@ class ComponentPayloadLeaf:
     wildCardItem: WildCardItem | None
 
 
-ComponentPayload = TypeRef()
-
-
-@serde(type_check=coerce)
 class ComponentPayload:
+    rowType: str | None
     header: ComponentPayloadHeader | None
-    body: list["ComponentPayload | ComponentPayloadLeaf"] | None
+    body: list[Union["ComponentPayload", ComponentPayloadLeaf]] | None
+
+
+ComponentPayload = serde(type_check=coerce, tagging=Untagged)(ComponentPayload)
 
 
 @serde
