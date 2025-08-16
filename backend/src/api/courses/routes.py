@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, status
 
 from api.courses.models import CourseDBModel
 from api.courses.schemas import CourseRead, CourseReadDetailed
-from api.courses.service import get_all_courses, get_course_by_code
+from api.courses.service import get_all_courses, get_course_by_full_code
 from api.database.deps import DbSession
 from common.enums import CourseLevel
 
@@ -26,7 +26,7 @@ async def get_all(
 @r.get("/{course_code}", response_model=CourseReadDetailed)
 async def get(course_code: str, db: DbSession) -> CourseDBModel:
     """Get a course by ID."""
-    result = await get_course_by_code(db, course_code)
+    result = await get_course_by_full_code(db, course_code)
     if result is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=f"Course under the id '{course_code}' not found"
