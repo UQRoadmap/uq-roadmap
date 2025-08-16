@@ -278,6 +278,21 @@ class AR13(AR):
     course_list: list[CourseRef]
     program_plan_list: list[ProgramRef]
 
+    def validate(self, plan: Plan) -> ValidateResult:
+        for plan_ref in self.plan_list: 
+            if plan_ref.code in plan.specialisations[self.part]:
+                overlap = set(self.course_list) & set(plan.courses)
+                if overlap:
+                    return ValidateResult(
+                        Status.ERROR,
+                        0,
+                        f"Students completing {plan_ref} are exempt from {overlap}.",
+                        list(overlap),
+                    )
+                else:
+                    return ValidateResult(Status.OK, 100, "", [])
+
+
 
 @serde
 class AR15(AR):
