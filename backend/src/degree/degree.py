@@ -7,6 +7,7 @@ from serde import serde
 from api.courses.models import CourseDBModel
 from api.degree.models import DegreeDBModel
 from api.plan import Plan
+from degree.params import CourseRef, ProgramRef
 from degree.aux_rule import AR
 from degree.sr_rule import SR
 from degree.validate_result import ValidateResult

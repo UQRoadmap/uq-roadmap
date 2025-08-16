@@ -67,7 +67,7 @@ def load_degrees_from_file() -> Generator[DegreeDBModel]:
                 if degree is None:
                     continue
 
-                flat = convert_degree(degree)
+                flat = convert_degree(degree, data)
 
                 if flat.code not in degree_meta_map:
                     # thanks UQ :)

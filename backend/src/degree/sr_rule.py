@@ -4,6 +4,7 @@ from degree.validate_result import ValidateResult, Status
 from degree.params import ProgramRef, CourseRef
 from api.plan import Plan
 
+from serde.json import from_dict
 
 @serde
 class SR:
@@ -11,7 +12,7 @@ class SR:
     part: str
 
     def validate(self, plan: Plan) -> ValidateResult:
-        return ValidateResult(Status.OK, None, "", [])
+        return ValidateResult(Status.ERROR, None, "Should not be seeing this - validating abstract SR", plan.courses)
 
 
 @serde
@@ -20,6 +21,7 @@ class SR1(SR):
 
     n: int
     options: list[CourseRef]
+    type: str = "SR1"
 
     def validate(self, plan: Plan):
         count = 0
@@ -47,6 +49,7 @@ class SR2(SR):
     n: int
     m: int
     options: list[CourseRef]
+    type: str = "SR2"
 
     def validate(self, plan: Plan):
         count = 0
@@ -80,6 +83,7 @@ class SR3(SR):
 
     n: int
     options: list[CourseRef]
+    type: str = "SR3"
 
     def validate(self, plan: Plan):
         count = 0
@@ -105,6 +109,7 @@ class SR4(SR):
     n: int
     m: int
     options: list[CourseRef]
+    type: str = "SR4"
 
     def validate(self, plan: Plan):
         count = 0
@@ -135,6 +140,7 @@ class SR5(SR):
 
     n: int
     options: list[CourseRef]
+    type: str = "SR5"
 
     def validate(self, plan: Plan):
         count = 0
@@ -165,6 +171,7 @@ class SR6(SR):
 
     plan_type: str
     options: list[ProgramRef]
+    type: str = "SR6"
 
     def validate(self, plan: Plan):
         option_codes = [opt.code for opt in self.options]
@@ -183,6 +190,7 @@ class SR7(SR):
     n: int
     plan_types: str
     options: list[ProgramRef]
+    type: str = "SR7"
 
     def validate(self, plan: Plan):
         option_codes = [opt.code for opt in self.options]
@@ -209,6 +217,7 @@ class SR8(SR):
     m: int
     plan_types: str  # Usually just major unless your course is weird
     options: list[ProgramRef]
+    type: str = "SR8"
 
     def validate(self, plan: Plan):
         option_codes = [opt.code for opt in self.options]
@@ -225,3 +234,26 @@ class SR8(SR):
                                   f"but {self.m} maximum. Remove from: "
                                   f"{', '.join(option_codes)}", option_codes)
         return ValidateResult(Status.OK, 100, "", [])
+    
+
+def create_sr_from_dict(data: dict) -> SR:
+    """Factory function to create correct SR subclass from dict."""
+    sr_type = data.get("type", "SR")
+    
+    type_map = {
+        "SR1": SR1,
+        "SR2": SR2,
+        "SR3": SR3,
+        "SR4": SR4,
+        "SR5": SR5,
+        "SR6": SR6,
+        "SR7": SR7,
+        "SR8": SR8,
+    }
+    
+    print(sr_type)
+    if sr_type in type_map:
+        return from_dict(type_map[sr_type], data)
+    else:
+        return from_dict(SR, data)
+    

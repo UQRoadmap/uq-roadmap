@@ -6,14 +6,15 @@ from api.plan import Plan
 from degree.params import CourseRef, ProgramRef
 from degree.validate_result import Status, ValidateResult
 
+from serde.json import from_dict
 
-@serde(tagging=AdjacentTagging("code", "data"))
+@serde
 class AR:
     # Part, e.g. A or A.1
     part: str
 
-    def validate(self, plan) -> ValidateResult:
-        return ValidateResult(Status.ERROR, None, "Should not be seeing this", [])
+    def validate(self, plan: Plan) -> ValidateResult:
+        return ValidateResult(Status.ERROR, None, "Should not be seeing this - validating abstract AR", plan.courses)
 
 
 @serde
@@ -23,6 +24,7 @@ class AR1(AR):
     n: int
     level: int
     or_higher: bool = True
+    type: str = "AR1"
 
     def validate(self, plan: Plan) -> ValidateResult:
         count = 0
@@ -51,6 +53,7 @@ class AR2(AR):
 
     n: int
     level: int
+    type: str = "AR2"
 
     def validate(self, plan: Plan) -> ValidateResult:
         count = 0
@@ -82,6 +85,7 @@ class AR3(AR):
     n: int
     level: int
     or_higher: bool = True
+    type: str = "AR3"
 
     def validate(self, plan: Plan) -> ValidateResult:
         count = 0
@@ -114,6 +118,7 @@ class AR4(AR):
     m: int
     level: int
     or_higher: bool = True
+    type: str = "AR4"
 
     def validate(self, plan: Plan) -> ValidateResult:
         count = 0
@@ -151,6 +156,7 @@ class AR5(AR):
 
     plan_list_1: list[ProgramRef]
     plan_list_2: list[ProgramRef]
+    type: str = "AR5"
 
     def validate(self, plan: Plan) -> ValidateResult:
         for plan_ref in self.plan_list_1:
@@ -173,6 +179,7 @@ class AR6(AR):
 
     plan_list_1: list[ProgramRef]
     plan_list_2: list[ProgramRef]
+    type: str = "AR6"
 
     def validate(self, plan: Plan) -> ValidateResult:
         for plan_ref in self.plan_list_1:
@@ -194,6 +201,7 @@ class AR7(AR):
     """No more than [N] units from same discipline descriptor."""
 
     n: int
+    type: str = "AR7"
 
     def validate(self, plan: Plan) -> ValidateResult:
         discipline_count = {}
@@ -217,6 +225,7 @@ class AR9(AR):
     """No credit for [COURSE_LIST]."""
 
     course_list: list[CourseRef]
+    type: str = "AR9"
 
     def validate(self, plan: Plan) -> ValidateResult:
         badcourses = []
@@ -234,6 +243,7 @@ class AR10(AR):
 
     course_list: list[CourseRef]
     plan_list: list[ProgramRef]
+    type: str = "AR10"
 
     def validate(self, plan: Plan) -> ValidateResult:
         for plan_ref in self.plan_list:
@@ -256,6 +266,7 @@ class AR11(AR):
 
     course_list: list[CourseRef]
     plan_list: list[ProgramRef]
+    type: str = "AR11"
 
     def validate(self, plan: Plan) -> ValidateResult:
         overlap = set(self.course_list) & set(plan.courses)
@@ -278,6 +289,7 @@ class AR13(AR):
     plan_list: list[ProgramRef]
     course_list: list[CourseRef]
     program_plan_list: list[ProgramRef]
+    type: str = "AR13"
 
     # This is such a crazy edge case i'm just not gonna bother - it reads
     """
@@ -310,6 +322,7 @@ class AR15(AR):
     must: bool  # True=MUST, False=MAY
     program_plan_list: list[ProgramRef]
     lists: list[str]  # reference names/ids to course lists
+    type: str = "AR15"
 
     def validate(self, plan: Plan) -> ValidateResult:
         if self.must:
@@ -344,6 +357,7 @@ class AR16(AR):
     must: bool
     course_list_2: list[CourseRef]
     program_plan_list: list[ProgramRef]
+    type: str = "AR16"
 
     def validate(self, plan: Plan) -> ValidateResult:
         if self.must:
@@ -379,6 +393,7 @@ class AR17(AR):
     must: bool
     program_plan_list: list[ProgramRef]
     lists: list[str]
+    type: str = "AR17"
 
     def validate(self, plan: Plan) -> ValidateResult:
         if self.must:
@@ -411,6 +426,7 @@ class AR18(AR):
 
     course_list: list[CourseRef]
     program: ProgramRef
+    type: str = "AR18"
 
     def validate(self, plan: Plan) -> ValidateResult:
         for course in plan.courses:
@@ -432,6 +448,7 @@ class AR19(AR):
     plan_list: list[ProgramRef]
     course_list: list[CourseRef]
     program: ProgramRef
+    type: str = "AR19"
 
     def validate(self, plan: Plan) -> ValidateResult:
         for plan_ref in self.plan_list:
@@ -457,6 +474,7 @@ class AR20(AR):
     plan_list_1: list[ProgramRef]
     course_list: list[CourseRef]
     plan_list_2: list[ProgramRef]
+    type: str = "AR20"
 
     def validate(self, plan: Plan) -> ValidateResult:
         if plan.degree == self.plan_1.code:
@@ -481,3 +499,34 @@ class ARUnknown(AR):
 
     text: str
     raw_params: list[dict]
+
+
+def create_ar_from_dict(data: dict) -> AR:
+    """Factory function to create correct AR subclass from dict."""
+    ar_type = data.get("type", "AR")
+    
+    type_map = {
+        "AR1": AR1,
+        "AR2": AR2,
+        "AR3": AR3,
+        "AR4": AR4,
+        "AR5": AR5,
+        "AR6": AR6,
+        "AR7": AR7,
+        "AR9": AR9,
+        "AR10": AR10,
+        "AR11": AR11,
+        "AR13": AR13,
+        "AR15": AR15,
+        "AR16": AR16,
+        "AR17": AR17,
+        "AR18": AR18,
+        "AR19": AR19,
+        "AR20": AR20,
+        "ARUnknown": ARUnknown,
+    }
+    
+    if ar_type in type_map:
+        return from_dict(type_map[ar_type], data)
+    else:
+        return from_dict(AR, data)
