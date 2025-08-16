@@ -20,122 +20,13 @@ import { useState } from 'react'
 import { Course, DegreeReq } from '@/types/course'
 import { MagnifyingGlassIcon } from '@heroicons/react/16/solid';
 
-const courses: Course[] = [
-  {
-    code: "CSSE6400",
-    degreeReq: {
-      core: [
-          "csse2310",
-          "csse2010",
-          "CSSE6400"
-      ],
-      electives: [
-          "DATA2001",
-          "CSSE6400"
-      ],
-    },
-    id: "meow1",
-    sems: ["Semester 1", "Summer Semester"],
-    sem: "Semester 1",
-    name: 'Software Architecture',
-    units: 2,
-    secats: 4,
-    completed: false,
-    desc: "Software systems are often composed of a heterogeneous network of inter-related systems. In this course you will build upon the knowledge and skills you have developed so far to learn how to design complex systems. This will include how these systems communicate and coordinate their responsibilities. You will learn design techniques to manage the complexity of large systems. You will learn how to assess and manage software risks (e.g.security, scalability, availability, resilience, robustness). You will apply these techniques to build a system composed of heterogeneous computing devices (e.g. mobile devices, servers, cloud-hosted services). You will learn how to apply systems thinking to design large-scale cyber-physical systems." },
-  {
-    code: "CSSE3200",
-    degreeReq: {
-      core: [
-          "csse2310",
-          "csse2010",
-          "CSSE6400"
-      ],
-      electives: [
-          "DATA2001",
-          "CSSE6400"
-      ],
-    },
-    id: "meow",
-    sems: ["Semester 1", "Summer Semester"],
-    sem: "Semester 1",
-    name: 'Software Engineering Studio: Design, Implement and Test',
-    units: 2,
-    secats: 3,
-    completed: false,
-    desc: "Students work in teams on a studio-based software development project to gain an understanding of the processes, techniques and tools used to manage and deliver large, complex software systems. The course covers software engineering, design, project management and team work processes. Students will learn techniques and tools used to manage complex software projects. These techniques and tools will be applied to software design, verification and validation, configuration management and documentation." },
-  {
-    code: "CSSE3221",
-    degreeReq: {
-      core: [
-          "csse2310",
-          "csse2010",
-          "CSSE6400"
-      ],
-      electives: [
-          "DATA2001",
-          "CSSE6400"
-      ],
-    },
-    id: "meow2",
-    sems: ["Semester 1", "Summer Semester"],
-    sem: "Semester 1",
-    name: 'Software Engineering Studio: Design, Implement and Test',
-    units: 2,
-    secats: 1,
-    completed: false,
-    desc: "Students work in teams on a studio-based software development project to gain an understanding of the processes, techniques and tools used to manage and deliver large, complex software systems. The course covers software engineering, design, project management and team work processes. Students will learn techniques and tools used to manage complex software projects. These techniques and tools will be applied to software design, verification and validation, configuration management and documentation." },
-  {
-    code: "CSSE3211",
-    degreeReq: {
-      core: [
-          "csse2310",
-          "csse2010",
-          "CSSE6400"
-      ],
-      electives: [
-          "DATA2001",
-          "CSSE6400"
-      ],
-    },
-    id: "meow3",
-    sems: ["Semester 2", "Summer Semester"],
-    name: 'Software Engineering Studio: Design, Implement and Test',
-    sem: "Semester 1",
-    units: 2,
-    secats: 1,
-    completed: false,
-    desc: "Students work in teams on a studio-based software development project to gain an understanding of the processes, techniques and tools used to manage and deliver large, complex software systems. The course covers software engineering, design, project management and team work processes. Students will learn techniques and tools used to manage complex software projects. These techniques and tools will be applied to software design, verification and validation, configuration management and documentation." },
-  {
-    code: "CSSE3201",
-    degreeReq: {
-      core: [
-          "csse2310",
-          "csse2010",
-          "CSSE6400"
-      ],
-      electives: [
-          "DATA2001",
-          "CSSE6400"
-      ],
-    },
-    id: "meow4",
-    sems: ["Semester 2"],
-    name: 'Software Engineering Studio: Design, Implement and Test',
-    sem: "Semester 1",
-    units: 2,
-    secats: 1,
-    completed: false,
-    desc: "Students work in teams on a studio-based software development project to gain an understanding of the processes, techniques and tools used to manage and deliver large, complex software systems. The course covers software engineering, design, project management and team work processes. Students will learn techniques and tools used to manage complex software projects. These techniques and tools will be applied to software design, verification and validation, configuration management and documentation." },
-]
-
-const recent = [courses[0]]
-
 export default function CommandPalette({draggable, clickable, setActiveId, activeId, opened, sem,
-    setPaletteOpen, onSelectCourse, stateCourses, setDelete, courseReqs}:
+    setPaletteOpen, onSelectCourse, stateCourses, setDelete, courseReqs, courses}:
     {draggable?: boolean, clickable?: boolean, setActiveId: (open: string) => void,
         activeId: string, opened: boolean, sem?: string, setPaletteOpen: (open: boolean) => void,
         onSelectCourse: (course: Course, id: string) => void, stateCourses: Course[][],
-     setDelete: (id: string, sem:string) => void, courseReqs:DegreeReq }) {
+     setDelete: (id: string, sem:string) => void, courseReqs:DegreeReq, courses: Course[] }) {
+
   const [query, setQuery] = useState('')
   const activeCourse = courses.find(c => c.id === activeId) as Course;
 

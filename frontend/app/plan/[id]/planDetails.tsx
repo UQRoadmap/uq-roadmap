@@ -113,7 +113,7 @@ function SemesterSection({ semester, courses, setPaletteOpen, setActiveId, setDe
     );
 }
 
-export function PlanDetailClient({ plan: initialPlan }: { plan: Plan }) {
+export function PlanDetailClient(initialPlan: Plan, courses: Course[]) {
     const [plan, setPlan] = useState<Plan>(initialPlan);
     const [isPaletteOpen, setPaletteOpen] = useState(false);
     const [sem, setSem] = useState(undefined);
@@ -458,6 +458,7 @@ export function PlanDetailClient({ plan: initialPlan }: { plan: Plan }) {
                         stateCourses={stateCourses}
                         setDelete={handleDeleteCourse}
                         courseReqs={courseReqs}
+                        courses={courses}
                     />
 
                     <div className="flex flex-col h-screen overflow-y-auto">
