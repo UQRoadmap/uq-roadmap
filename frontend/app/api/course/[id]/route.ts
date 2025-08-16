@@ -5,7 +5,7 @@ import { BACKEND_BASE_URL } from '../../common';
 
 export async function GET({ params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = params
+        const { id } = await params
 
         const backendUrl = `${BACKEND_BASE_URL}/course/${id}`;
         const res = await fetch(backendUrl);
