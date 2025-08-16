@@ -34,21 +34,32 @@ class CourseLevel(StrEnum):
     OTHER = "other"
 
 
-class UniversitySemester(StrEnum):
+class CourseSemester(StrEnum):
     """University Semesters."""
 
+    RQ1 = "Research Quarter 1"
+    RQ2 = "Research Quarter 2"
+    RQ3 = "Research Quarter 3"
+    RQ4 = "Research Quarter 4"
+    SFC = "SFC Enrolment Year"
     SEM1 = "Semester 1"
     SEM2 = "Semester 2"
-    SSEM = "Summer Semester"
-    WSEM = "Winter Semester"
+    SUM_SEM = "Summer Semester"
+    TRIM_1 = "Trimester 1"
+    TRIM_2 = "Trimester 2"
+    TRIM_3 = "Trimester 3"
+    COLLEGE1 = "UQ College Intake 1"
+    COLLEGE2 = "UQ College Intake 2"
+    OTHER = "Other"
 
 
-class CourseOfferingMode(StrEnum):
+class CourseMode(StrEnum):
     """Course offering mode."""
 
     WORK_EXPERIENCE = "Work Experience"
     IN_PERSON = "In Person"
     EXTERNAL = "External"
+    INTERNAL = "Internal"
     WEEKEND = "Weekend"
     JULY_INTENSIVE = "July Intensive"
     OFFSHORE = "Off-Shore"
