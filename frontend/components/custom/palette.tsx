@@ -11,7 +11,7 @@ import {
 } from '@headlessui/react'
 import { Badge } from '@/components/badge'
 import  CourseCard from '@/components/custom/course-card'
-//import { StarIcon } from "@heroicons/react/20/solid"
+import { StarIcon } from "@heroicons/react/20/solid"
 
 import {DragOverlay} from '@dnd-kit/core';
 import Draggable from '@/components/draggable'
@@ -24,7 +24,7 @@ const courses: Course[] = [
   {
     code: "CSSE6400",
     id: "meow1",
-    sem: "1",
+    sems: ["Semester 1", "Summer Semester"],
     name: 'Software Architecture',
     units: 2,
     secats: 4,
@@ -33,7 +33,7 @@ const courses: Course[] = [
   {
     code: "CSSE3200",
     id: "meow",
-    sem: "2",
+    sems: ["Semester 1", "Summer Semester"],
     name: 'Software Engineering Studio: Design, Implement and Test',
     units: 2,
     secats: 3,
@@ -42,7 +42,7 @@ const courses: Course[] = [
   {
     code: "CSSE3221",
     id: "meow2",
-    sem: "1 & 2",
+    sems: ["Semester 1", "Summer Semester"],
     name: 'Software Engineering Studio: Design, Implement and Test',
     units: 2,
     secats: 1,
@@ -51,7 +51,7 @@ const courses: Course[] = [
   {
     code: "CSSE3211",
     id: "meow3",
-    sem: "1 & 2",
+    sems: ["Semester 2", "Summer Semester"],
     name: 'Software Engineering Studio: Design, Implement and Test',
     units: 2,
     secats: 1,
@@ -60,7 +60,7 @@ const courses: Course[] = [
   {
     code: "CSSE3201",
     id: "meow4",
-    sem: "1 & 2",
+    sems: ["Semester 2"],
     name: 'Software Engineering Studio: Design, Implement and Test',
     units: 2,
     secats: 1,
@@ -70,22 +70,24 @@ const courses: Course[] = [
 
 const recent = [courses[0]]
 
-export default function CommandPalette({draggable, clickable, setActiveId, activeId, opened, sem, setPaletteOpen, onSelectCourse, stateCourses}:
+export default function CommandPalette({draggable, clickable, setActiveId, activeId, opened, sem,
+    setPaletteOpen, onSelectCourse, stateCourses, setDelete}:
     {draggable?: boolean, clickable?: boolean, setActiveId: (open: string) => void,
         activeId: string, opened: boolean, sem?: string, setPaletteOpen: (open: boolean) => void,
-        onSelectCourse: (course: Course, id: string) => void, stateCourses: Course[][]}) {
+        onSelectCourse: (course: Course, id: string) => void, stateCourses: Course[][],
+     setDelete: (id: string, sem:string) => void}) {
   const [query, setQuery] = useState('')
   const activeCourse = courses.find(c => c.id === activeId) as Course;
-  const filteredcourses: Course[] =
-    query === ''
-      ? []
-      : courses.filter((course) => {
-          const q = query.toLowerCase();
-          return (
-            course.name.toLowerCase().includes(q) ||
-            course.code.toLowerCase().includes(q)
-          );
-        });
+
+  const filteredcourses = courses.filter((course) => {
+      const q = query.toLowerCase();
+
+      // Check name and code
+      const matchesNameOrCode =
+          course.name.toLowerCase().includes(q) ||
+          course.code.toLowerCase().includes(q);
+      return matchesNameOrCode
+  });
 
     const handleClick = (course: Course) => {
       if (!clickable) return;
@@ -149,7 +151,7 @@ export default function CommandPalette({draggable, clickable, setActiveId, activ
             disabled={!draggable}
               >
             <li
-              className={`group ${clickable ? "cursor-pointer" : "cursor-grab"} rounded-md px-3 py-2 bg-black hover:bg-[#1f1f1f] transition-colors flex flex-col select-none`}
+              className={`group ${clickable ? "cursor-pointer" : "cursor-grab"} rounded-md px-3 py-2 backdrop-blur-md bg-[#1f1f1f] hover:bg-[#1f1f1f] transition-colors flex flex-col select-none`}
               onClick={() => handleClick(course)}
               style={{
                 opacity: activeId === course.id ? 0 : 1, // hide original while dragging
@@ -160,15 +162,24 @@ export default function CommandPalette({draggable, clickable, setActiveId, activ
                 <span className="ml-3 hidden flex-none text-gray-400 group-data-focus:inline">Add to planner</span>
               </div>
               <span className="ml-3 text-gray-400 text-sm">{course.desc.length > 180 ? course.desc.slice(0, 180) + '…' : course.desc}</span>
-              <span className="ml-3 text-gray-400 text-sm space-x-2">
-              <Badge color={course.sem == "2" ? "blue" : course.sem == "1" ? "red" : "purple"}>Semester {course.sem}</Badge>
-              <Badge color="pink">{course.units} Units</Badge>
-              <Badge color={course.secats > 3.5 ? "green" : course.secats > 2 ? "orange" : "red"}>
-                  <div className="flex items-center space-x-1 text-yellow-400">
-                stars to go here
-                  </div>
-              </Badge>
-              </span>
+            <div className="flex space-x-6 ml-3 text-gray-400 text-sm space-x-6 justify-between">
+              {/* Offering */}
+              <div>
+                <span className="font-semibold">Offerings: {course.sems?.join(', ')}</span>
+              </div>
+
+              {/* Units and Secats */}
+              <div className="flex items-center space-x-4">
+                <span>{course.units} Units</span>
+                <div className="flex items-center space-x-1 text-yellow-400">
+                  <span>{course.secats}</span>
+                  <StarIcon className="w-3 h-3" />
+                </div>
+              </div>
+
+            </div>
+
+
             </li>
               </Draggable>
             ))}
@@ -194,7 +205,7 @@ export default function CommandPalette({draggable, clickable, setActiveId, activ
     </Dialog>
 <DragOverlay>
   {activeId && (
-    <CourseCard {...stateCourses.flat().find(c => c.id === activeId)!} />
+    <CourseCard {...stateCourses.flat().find(c => c.id === activeId)!} deleteMeth={setDelete} />
   )}
 </DragOverlay>
     </div>
