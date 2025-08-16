@@ -29,10 +29,11 @@ class AR1(AR):
         try:
             for course in plan.courses:
                 course_level = int(course[4])
-                if course_level == self.level or (course_level > self.level and self.or_higher):
-                    count += 1
+                if course_level == self.level or \
+                        (course_level > self.level and self.or_higher):
+                    count += -1  # change to units (ask lucas)
             if count >= self.n:
-                return ValidateResult(Status.OK, None, "", [])
+                return ValidateResult(Status.OK, 100, "", [])
             else:
                 return ValidateResult(
                     Status.ERROR,
@@ -50,6 +51,24 @@ class AR2(AR):
 
     n: int
     level: int
+
+    def validate(self, plan: Plan) -> ValidateResult:
+        count = 0
+        badcourses = []
+        try:
+            for course in plan.courses:
+                course_level = int(course[4])
+                if course_level == self.level:
+                    count += -1  # change to units (ask lucas)
+                    badcourses.append(course)
+            if count < self.n:
+                return ValidateResult(Status.OK, 100, "", [])
+            else:
+                return ValidateResult(Status.ERROR, count / self.n * 100,
+                                    f"Expected at most {self.n} units at level {self.level}, found {count}.", badcourses)
+        except ValueError:
+            return ValidateResult(Status.ERROR, None,
+                                  "Invalid course level format", plan.courses)
 
 
 @serde

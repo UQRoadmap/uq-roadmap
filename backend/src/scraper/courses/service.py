@@ -1,20 +1,16 @@
 """Courses scrape service."""
 
 import asyncio
-import json
 import logging
-import re
-from collections import defaultdict
-from collections.abc import AsyncGenerator
+from pathlib import Path
 from typing import NoReturn
 
 import bs4
 import curl_cffi
 from bs4 import BeautifulSoup
-from playwright.async_api import async_playwright
 
 from common.enums import CourseLevel
-from scraper.courses.models import Course, CourseOffering, CourseSecatInfo, SecatQuestion
+from scraper.courses.models import ScrapedAssessment, ScrapedCourse, ScrapedCourseOffering
 
 log = logging.getLogger(__name__)
 
@@ -26,151 +22,96 @@ TIMEOUT_SECONDS = 60
 # Urls
 COURSES_URL = "https://programs-courses.uq.edu.au/search.html?keywords=*&searchType=all&archived=true#courses"
 ECP_URL = "https://programs-courses.uq.edu.au/course.html?course_code={}"
-SECAT_URL = "https://www.pbi.uq.edu.au/clientservices/SECaT/embedChart.aspx"
+
+CACHE_DIR = Path("cache")
+CACHE_DIR.mkdir(exist_ok=True)
 
 
 semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
 
 
-def _extract_secat_questions(html: str, course_code: str) -> list[SecatQuestion]:  # noqa: C901
-    """Extract the question info from the secats."""
-    """Extracts SECaT question distributions from the embedded JS."""
+async def _get_webpage(session: curl_cffi.AsyncSession, url: str) -> str:
+    cache_file = CACHE_DIR / f"{url.replace('/', '_').replace(':', '')}.html"
+
+    if cache_file.exists():
+        log.info(f"Cached page for {url} exists")
+        return cache_file.read_text(encoding="utf-8")
+
+    # get it online
+    r = await session.get(url, timeout=TIMEOUT_SECONDS)
+    r.raise_for_status()
+    html = r.text
+    cache_file.write_text(html, encoding="utf-8")
+
+    return html
+
+
+def _extract_assessment_html(html: str) -> list[ScrapedAssessment] | None:
     soup = BeautifulSoup(html, "html.parser")
-    script = soup.select_one("#SECATControl script")
+    assessments: list[ScrapedAssessment] = []
+    # Extract assessment information from the soup
 
-    if not script or "courseSECATData" not in script.text or script.string is None:
-        log.warning(f"No SECaT data found for {course_code}")
-        return []
+    sections = soup.select("#assessment-details h3")
+    if sections is None or len(sections) == 0:
+        return None
 
-    match = re.search(r"var courseSECATData\s*=\s*(\[.*?\]);", script.string, re.DOTALL)
-    if not match:
-        log.warning(f"Couldn't parse SECaT data for {course_code}")
-        return []
+    for section in sections:
+        task = section.get_text(strip=True)
 
-    raw_json = match.group(1)
-
-    # clean trailing commas
-    cleaned = re.sub(r",\s*}", "}", raw_json)
-    cleaned = re.sub(r",\s*]", "]", cleaned)
-
-    try:
-        data = json.loads(cleaned)
-    except json.JSONDecodeError:
-        log.exception(f"Failed to decode SECaT JSON for {course_code}")
-        return []
-
-    # Group by question
-    grouped: dict[str, dict[str, float]] = defaultdict(
-        lambda: {
-            "s_agree": 0.0,
-            "agree": 0.0,
-            "middle": 0.0,
-            "disagree": 0.0,
-            "s_disagree": 0.0,
+        # Navigate siblings (dl contains structured data)
+        dl = section.find_next("dl")
+        details = {
+            dt.get_text(strip=True): dd.get_text(" ", strip=True)
+            for dt, dd in zip(dl.find_all("dt"), dl.find_all("dd"), strict=False)
         }
-    )
 
-    for row in data:
-        if row["COURSE_CD"] != course_code:
-            continue
-
-        qname = row["QUESTION_NAME"]
-
-        # Map answers into categories
-        answer = row["ANSWER"].lower()
-        percent = row["PERCENT_ANSWER"]
-
-        if "strongly agree" in answer:
-            grouped[qname]["s_agree"] += percent
-        elif answer.startswith("2 agree"):
-            grouped[qname]["agree"] += percent
-        elif "neither" in answer or "neutral" in answer or "3" in answer:
-            grouped[qname]["middle"] += percent
-        elif answer.startswith("4 disagree"):
-            grouped[qname]["disagree"] += percent
-        elif "strongly disagree" in answer:
-            grouped[qname]["s_disagree"] += percent
-
-    return [
-        SecatQuestion(
-            name=qname,
-            s_agree=vals["s_agree"],
-            agree=vals["agree"],
-            middle=vals["middle"],
-            disagree=vals["disagree"],
-            s_disagree=vals["s_disagree"],
+        category = details.get("Category")
+        mode = details.get("Mode")
+        weight = details.get("Weight")
+        due_date = details.get("Due date")
+        learning_outcomes = (
+            details.get("Learning outcomes", "").replace(" ", "").split(",") if "Learning outcomes" in details else []
         )
-        for qname, vals in grouped.items()
-    ]
+
+        # Flags (hurdle, identity verified)
+        flags = [li.get_text(strip=True) for li in section.find_next("ul").find_all("li")]
+        hurdle = any("Hurdle" in f for f in flags)
+        identity_verified = any("Identity Verified" in f for f in flags)
+
+        task_div = section.find_next("h4", string="Task description")
+        task_description = None
+        if task_div:
+            task_p = task_div.find_next("div", class_="collapsible")
+            if task_p:
+                task_description = task_p.get_text(" ", strip=True)
+
+        weight = weight.strip().replace("%", "") if weight else None
+        weight_val = (float(weight) / 100 if weight.isnumeric() else None) if weight is not None else None
+
+        assessments.append(
+            ScrapedAssessment(
+                task=task,
+                category=category,
+                description=task_description,
+                weight=weight_val,
+                due_date=due_date,
+                mode=mode,
+                learning_outcomes=learning_outcomes,
+                hurdle=hurdle,
+                identity_verified=identity_verified,
+            )
+        )
+
+    return assessments
 
 
-async def iter_secat_info() -> AsyncGenerator[tuple[str, CourseSecatInfo]]:
-    """Extracts course info from the secat, mapping a course code to the secat info."""
-    async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
-        page = await browser.new_page()
-        await page.goto(SECAT_URL)
+async def _extract_assessment_info(session: curl_cffi.AsyncSession, profile_url: str) -> list[ScrapedAssessment] | None:
+    html = await _get_webpage(session, profile_url)
 
-        letters = page.locator(".rtsLevel1 .rtsLink .rtsTxt")
-
-        # this is getting A, B, C, etc.
-        for i in range(await letters.count()):
-            letter_elem = letters.nth(i)
-            letter_text = await letter_elem.inner_text()
-            log.info(f"[Level 1] Clicking letter: {letter_text}")
-
-            await letter_elem.click()
-
-            await page.wait_for_selector(".rtsLevel2 .rtsLink .rtsTxt", state="visible")
-            courses_lvl2 = page.locator(".rtsLevel2 .rtsLink .rtsTxt")
-
-            await page.wait_for_selector(".rtsLevel3 .rtsLink .rtsTxt")
-            courses_lvl3_texts = await page.locator(".rtsLevel3 .rtsLink .rtsTxt").all_inner_texts()
-            log.info(f"Letter {letter_text} has {len(courses_lvl3_texts)} Level 3 courses")
-
-            current_prefix = None
-
-            for full_course_code in courses_lvl3_texts:
-                prefix = "".join([c for c in full_course_code if not c.isdigit()])  # e.g., 'ABTS'
-
-                if prefix != current_prefix:
-                    # find and click the matching Level 2 element
-                    lvl2_elem = courses_lvl2.filter(has_text=prefix)
-                    log.info(f"Switching Level 2 to {prefix}")
-
-                    await lvl2_elem.scroll_into_view_if_needed()
-                    await lvl2_elem.click(force=True)  # force click in case of overlay
-                    current_prefix = prefix
-
-                    await page.wait_for_selector(".rtsLevel3 .rtsLink .rtsTxt")
-                    courses_lvl3_texts_for_prefix = await page.locator(".rtsLevel3 .rtsLink .rtsTxt").all_inner_texts()
-                    log.info(f"Level 3 courses for {prefix}: {len(courses_lvl3_texts_for_prefix)}")
-
-                # re-locate the Level 3 element to avoid stale element
-                course_elem = page.locator(".rtsLevel3 .rtsLink .rtsTxt", has_text=full_course_code)
-                log.info(f"[Level 3] Clicking full course: {full_course_code}")
-                await course_elem.scroll_into_view_if_needed()
-                await course_elem.click()
-
-                await page.wait_for_selector("#lblNoEnrolled")
-                enrolled = int(await page.locator("#lblNoEnrolled").inner_text())
-                responses = int(await page.locator("#lblNoResponses").inner_text())
-                rate = float((await page.locator("#lblRespRate").inner_text()).replace("%", ""))
-
-                html = await page.content()
-                questions = _extract_secat_questions(html, full_course_code)
-
-                yield (
-                    full_course_code,
-                    CourseSecatInfo(
-                        num_enrolled=enrolled, num_responses=responses, response_rate=rate, questions=questions
-                    ),
-                )
-
-        await browser.close()
+    return _extract_assessment_html(html)
 
 
-def _extract_course_html(html: str, course_code: str) -> Course | None:  # noqa: C901, PLR0915
+async def _extract_course_html(session: curl_cffi.AsyncSession, html: str, course_code: str) -> ScrapedCourse | None:  # noqa: C901, PLR0912, PLR0915
     """Parses the ECP html into a course."""
     soup = BeautifulSoup(html, "html.parser")
 
@@ -260,7 +201,7 @@ def _extract_course_html(html: str, course_code: str) -> Course | None:  # noqa:
     course_enquiries = course_enquiries_tag.text.strip() if course_enquiries_tag else None
 
     # Offerings
-    def _parse_offerings(table_id: str) -> list[CourseOffering]:
+    def _parse_offerings(table_id: str) -> list[ScrapedCourseOffering]:
         offerings = []
         for row in soup.select(f"#{table_id} tbody tr"):
             sem_tag = row.select_one("a.course-offering-year")
@@ -286,13 +227,32 @@ def _extract_course_html(html: str, course_code: str) -> Course | None:  # noqa:
             else:
                 log.warning(f"{course_code} profile unavailable for {sem_tag.text.strip()} ({table_id})")
 
-            offerings.append(CourseOffering(semester=sem, location=loc, mode=mode, profile_url=profile_url))
+            offerings.append(ScrapedCourseOffering(semester=sem, location=loc, mode=mode, profile_url=profile_url))
         return offerings
 
     current_offerings = _parse_offerings("course-current-offerings")
     archived_offerings = _parse_offerings("course-archived-offerings")
 
-    return Course(
+    asessment_info: list[ScrapedAssessment] | None = None
+    for offering in current_offerings:
+        if not offering.profile_url:
+            continue
+        asessment_info = await _extract_assessment_info(session, offering.profile_url)
+        if asessment_info:
+            log.info(f"Found assessment info for {course_code} in offering {offering.semester}")
+            break
+
+    if asessment_info is not None:
+        log.info(f"Looking in archived courses for assessment info for course {course_code}...")
+        for offering in archived_offerings:
+            if not offering.profile_url:
+                continue
+            asessment_info = await _extract_assessment_info(session, offering.profile_url)
+            if asessment_info:
+                log.info(f"Found assessment info for {course_code} in archived offering {offering.semester}")
+                break
+
+    return ScrapedCourse(
         # General info
         code=course_code,
         name=name,
@@ -312,18 +272,20 @@ def _extract_course_html(html: str, course_code: str) -> Course | None:  # noqa:
         # Offerings
         current_offerings=current_offerings,
         archived_offerings=archived_offerings,
+        latest_assessment=asessment_info,
+        secat=None,
     )
 
 
-async def _extract_course_info_ecp(session: curl_cffi.AsyncSession, course_code: str) -> Course | str:
+async def _extract_course_info_ecp(session: curl_cffi.AsyncSession, course_code: str) -> ScrapedCourse | str:
     """Extracts the course info from the ecp."""
     log.debug(f"Fetching ecp info for course '{course_code}'")
 
     for attempt in range(1, RETRY_COUNT + 1):
         try:
-            r = await session.get(ECP_URL.format(course_code), timeout=TIMEOUT_SECONDS)
-            r.raise_for_status()
-            result = _extract_course_html(r.text, course_code)
+            html = await _get_webpage(session, ECP_URL.format(course_code))
+            result = await _extract_course_html(session, html, course_code)
+
             return result or course_code  # noqa: TRY300
         except curl_cffi.requests.exceptions.Timeout:
             log.warning(f"Timeout fetching course '{course_code}' (attempt {attempt}/{RETRY_COUNT})")
@@ -334,7 +296,7 @@ async def _extract_course_info_ecp(session: curl_cffi.AsyncSession, course_code:
     return course_code
 
 
-async def _extract_course_info_with_limit(session: curl_cffi.AsyncSession, course_code: str) -> Course | str:
+async def _extract_course_info_with_limit(session: curl_cffi.AsyncSession, course_code: str) -> ScrapedCourse | str:
     """Wrap extraction with semaphore to limit concurrency."""
     async with semaphore:
         return await _extract_course_info_ecp(session, course_code)
@@ -357,25 +319,21 @@ def _parse_course_codes(html: str) -> list[str]:
         log.warning("No courses found")
         return []
 
-    if isinstance(container, bs4.PageElement):
-        log.warning("WEIRD -> Its a page element")
-        return []
-
     list_items = container.select("ul.listing > li")
 
     return [li.find("a", class_="code").get_text(strip=True) for li in list_items]
 
 
-async def scrape_courses() -> list[Course]:
+async def scrape_courses() -> list[ScrapedCourse]:
     """Fetches all of the course info."""
     async with curl_cffi.AsyncSession() as session:
         try:
-            r = await session.get(COURSES_URL)
-            r.raise_for_status()
-            course_codes = _parse_course_codes(r.text)
+            html = await _get_webpage(session, COURSES_URL)
+
+            course_codes = _parse_course_codes(html)
 
             # Get info from ecp
-            courses: list[Course] = []
+            courses: list[ScrapedCourse] = []
             skipped: list[str] = []
 
             tasks = [_extract_course_info_with_limit(session, code) for code in course_codes]
@@ -388,7 +346,8 @@ async def scrape_courses() -> list[Course]:
                 else:
                     courses.append(course)
 
-            log.error(f"Couldn't get data for the following courses: '{', '.join(skipped)}'")
+            if skipped:
+                log.error(f"Couldn't get data for the following courses: '[{', '.join(skipped)}]'")
 
         except Exception:
             log.exception("Error fetching courses")
