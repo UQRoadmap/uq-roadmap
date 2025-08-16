@@ -130,7 +130,7 @@ export default function CommandPalette({draggable, clickable, activeId}: {dragga
                           className="group cursor-move rounded-md px-3 py-2 bg-gray-800 hover:bg-gray-700 transition-colors flex flex-col select-none"
                           onClick={() => handleClick()}
                         style={{
-                          opacity: activeId === +course.id ? 0 : 1, // hide original while dragging
+                          opacity: activeId === course.id ? 0 : 1, // hide original while dragging
                         }}
                         >
                           <div className="flex justify-between items-center">
