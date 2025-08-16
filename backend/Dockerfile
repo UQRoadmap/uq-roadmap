@@ -4,24 +4,22 @@ ENV UV_COMPILE_BYTECODE=1 \
     UV_PYTHON_DOWNLOADS=0
 
 WORKDIR /app
+
+COPY pyproject.toml uv.lock /app/
+
 RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     uv sync --frozen --no-install-project --no-dev
 
-ADD . /app
+COPY . /app
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev
-
 
 # Final Image
 FROM python:3.13-slim-bookworm
 
-# Put the app back in
-COPY --from=builder --chown=app:app /app /app
-
 WORKDIR /app
-
+# Put the app back in
+COPY --from=builder /app /app
 COPY data /app/data
 
 ENV PATH="/app/.venv/bin:$PATH"

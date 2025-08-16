@@ -611,7 +611,7 @@ def convert_degree(parsed_degree: ParsedDegree) -> FlatDegree:
 
 
 def main():
-    with open("../../data/course_reqs/details.json") as f:
+    with open("../data/program_details.json") as f:
         raw = f.read()
         details = json.loads(raw)["program_details"]
         components = {}
