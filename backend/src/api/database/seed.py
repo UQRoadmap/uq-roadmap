@@ -5,7 +5,8 @@ from collections.abc import Generator
 from pathlib import Path
 
 import orjson
-from serde.json import from_dict, to_json
+from serde import to_dict
+from serde.json import from_dict
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.courses.models import CourseDBModel
@@ -76,7 +77,7 @@ def load_degrees_from_file() -> Generator[DegreeDBModel]:
                 year = int(flat.year)
 
                 degree_db_model = DegreeDBModel(
-                    degree_code=flat.code, year=year, title=degree_title, details=to_json(flat), degree_url=degree_url
+                    degree_code=flat.code, year=year, title=degree_title, details=to_dict(flat), degree_url=degree_url
                 )
 
                 yield degree_db_model
@@ -100,7 +101,7 @@ def load_degrees_from_file() -> Generator[DegreeDBModel]:
                     degree_code=code,
                     year=int(flat.year),
                     title=code,
-                    details=to_json(flat),
+                    details=to_dict(flat),
                     degree_url=None,
                 )
 
