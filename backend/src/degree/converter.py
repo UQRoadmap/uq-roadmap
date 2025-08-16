@@ -155,6 +155,8 @@ def process_ar(parsed_ar: ParsedAuxRule, part: str) -> AR:
             )
         ]
 
+    # ...existing code...
+
     def _list_to_programs(v) -> list[ProgramRef]:
         if v is None:
             return []
@@ -162,49 +164,86 @@ def process_ar(parsed_ar: ParsedAuxRule, part: str) -> AR:
             out: list[ProgramRef] = []
             for item in v:
                 if isinstance(item, dict):
-                    out.append(_to_program_ref(item))
+                    # Handle PLAN_WITH_PARENT structure in lists
+                    if "plan" in item:
+                        plan = item["plan"]
+                        out.append(ProgramRef(
+                            units_max=plan.get("unitsMaximum"),
+                            units_min=plan.get("unitsMinimum"),
+                            code=plan.get("code", ""),
+                            org_name=plan.get("orgName", ""),
+                            org_code=plan.get("orgCode", ""),
+                            name=plan.get("name", ""),
+                            abbreviation=plan.get("abbreviation", "")
+                        ))
+                    else:
+                        # Direct plan object
+                        out.append(_to_program_ref(item))
                 else:
-                    out.append(
-                        ProgramRef(
-                            units_max=None,
-                            units_min=None,
-                            code=str(item),
-                            org_name="",
-                            org_code="",
-                            name="",
-                            abbreviation="",
-                        )
-                    )
+                    out.append(ProgramRef(
+                        units_max=None,
+                        units_min=None,
+                        code=str(item),
+                        org_name="",
+                        org_code="",
+                        name="",
+                        abbreviation="",
+                    ))
             return out
         if isinstance(v, dict):
-            return [_to_program_ref(v)]
-        return [
-            ProgramRef(
-                units_max=None,
-                units_min=None,
-                code=str(v),
-                org_name="",
-                org_code="",
-                name="",
-                abbreviation="",
-            )
-        ]
+            return [_single_program(v)]  # Use _single_program for consistency
+        return [ProgramRef(
+            units_max=None,
+            units_min=None,
+            code=str(v),
+            org_name="",
+            org_code="",
+            name="",
+            abbreviation="",
+        )]
+
+# ...existing code...
+
 
     def _single_program(v) -> ProgramRef:
-        ps = _list_to_programs(v)
-        return (
-            ps[0]
-            if ps
-            else ProgramRef(
+        if v is None:
+            return ProgramRef(
                 units_max=None,
                 units_min=None,
-                code="",
-                org_name="",
-                org_code="",
-                name="",
-                abbreviation="",
+                code="", 
+                org_name="", 
+                org_code="", 
+                name="", 
+                abbreviation=""
             )
+        
+        # Handle nested structure like {"parentProgram": {...}, "plan": {...}}
+        if isinstance(v, dict):
+            if "plan" in v:  # PLAN_WITH_PARENT structure
+                plan = v["plan"]
+                return ProgramRef(
+                    units_max=plan.get("unitsMaximum"),
+                    units_min=plan.get("unitsMinimum"),
+                    code=plan.get("code", ""),
+                    org_name=plan.get("orgName", ""),
+                    org_code=plan.get("orgCode", ""),
+                    name=plan.get("name", ""),
+                    abbreviation=plan.get("abbreviation", "")
+                )
+            else:  # Direct plan object
+                return _to_program_ref(v)
+        
+        # Handle string (just a code)
+        return ProgramRef(
+            units_max=None,
+            units_min=None,
+            code=str(v), 
+            org_name="", 
+            org_code="", 
+            name="", 
+            abbreviation=""
         )
+
 
     # index params by name for convenience
     params = {p.name: p for p in (parsed_ar.params or [])}
@@ -394,6 +433,7 @@ def process_sr(parsed_sr: ParsedSelectionRule, rows: list[ComponentPayloadLeaf],
             abbreviation=d.get("abbreviation") or "",
         )
 
+
     def _collect_options() -> tuple[list[CourseRef], list[ProgramRef]]:
         # Gather options from the sibling leaves of this SR node.
         courses: list[CourseRef] = []
@@ -443,6 +483,7 @@ def process_sr(parsed_sr: ParsedSelectionRule, rows: list[ComponentPayloadLeaf],
 
         return dedup_courses, dedup_programs
 
+
     # index params by name for convenience
     params = {p.name: p for p in (parsed_sr.params or [])}
     get = lambda key, default=None: (params.get(key).value if key in params else default)
@@ -486,35 +527,107 @@ def process_sr(parsed_sr: ParsedSelectionRule, rows: list[ComponentPayloadLeaf],
     # unknown future SR type: keep part so it still validates as a no-op SR
     return SR(part=part)
 
+# Replace the convert_degree function with this version that uses raw JSON:
 
-def convert_degree(parsed_degree: ParsedDegree) -> FlatDegree:
+def convert_degree(parsed_degree: ParsedDegree, raw_json: dict = None) -> FlatDegree:
+    """Convert the recursive scraper.degree structure to a flat Degree.
+    
+    Also takes raw_json to extract course data when serde fails.
+    """
+    
     flat_degree = FlatDegree()
     flat_degree.name = parsed_degree.title
     flat_degree.code = parsed_degree.params.code
     flat_degree.year = parsed_degree.params.year
 
-    rule_logic: dict[str, str | None] = {}
+    # Collect here, then assign to flat_degree at the end.
+    rule_logic_by_part: dict[str, str] = {}
+    part_references: dict[str, str] = {}
     ars: list[AR] = []
     srs: list[SR] = []
+    valid_parts: set[str] = set()
 
-    def _walk(node: ComponentPayload, inherited_part: str) -> None:
-        # part can be on any node; inherit if missing
-        part = inherited_part
-        if getattr(node, "header", None) is not None:
-            if node.header.partReference is not None:
-                part = node.header.partReference
+    # Fix the extract_courses_from_raw_json_for_part function:
 
-            # Aux rules live on headers at all levels
-            if node.header.auxiliaryRules is not None:
-                for ar in node.header.auxiliaryRules:
-                    ars.append(process_ar(ar, part))
+    def extract_courses_from_raw_json_for_part(part: str) -> list[ComponentPayloadLeaf]:
+        """Extract course data from raw JSON when serde fails."""
+        if not raw_json:
+            return []
+            
+        leaves = []
+        
+        def find_part_in_json(obj, target_part: str):
+            if isinstance(obj, dict):
+                # Check if this is a header with our target part
+                if (obj.get("header", {}).get("partReference") == target_part and 
+                    "body" in obj):
+                    
+                    for body_item in obj.get("body", []):
+                        if (body_item.get("rowType") == "CurriculumReference" and 
+                            "curriculumReference" in body_item):
+                            
+                            cr_data = body_item["curriculumReference"]
+                            
+                            # Create a proper CurriculumReference object using the actual class
+                            curriculum_ref = CurriculumReference(
+                                unitsMaximum=cr_data.get("unitsMaximum"),
+                                code=cr_data.get("code", ""),
+                                orgName=cr_data.get("orgName", ""),
+                                type=cr_data.get("type", "Course"),
+                                version=cr_data.get("version"),
+                                subtype=cr_data.get("subtype"),
+                                fromYear=cr_data.get("fromYear"),
+                                latestVersion=cr_data.get("latestVersion"),
+                                unitsMinimum=cr_data.get("unitsMinimum"),
+                                orgCode=cr_data.get("orgCode", ""),
+                                name=cr_data.get("name", ""),
+                                fromTerm=cr_data.get("fromTerm"),
+                                state=cr_data.get("state")
+                            )
+                            
+                            # Create ComponentPayloadLeaf manually
+                            leaf = ComponentPayloadLeaf(
+                                rowType=body_item.get("rowType"),
+                                orderNumber=body_item.get("orderNumber"),
+                                notes=body_item.get("notes"),
+                                curriculumReference=curriculum_ref,
+                                equivalenceGroup=None,
+                                wildCardItem=None
+                            )
+                            
+                            leaves.append(leaf)
+                # Recurse through all values
+                for value in obj.values():
+                    find_part_in_json(value, target_part)
+            elif isinstance(obj, list):
+                for item in obj:
+                    find_part_in_json(item, target_part)
+        
+        find_part_in_json(raw_json, part)
+        return leaves
 
-            # Rule logic can appear on headers (keep last write per part)
-            if node.header.ruleLogic is not None:
-                rule_logic[part] = node.header.ruleLogic
+    def _walk(node: ComponentPayload, part_stack: list[str]) -> None:
+        header = getattr(node, "header", None)
+        # If this node declares a partReference, push it
+        if header is not None:
+            pr = header.partReference
+            if pr:
+                part_stack = [*part_stack, pr]
+                valid_parts.add(pr)
+                part_references[pr] = header.title or ""
 
-        # If this node declares a SelectionRule, gather *its own* sibling leaves
-        # (do not recurse into grandchildren here, those are separate SR contexts).
+            # Aux rules live on headers; attach only if we have a concrete part
+            if header.auxiliaryRules:
+                current_part = part_stack[-1] if part_stack else ""
+                if current_part:
+                    for ar in header.auxiliaryRules:
+                        ars.append(process_ar(ar, current_part))
+
+            # Rule logic for this part (if any)
+            if pr and header.ruleLogic:
+                rule_logic_by_part[pr] = header.ruleLogic
+
+        # Split leaves vs child payloads
         sibling_leaves: list[ComponentPayloadLeaf] = []
         children_nodes: list[ComponentPayload] = []
 
@@ -523,43 +636,64 @@ def convert_degree(parsed_degree: ParsedDegree) -> FlatDegree:
                 if isinstance(child, ComponentPayloadLeaf):
                     sibling_leaves.append(child)
                 else:
-                    # It's another ComponentPayload (serde-untagged union)
                     children_nodes.append(child)
 
-        if getattr(node, "header", None) is not None and node.header.selectionRule is not None:
-            srs.append(process_sr(node.header.selectionRule, sibling_leaves, part))
+        def collect_all_leaves(n: ComponentPayload) -> list[ComponentPayloadLeaf]:
+            leaves = []
+            
+            if getattr(n, "body", None) is not None:
+                for child in n.body:
+                    if isinstance(child, ComponentPayloadLeaf):
+                        leaves.append(child)
+                    else:
+                        # Recurse to find any properly deserialized leaves deeper
+                        leaves.extend(collect_all_leaves(child))
+            
+            return leaves
 
-        # Recurse into children after handling this node's SR
+        # Only attach SR when this very header declares a concrete part AND
+        # the selectionRule has a valid code.
+        if header is not None and header.partReference and header.selectionRule:
+            sr_code = getattr(header.selectionRule, "code", None)
+            if sr_code:  # skip empty selection rules
+                current_part = header.partReference
+                
+                # First try serde-deserialized leaves
+                all_leaves = collect_all_leaves(node)
+                
+                # If serde failed, extract from raw JSON
+                if len(all_leaves) == 0:
+                    all_leaves = extract_courses_from_raw_json_for_part(current_part)
+                
+                srs.append(process_sr(header.selectionRule, all_leaves, current_part))
+
+        # Recurse
         for child_node in children_nodes:
-            _walk(child_node, part)
+            _walk(child_node, part_stack)
 
     # Only process the Program Requirements component with internalComponentIdentifier == 1
     for component in parsed_degree.programRequirements.payload.components:
-        if component.internalComponentIdentifier != 1:
+        if component.internalComponentIdentifier != 1 or component.payload is None:
             continue
-        if component.payload is None:
-            continue
+        _walk(component.payload, [])
 
-        # Component-level header (root node) can also have aux/rule logic and (rarely) SR
-        _walk(component.payload, inherited_part="")
+    # Filter any AR/SR that somehow got a non-existent part
+    ars = [a for a in ars if getattr(a, "part", "") in valid_parts]
+    srs = [r for r in srs if getattr(r, "part", "") in valid_parts]
 
+    # Assign outputs
     flat_degree.aux = ars
     flat_degree.srs = srs
-
+    # Flatten rule logic to a unique list of strings
+    flat_degree.rule_logic = list({v for v in rule_logic_by_part.values() if v})
+    flat_degree.part_references = part_references
     return flat_degree
 
 
 def main():
-    with open("../data/program_details.json") as f:
+    with open("../../data/course_reqs/details.json") as f:
         raw = f.read()
         details = json.loads(raw)["program_details"]
-        components = {}
-        rule_logic = set()
-        ars = {}
-        ar_params = set()
-        row_types = set()
-        srs = {}
-        sr_params: dict[str, set] = {}
 
         for detail in details:
             for year, data in detail["data"].items():
@@ -567,19 +701,36 @@ def main():
                 if degree is None:
                     continue
 
-                print("--------------------------------")
-                print("--------------------------------")
-                print("--------------------------------")
-                print("--------------------------------")
-                flat = convert_degree(degree)
-
-                with open("../../data/magic.json", "w") as f2:
-                    f2.write(to_json(degree))
+                # Pass the raw JSON data to the converter
+                flat = convert_degree(degree, data)
 
                 if len(flat.aux) > 10:
                     pprint(flat)
                     return
 
+
+# testing by printing to a file, it works
+# import contextlib
+# def main():
+#     with open("../../data/course_reqs/details.json") as f:
+#         raw = f.read()
+#         details = json.loads(raw)["program_details"]
+
+#         for detail in details:
+#             for year, data in detail["data"].items():
+#                 degree: ParsedDegree = from_dict(ParsedDegree | None, data)
+#                 if degree is None:
+#                     continue
+
+#                 flat = convert_degree(degree, data)
+
+#                 if len(flat.aux) > 10:
+#                     # Redirect stdout to file (like freopen in C)
+#                     with open("degree_output.txt", "w") as f:
+#                         with contextlib.redirect_stdout(f):
+#                             pprint(flat)
+#                     print("Output written to degree_output.txt")
+#                     return
 
 if __name__ == "__main__":
     main()
