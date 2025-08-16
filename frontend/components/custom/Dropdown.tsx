@@ -3,7 +3,7 @@
 import { Field, Label } from '@/components/fieldset'
 import { Combobox, ComboboxLabel, ComboboxOption } from '@/components/combobox'
 
-interface DropdownProps<T> {
+interface BetterDropdownProps<T> {
     label: string
     options: T[]
     value: T | undefined
@@ -13,7 +13,7 @@ interface DropdownProps<T> {
     isEnabled: boolean
 }
 
-export default function Dropdown<T>({
+export default function BetterDropdown<T>({
     label,
     options,
     value,
@@ -21,7 +21,7 @@ export default function Dropdown<T>({
     displayValue,
     id,
     isEnabled
-}: DropdownProps<T>) {
+}: BetterDropdownProps<T>) {
     return (
         <Field disabled={!isEnabled}>
             <Label htmlFor={id}>{label}</Label>

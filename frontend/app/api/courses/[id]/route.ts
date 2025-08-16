@@ -1,22 +1,6 @@
 import { NextResponse } from 'next/server';
-import { Course, ApiCourse } from '@/types/course'
-
-function mapToCourse(apiCourse: ApiCourse): Course {
-  return {
-    id: apiCourse.course_id,
-    code: apiCourse.code,
-    name: apiCourse.name,
-
-    units: apiCourse.num_units,
-    sem: "filler",
-    sems: apiCourse.semesters,
-    secats: 3.2,
-    desc: apiCourse.description,
-
-    degreeReq: { filler: ["filler"] },
-    completed: false,
-  };
-}
+import { Course} from '@/types/course'
+import MapToCourse from '../types';
 
 export async function GET(
   request: Request,
@@ -33,7 +17,7 @@ export async function GET(
         );
       }
       const apiCourse = await res.json();
-      const course: Course = mapToCourse(apiCourse)
+      const course: Course = MapToCourse(apiCourse)
       console.log(course)
       if (!course) {
         return NextResponse.json({ error: `No course found with ${id}` }, { status: 404 });
