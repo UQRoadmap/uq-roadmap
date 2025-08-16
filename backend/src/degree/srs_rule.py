@@ -139,6 +139,15 @@ class SR6(SR):
     plan_type: str
     options: list[ProgramRef]
 
+    def validate(self, plan: Plan):
+        option_codes = [opt.code for opt in self.options]
+        if any(code in option_codes for code in plan.specialisations[self.part]):
+            return ValidateResult(Status.OK, 100, "", [])
+        else:
+            return ValidateResult(Status.ERROR, None,
+                                  f"No {self.plan_type} found in plan. "
+                                  f"Add from: {', '.join(option_codes)}",
+                                  option_codes)
 
 @serde
 class SR7(SR):
@@ -147,6 +156,22 @@ class SR7(SR):
     n: int
     plan_types: str
     options: list[ProgramRef]
+
+    def validate(self, plan: Plan):
+        option_codes = [opt.code for opt in self.options]
+        count = sum(1 for code in plan.specialisations[self.part]
+                    if code in option_codes)
+        if count < self.n:
+            return ValidateResult(Status.ERROR, None,
+                                  f"{count} {self.plan_types} found in plan, "
+                                  f"but {self.n} required. Add from: "
+                                  f"{', '.join(option_codes)}", option_codes)
+        elif count > self.n:
+            return ValidateResult(Status.WARN, None,
+                                  f"{count} {self.plan_types} found in plan, "
+                                  f"but {self.n} required. Remove from: "
+                                  f"{', '.join(option_codes)}", option_codes)
+        return ValidateResult(Status.OK, 100, "", [])
 
 
 @serde
@@ -157,3 +182,19 @@ class SR8(SR):
     m: int
     plan_types: str  # Usually just major unless your course is weird
     options: list[ProgramRef]
+
+    def validate(self, plan: Plan):
+        option_codes = [opt.code for opt in self.options]
+        count = sum(1 for code in plan.specialisations[self.part]
+                    if code in option_codes)
+        if count < self.n:
+            return ValidateResult(Status.ERROR, None,
+                                  f"{count} {self.plan_types} found in plan, "
+                                  f"but {self.n} required. Add from: "
+                                  f"{', '.join(option_codes)}", option_codes)
+        elif count > self.m:
+            return ValidateResult(Status.WARN, None,
+                                  f"{count} {self.plan_types} found in plan, "
+                                  f"but {self.m} maximum. Remove from: "
+                                  f"{', '.join(option_codes)}", option_codes)
+        return ValidateResult(Status.OK, 100, "", [])
