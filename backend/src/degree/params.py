@@ -20,11 +20,17 @@ class CourseRef(Param):
     org_code: str
     name: str
 
+    def __hash__(self):
+        return self.code.__hash__()
+
 
 @serde
 class EquivalenceGroup(Param):
     courses: list[CourseRef]
     notes: str | None
+
+    def __hash__(self):
+        return self.courses.__hash__()
 
 
 @serde
@@ -35,6 +41,9 @@ class WildCardItem(Param):
     org_code: str | None
     include_child_orgs: bool
     type: str
+
+    def __hash__(self):
+        return self.code.__hash__()
 
 
 @serde
@@ -47,3 +56,6 @@ class ProgramRef(Param):
     org_code: str
     name: str
     abbreviation: str
+
+    def __hash__(self):
+        return self.code.__hash__()
