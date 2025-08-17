@@ -92,13 +92,13 @@ class PartTree:
 
         return results
 
-    def evaluate_requirement(self, requirements: RequirementRead, plan: Plan) -> list[ValidateResult]:
+    def evaluate_requirement(self, requirements: RequirementRead, plan: Plan, prefix: str) -> list[ValidateResult]:
         results = []
         if requirements.kind == CourseRequirementKind.OR:
             flag = True
             temp_results = []
             for child in requirements.value:
-                temp_results.extend(self.evaluate_requirement(child, plan))
+                temp_results.extend(self.evaluate_requirement(child, plan, prefix))
             for result in temp_results:
                 if result.status == Status.OK:
                     flag = False
@@ -107,10 +107,10 @@ class PartTree:
                 results.append(ValidateResult(Status.ERROR, None, "", [], self.part))
         elif requirements.kind == CourseRequirementKind.AND:
             for child in requirements.value:
-                results.extend(self.evaluate_requirement(child, plan))
+                results.extend(self.evaluate_requirement(child, plan, prefix))
         elif requirements.kind == CourseRequirementKind.ATOMIC:
             requirements.value = requirements.value.removeprefix("Part ")
-            results.extend(self.evaluate(requirements.value, plan))
+            results.extend(self.evaluate(((prefix + ".") if prefix != "" else "") + requirements.value, plan))
 
         return results
 
@@ -155,10 +155,19 @@ class Degree:
         for srs in self.srs:
             tree.insert(srs.part, srs)
 
+        if self.part is None:
+            self.part = ""
+
         results: list[ValidateResult] = []
         for rule in self.rule_logic:
             requirements = parse_requirement(rule)
-            results.extend(tree.evaluate_requirement(requirements, plan))
+            results.extend(tree.evaluate_requirement(requirements, plan, self.part))
+
+        if len(self.rule_logic) == 0:
+            for srs in self.srs:
+                results.extend(tree.evaluate(srs.part, plan))
+            for aux in self.aux:
+                results.extend(tree.evaluate(aux.part, plan))
 
         # Validate sub-degrees :)
         for prefix, specs in plan.specialisations.items():
@@ -171,9 +180,11 @@ class Degree:
             for spec_code in specs:
                 dbm = await degree_getter(str(spec_code), int(self.year))
                 sub_degree: Degree = from_dict(Degree, dbm.details)
-                sub_degree.part = ((self.part + ".") if self.part != "" or self.part is not None else "") + prefix
+                sub_degree.part = ((self.part + ".") if self.part != "" else "") + prefix
                 sub_degree.prefix(prefix)
                 sub_results = await sub_degree.validate(plan, course_getter, degree_getter)
+                pprint(sub_degree)
+                pprint(plan)
                 pprint(sub_results)
                 results.extend(sub_results)
 
