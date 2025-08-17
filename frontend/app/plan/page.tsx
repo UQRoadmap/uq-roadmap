@@ -131,7 +131,7 @@ export default function PlanPage() {
                         <Button
                             onClick={() => router.push('/start')}
                             accent
-                            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                            className="mt-4 px-4 py-2 text-white rounded "
                         >
                             Create Your First Plan
                         </Button>
