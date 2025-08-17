@@ -50,7 +50,7 @@ class SecatQuestion(UQRoadmapBase):
 
     def get_avg_score(self) -> float:
         """Get avg score for a secat question."""
-        return 5 * self.s_agree + 4 * self.agree + 3 * self.middle + 2 * self.disagree + 1 * self.s_disagree
+        return (5 * self.s_agree + 4 * self.agree + 3 * self.middle + 2 * self.disagree + 1 * self.s_disagree) / 100
 
 
 class SecatInfo(UQRoadmapBase):
