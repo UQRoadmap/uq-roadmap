@@ -48,14 +48,14 @@ class Degree:
         results = []
         errored_parts = set()
         for aux in self.aux:
-            results.append(aux.validate(plan))
+            results.append(aux.validate(plan, course_getter, degree_getter))
             if results[-1].status == Status.ERROR:
                 # An error produced by aux means an error in the part I guess?
-                errored_parts.add(results[-1].part)
+                errored_parts.add(aux.part)
         for srs in self.srs:
-            results.append(srs.validate(plan))
+            results.append(srs.validate(plan, course_getter, degree_getter))
             if results[-1].status == Status.ERROR:
-                errored_parts.add(results[-1].part)
+                errored_parts.add(srs.part)
 
         for rule in self.rule_logic:
             parsed = parse_requirement(rule)
