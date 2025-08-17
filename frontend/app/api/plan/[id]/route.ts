@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import MapToPlan, { APIPlanCreateUpdate, APIPlanRead } from "../types";
 import { BACKEND_BASE_URL } from "../../common";
 
-export async function GET({ params }: { params: Promise<{ id: string }> }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
 
     try {
