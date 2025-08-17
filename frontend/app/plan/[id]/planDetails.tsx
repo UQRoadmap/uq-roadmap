@@ -336,11 +336,13 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: JacksonP
 
     useEffect(() => {
         console.log("Updating the state courses")
+        console.log(JSON.stringify(stateCourses))
         let cur_sem = plan.start_sem;
         let cur_year = plan.start_year;
         let row_num = 0;
         let new_courses: Course[]
         let key: string;
+        plan.course_tiles = {} // reset it
         while (row_num < stateCourses.length) {
             console.log(`Currently at ROW: ${row_num}`)
             console.log(`Currently at YEAR: ${cur_year}`)
@@ -350,9 +352,9 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: JacksonP
             for (let idx = 0; idx < new_courses.length; idx++) {
                 key = `${cur_year}${cur_sem - 1}-${idx}`;
                 console.log(`Setting ${key} -> ${new_courses[idx].code}`)
-                plan.course_tiles = {} // reset it
                 plan.course_tiles[key] = new_courses[idx].code
             }
+            console.log(`Course tiles is now: ${JSON.stringify(plan.course_tiles)}`)
             if (cur_sem == 2) {
                 cur_sem = 1;
                 cur_year += 1
