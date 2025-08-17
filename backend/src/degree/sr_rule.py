@@ -61,15 +61,8 @@ class SR1(SR):
         async def _async_validate():
             count = 0
             badcourses = []
-            print("options")
-            print(self.options)
             
             for option in self.options:
-                print("printing option")
-                if hasattr(option, 'code'):
-                    print(option.code)
-                else:
-                    print(f"EquivalenceGroup: {option}")
                 done = False
                 for course in plan.courses:
                     if option.validate(course):
