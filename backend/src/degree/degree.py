@@ -98,10 +98,14 @@ class PartTree:
             flag = True
             temp_results = []
             for child in requirements.value:
-                temp_results.extend(self.evaluate_requirement(child, plan, prefix))
-            for result in temp_results:
-                if result.status == Status.OK:
+                flag2 = True
+                intermediate = self.evaluate_requirement(child, plan, prefix)
+                for result in intermediate:
+                    if result.status != Status.OK:
+                        flag2 = False
+                if flag2:
                     flag = False
+                temp_results.extend(intermediate)
             if flag:
                 results.extend(temp_results)
                 results.append(ValidateResult(Status.ERROR, None, "", [], self.part))
