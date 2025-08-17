@@ -121,6 +121,7 @@ class Degree:
     code: str
     year: str
     sem: int
+    part: str | None
 
     # ALL aux rules associated with this course.
     # Aux rules (and SRS) conveniently have a ref, e.g. "A" or "A.1"
@@ -159,22 +160,29 @@ class Degree:
             requirements = parse_requirement(rule)
             results.extend(tree.evaluate_requirement(requirements, plan))
 
-        # # Validate sub-degrees :)
-        # for prefix, specs in plan.specialisations.items():
-        #     for spec_code in specs:
-        #         dbm = await degree_getter(str(spec_code), int(self.year))
-        #         sub_degree: Degree = from_dict(Degree, dbm.details)
-        #         sub_degree.prefix(prefix)
-        #         pprint(sub_degree)
-        #         results.extend(await sub_degree.validate(plan, course_getter, degree_getter))
-        #         pprint(sub_degree.code)
-        #         pprint(sub_degree.part_references)
+        # Validate sub-degrees :)
+        for prefix, specs in plan.specialisations.items():
+            if self.part is None:
+                self.part = ""
+
+            if not prefix.startswith(self.part):
+                continue
+
+            for spec_code in specs:
+                dbm = await degree_getter(str(spec_code), int(self.year))
+                sub_degree: Degree = from_dict(Degree, dbm.details)
+                sub_degree.part = ((self.part + ".") if self.part != "" or self.part is not None else "") + prefix
+                sub_degree.prefix(prefix)
+                sub_results = await sub_degree.validate(plan, course_getter, degree_getter)
+                pprint(sub_results)
+                results.extend(sub_results)
 
         return results
 
     @staticmethod
     def build() -> "Degree":
         return Degree(
+            part="",
             name="",
             code="",
             year="",
