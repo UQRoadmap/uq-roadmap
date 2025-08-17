@@ -14,10 +14,11 @@ export type CourseExtended = Course & {
 }
 
 export default function CourseCard({id, code, name, units, sems, sem, secats, desc, degreeReq, completed, deleteMeth}: CourseExtended) {
-    const [popupOpen, setPopupOpen] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [modalData, setModalData] = useState<Course | null>(null); // store the course whose details you want
+    const [popupOpen, setPopupOpen] = useState<boolean>(false);
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [modalData, setModalData] = useState<CourseDetailed | null>(null); // store the course whose details you want
 
+    const categories = getCourseCategories(code, degreeReq);
     function handleDelete() {
       console.log("Delete course:", id, sem);
       deleteMeth(id, sem);
@@ -30,14 +31,6 @@ export default function CourseCard({id, code, name, units, sems, sem, secats, de
       setIsModalOpen(true);
     }
 
-    function getCourseCategories(courseCode: string, reqs: DegreeReq): string[] {
-      return Object.entries(reqs)
-        .filter(([_, codes]) => codes.includes(courseCode))
-        .map(([category]) => category.charAt(0).toUpperCase() + category.slice(1));
-    }
-
-    const categories = getCourseCategories(code, degreeReq);
-    console.log(categories)
     return (
       <Draggable
         id={id}
@@ -81,57 +74,31 @@ export default function CourseCard({id, code, name, units, sems, sem, secats, de
                     </div>
                   )}
                 </div>
-                  <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-                    {modalData && (
-                      <div className="flex, flex-col space-y-5">
-                        <h2 className="text-2xl font-bold mb-4">{modalData.name}</h2>
-                        <p><strong>Code:</strong> {modalData.code}</p>
-                        <p><strong>Units:</strong> {modalData.units}</p>
-                        <p className="space-y-5" ><strong>Semesters:</strong> {modalData.sems.join(", ")}</p>
-                        <Fieldset className="space-y-5 rounded-lg p-4 bg-gray-50">
-                          <CategoryDropdown categories={getCourseCategories(code, degreeReq)}/>
-                          <CheckboxGroup className="space-y-2">
-                            <CheckboxField className="flex items-start space-x-3">
-                              <Checkbox
-                                name="override"
-                                value="override"
-                                className="mt-1 h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                              />
-                              <div className="flex flex-col">
-                                <Label className="font-medium text-gray-900 cursor-pointer">
-                                  Override
-                                </Label>
-                                <Description className="text-gray-500 text-sm">
-                                  You can use this option to override settings or semesters if the
-                                  course has recently changed and UQ is yet to update it.
-                                </Description>
-                              </div>
-                            </CheckboxField>
-                          </CheckboxGroup>
-                        </Fieldset>
-                        <p><strong>Description:</strong> {modalData.desc}</p>
-                      </div>
-                    )}
-                  </Modal>
                 </div>
+                <BigModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} modalData={modalData}/>
                 <div className="text-xs font-medium truncate p-2" title={name}>
                     {name}
                 </div>
-                    <div className="text-xs flex items-center justify-between w-full p-2">
-                        <div className="truncate">{code}</div>
-                        <div>
-                            {units} Units
-                        </div>
-                        <div className="flex items-center space-x-1 text-yellow-400">
-                            <span>{secats}</span>
-                            <StarIcon className="w-3 h-3" />
-                        </div>
+                <div className="text-xs flex items-center justify-between w-full p-2">
+                    <div className="truncate">{code}</div>
+                    <div>
+                        {units} Units
                     </div>
+                    <div className="flex items-center space-x-1 text-yellow-400">
+                        <span>{secats}</span>
+                        <StarIcon className="w-3 h-3" />
+                    </div>
+                </div>
             </div>
         </Droppable>
-
       </Draggable>
     )
+}
+
+function getCourseCategories(courseCode: string, reqs: DegreeReq): string[] {
+  return Object.entries(reqs)
+    .filter(([_, codes]) => codes.includes(courseCode))
+    .map(([category]) => category.charAt(0).toUpperCase() + category.slice(1));
 }
 
 export function EmptyCourseCard({degreeReq, id, setPaletteOpen, setActiveId}:
@@ -206,16 +173,113 @@ interface ModalProps {
   children: React.ReactNode;
 }
 
-function Modal({ isOpen, onClose, children }: ModalProps) {
+export type CourseDetailed = Course & {
+}
+
+export function BigModal({ isModalOpen, setIsModalOpen, modalData }: {
+  isModalOpen: boolean;
+  setIsModalOpen: (val: boolean) => void;
+  modalData: CourseDetailed | null;
+}) {
+  const [activeTab, setActiveTab] = useState<"general" | "extra" | "prereqs" | "secats" | "assessment">("general");
+
+  if (!modalData) return null;
+
+  return (
+    <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <div className="flex flex-col space-y-5">
+        <h2 className="text-2xl font-bold mb-4">{modalData.name}</h2>
+
+        {/* Tabs */}
+        <div className="flex border-b border-gray-200 mb-4">
+          {["general", "extra", "prereqs", "secats", "assessment"].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab as typeof activeTab)}
+              className={`px-4 py-2 -mb-px font-medium border-b-2 ${
+                activeTab === tab ? "border-blue-500 text-blue-600" : "border-transparent text-gray-500"
+              }`}
+            >
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </button>
+          ))}
+        </div>
+
+        {/* Tab Content */}
+        <div>
+          {activeTab === "general" && (
+            <div>
+              <div className="space-y-2">
+                <p><strong>Code:</strong> {modalData.code}</p>
+                <p><strong>Units:</strong> {modalData.units}</p>
+                <p><strong>Semesters:</strong> {modalData.sems.join(", ")}</p>
+                <p><strong>Description:</strong> {modalData.desc}</p>
+              </div>
+              <Fieldset className="space-y-5 rounded-lg p-4 bg-gray-50">
+                <CategoryDropdown categories={getCourseCategories(modalData.code, modalData.degreeReq)} />
+              </Fieldset>
+              <Fieldset className="space-y-2 rounded-lg p-4 bg-gray-50">
+                <CheckboxGroup className="space-y-2">
+                  <CheckboxField className="flex items-start space-x-3">
+                    <Checkbox
+                      name="override"
+                      value="override"
+                      className="mt-1 h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                    />
+                    <div className="flex flex-col">
+                      <Label className="font-medium text-gray-900 cursor-pointer">
+                        Override
+                      </Label>
+                      <Description className="text-gray-500 text-sm">
+                        You can use this option to override settings or semesters if the
+                        course has recently changed and UQ is yet to update it.
+                      </Description>
+                    </div>
+                  </CheckboxField>
+                </CheckboxGroup>
+              </Fieldset>
+            </div>
+          )}
+
+          {activeTab === "extra" && (
+            <div> </div>
+          )}
+
+          {activeTab === "secats" && (
+            <div> </div>
+          )}
+
+          {activeTab === "prereqs" && (
+            <div> </div>
+          )}
+
+          {activeTab === "assessment" && (
+            <div> </div>
+          )}
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+export function Modal({ isOpen, onClose, children }: ModalProps) {
   if (!isOpen) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/50">
-      <div className="bg-white p-6 rounded-lg w-3/4 max-w-3xl max-h-[90vh] overflow-auto shadow-lg">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50">
+      <div className="relative bg-white p-6 rounded-lg w-3/4 max-w-3xl max-h-[90vh] overflow-auto shadow-lg">
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 transition-colors"
+        >
+          Close
+        </button>
+
         {children}
       </div>
     </div>,
-    document.body // portal renders modal at the root of the document
+    document.body
   );
 }
 

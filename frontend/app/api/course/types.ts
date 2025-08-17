@@ -50,7 +50,7 @@ export type ApiCourse = {
 export default function MapToCourse(apiCourse: ApiCourse): Course {
   return {
     id: apiCourse.course_id,
-    code: apiCourse.code,
+    code: apiCourse.full_code,
     name: apiCourse.name,
 
     units: apiCourse.num_units,
@@ -61,5 +61,6 @@ export default function MapToCourse(apiCourse: ApiCourse): Course {
 
     degreeReq: { filler: ["filler"] },
     completed: false,
+    assessment?: apiCourse.assessment,
   };
 }
