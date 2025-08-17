@@ -14,7 +14,7 @@ import ProgressCircle from '@/components/custom/progressCircle';
 import { Dialog, DialogBody, DialogTitle } from '@/components/dialog';
 import { Textarea } from '@/components/textarea';
 import { Button } from '@/components/button';
-import { JacksonPlan } from '@/app/api/plan/types';
+import { JacksonPlan, MapfromJacksonPlan } from '@/app/api/plan/types';
 
 
 function SemesterSection({ semester, courses, setPaletteOpen, setActiveId, setDelete, courseReqs}:
@@ -332,7 +332,47 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: JacksonP
             console.log("SEMESTERS")
             console.log(semesters)
         }
-    }, [plan]);
+    }, []);
+
+    useEffect(() => {
+        console.log("Updating the state courses")
+        let cur_sem = plan.start_sem;
+        let cur_year = plan.start_year;
+        let row_num = 0;
+        let new_courses: Course[]
+        let key: string;
+        while (row_num < stateCourses.length) {
+            console.log(`Currently at ROW: ${row_num}`)
+            console.log(`Currently at YEAR: ${cur_year}`)
+            console.log(`Currently at SEM: ${cur_sem}`)
+            new_courses = stateCourses[row_num]
+            console.log(`There is ${new_courses.length} courses in this row`)
+            for (let idx = 0; idx < new_courses.length; idx++) {
+                key = `${cur_year}${cur_sem - 1}-${idx}`;
+                console.log(`Setting ${key} -> ${new_courses[idx].code}`)
+                plan.course_tiles = {} // reset it
+                plan.course_tiles[key] = new_courses[idx].code
+            }
+            if (cur_sem == 2) {
+                cur_sem = 1;
+                cur_year += 1
+            } else {
+                cur_sem += 1
+            }
+            row_num += 1;
+        }
+
+        const body = MapfromJacksonPlan(plan, plan.degree.degree_id);
+        async function set_value(){
+            await fetch(`/api/plan/${plan.plan_id}`, {method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+            })
+        }
+
+        set_value();
+
+    }, [stateCourses])
 
     async function DeletePlan() {
         if (typeof window === "undefined" || !plan) return;

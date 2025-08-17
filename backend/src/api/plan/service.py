@@ -58,7 +58,7 @@ def update_plan(plan: PlanDBModel, degree: DegreeDBModel, plan_in: PlanCreateUpd
     plan.start_year = plan_in.start_year
     plan.start_sem = plan_in.start_sem
     plan.end_year = plan_in.end_year
-    plan.course_dates = plan_in.course_dates
+    plan.course_dates_input = plan_in.course_dates_input
     plan.course_reqs = plan_in.course_reqs
     plan.specialisations = plan_in.specialisations
 
