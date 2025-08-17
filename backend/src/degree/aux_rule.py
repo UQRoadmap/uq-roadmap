@@ -80,15 +80,15 @@ class AR1(AR):
         count, validcourses, exceptionCourse, error = result
         
         if error:
-            return ValidateResult(Status.ERROR, None, "Invalid course level format", [exceptionCourse])
+            return ValidateResult(Status.ERROR, None, "Invalid course level format", [exceptionCourse], self.part)
         
         if count >= self.n:
-            return ValidateResult(Status.OK, 100.0, "", [])
+            return ValidateResult(Status.OK, 100.0, "", [], self.part)
         return ValidateResult(
             Status.ERROR,
             count / self.n * 100.0,
             f"Expected at least {self.n} units at level {self.level}{' or higher' if self.or_higher else ''}, found {count}.",
-            validcourses,
+            validcourses, self.part
         )
 
 
@@ -125,15 +125,15 @@ class AR2(AR):
         count, badcourses, exceptionCourse, error = result
         
         if error:
-            return ValidateResult(Status.ERROR, None, "Invalid course level format", [exceptionCourse])
+            return ValidateResult(Status.ERROR, None, "Invalid course level format", [exceptionCourse], self.part)
         
         if count <= self.n:
-            return ValidateResult(Status.OK, 100.0, "", [])
+            return ValidateResult(Status.OK, 100.0, "", [], self.part)
         return ValidateResult(
             Status.ERROR,
             count / self.n * 100.0,
             f"Expected at most {self.n} units at level {self.level}, found {count}.",
-            badcourses,
+            badcourses, self.part
         )
 
 
@@ -171,15 +171,15 @@ class AR3(AR):
         count, levelcourses, exceptionCourse, error = result
         
         if error:
-            return ValidateResult(Status.ERROR, None, "Invalid course level format", [exceptionCourse])
+            return ValidateResult(Status.ERROR, None, "Invalid course level format", [exceptionCourse]), self.part
         
         if count == self.n:
-            return ValidateResult(Status.OK, 100.0, "", [])
+            return ValidateResult(Status.OK, 100.0, "", [], self.part)
         return ValidateResult(
             Status.ERROR,
             count / self.n * 100.0,
             f"Expected exactly {self.n} units at level {self.level}, found {count}.",
-            levelcourses,
+            levelcourses, self.part
         )
 
 
@@ -218,22 +218,22 @@ class AR4(AR):
         count, levelcourses, exceptionCourse, error = result
         
         if error:
-            return ValidateResult(Status.ERROR, None, "Invalid course level format", [exceptionCourse])
+            return ValidateResult(Status.ERROR, None, "Invalid course level format", [exceptionCourse], self.part)
         
         if count >= self.n and count <= self.m:
-            return ValidateResult(Status.OK, 100.0, "", [])
+            return ValidateResult(Status.OK, 100.0, "", [], self.part)
         if count < self.n:
             return ValidateResult(
                 Status.ERROR,
                 count / self.n * 100.0,
                 f"Expected at least {self.n} units at level {self.level}, found {count}.",
-                levelcourses,
+                levelcourses, self.part
             )
         return ValidateResult(
             Status.ERROR,
             count / self.m * 100.0,
             f"Expected at most {self.m} units at level {self.level}, found {count}.",
-            levelcourses,
+            levelcourses, self.part
         )
 
 
@@ -491,7 +491,7 @@ class AR13(AR):
                             overlap,
                             self.part,
                     )
-                    return ValidateResult(Status.OK, 100.0, "", [])
+                    return ValidateResult(Status.OK, 100.0, "", [], self.part)
         return ValidateResult(Status.OK, 100.0, "", [], self.part)
 
 
