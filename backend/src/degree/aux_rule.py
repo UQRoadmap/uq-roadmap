@@ -41,7 +41,9 @@ class AR:
     def validate(self, plan: Plan,
                  course_getter: Callable[[str], Awaitable[CourseDBModel | None]],
                  degree_getter: Callable[[str, int], Awaitable[DegreeDBModel | None]]) -> ValidateResult:
-        return ValidateResult(Status.ERROR, None, "Should not be seeing this - validating abstract AR", plan.courses)
+        return ValidateResult(
+            Status.ERROR, None, "Should not be seeing this - validating abstract AR", plan.courses, self.part
+        )
 
 
 @serde
@@ -268,9 +270,10 @@ class AR5(AR):
                     None,
                     f"Expected {[str(p) for p in self.plan_list_1]} to be with {[str(p) for p in self.plan_list_2]}.",
                     [str(p) for p in self.plan_list_2],
+                    self.part,
                 )
-            return ValidateResult(Status.OK, 100.0, "", [])
-        return ValidateResult(Status.OK, 100.0, "", [])
+            return ValidateResult(Status.OK, 100.0, "", [], self.part)
+        return ValidateResult(Status.OK, 100.0, "", [], self.part)
 
 
 @serde
@@ -348,8 +351,8 @@ class AR7(AR):
             greater_than_n = [d for d, count in discipline_count.items() if count > self.n]
             for discipline in greater_than_n:
                 badlist.extend(discipline_lists[discipline])
-            return ValidateResult(Status.ERROR, totalcount / self.n * 100.0, "", badlist)
-        return ValidateResult(Status.OK, 100.0, "", [])
+            return ValidateResult(Status.ERROR, totalcount / self.n * 100.0, "", badlist, self.part)
+        return ValidateResult(Status.OK, 100.0, "", [], self.part)
 
 
 @serde
@@ -371,8 +374,8 @@ class AR9(AR):
         if badcourses:
             return ValidateResult(Status.ERROR, None,
                                   f"No credit for {[str(c) for c in self.course_list]}.",
-                                  badcourses)
-        return ValidateResult(Status.OK, 100.0, "", [])
+                                  badcourses, self.part)
+        return ValidateResult(Status.OK, 100.0, "", [], self.part)
 
 
 @serde
@@ -402,9 +405,10 @@ class AR10(AR):
                             f"No credit for {overlap} for students "
                             f"completing {plan_ref}.",
                             overlap,
-                        )
-                    return ValidateResult(Status.OK, 100.0, "", [])
-        return ValidateResult(Status.OK, 100.0, "", [])
+                            self.part,
+                    )
+                    return ValidateResult(Status.OK, 100.0, "", [], self.part)
+        return ValidateResult(Status.OK, 100.0, "", [], self.part)
 
 
 @serde
@@ -442,9 +446,10 @@ class AR11(AR):
                     f"No credit for {overlap} for students not "
                     f"completing {[str(p) for p in self.plan_list]}.",
                     overlap,
+                    self.part,
                 )
-            return ValidateResult(Status.OK, 100.0, "", [])
-        return ValidateResult(Status.OK, 100.0, "", [])
+            return ValidateResult(Status.OK, 100.0, "", [], self.part)
+        return ValidateResult(Status.OK, 100.0, "", [], self.part)
 
 
 @serde
@@ -484,9 +489,10 @@ class AR13(AR):
                             f"Students completing {plan_ref} are exempt from "
                             f"{overlap} in {[str(p) for p in self.program_plan_list]}.",
                             overlap,
-                        )
+                            self.part,
+                    )
                     return ValidateResult(Status.OK, 100.0, "", [])
-        return ValidateResult(Status.OK, 100.0, "", [])
+        return ValidateResult(Status.OK, 100.0, "", [], self.part)
 
 
 @serde
@@ -518,8 +524,9 @@ class AR15(AR):
                     f"substituted in {[str(p) for p in self.program_plan_list]} "
                     f"by a course from {self.lists}.",
                     [str(c) for c in self.course_list],
+                    self.part,
                 )
-            return ValidateResult(Status.OK, 100.0, "", [])
+            return ValidateResult(Status.OK, 100.0, "", [], self.part)
         # If it's a MAY, we don't need to check anything
         if overlap:
             return ValidateResult(
@@ -529,8 +536,9 @@ class AR15(AR):
                 f"{[str(p) for p in self.program_plan_list]} by a course from "
                 f"{self.lists}",
                 overlap,
+                self.part,
             )
-        return ValidateResult(Status.OK, 100.0, "", [])
+        return ValidateResult(Status.OK, 100.0, "", [], self.part)
 
 
 @serde
@@ -563,8 +571,9 @@ class AR16(AR):
                     f"course from {[str(c) for c in self.course_list_2]} in "
                     f"{[str(p) for p in self.program_plan_list]}.",
                     [str(c) for c in self.course_list_1],
+                    self.part,
                 )
-            return ValidateResult(Status.OK, 100.0, "", [])
+            return ValidateResult(Status.OK, 100.0, "", [], self.part)
         # If it's a MAY, we don't need to check anything
         if overlap:
             return ValidateResult(
@@ -575,8 +584,9 @@ class AR16(AR):
                 f"{[str(c) for c in self.course_list_2]} in "
                 f"{[str(p) for p in self.program_plan_list]}",
                 overlap,
+                self.part,
             )
-        return ValidateResult(Status.OK, 100.0, "", [])
+        return ValidateResult(Status.OK, 100.0, "", [], self.part)
 
 
 @serde
@@ -609,8 +619,9 @@ class AR17(AR):
                     f"course from {self.lists} in "
                     f"{[str(p) for p in self.program_plan_list]}.",
                     [str(c) for c in self.course_list],
+                    self.part,
                 )
-            return ValidateResult(Status.OK, 100.0, "", [])
+            return ValidateResult(Status.OK, 100.0, "", [], self.part)
         # If it's a MAY, we don't need to check anything
         if overlap:
             return ValidateResult(
@@ -620,8 +631,9 @@ class AR17(AR):
                 f"{[str(p) for p in self.plan_list]} by a course from "
                 f"{self.lists} in {[str(p) for p in self.program_plan_list]}",
                 overlap,
+                self.part,
             )
-        return ValidateResult(Status.OK, 100.0, "", [])
+        return ValidateResult(Status.OK, 100.0, "", [], self.part)
 
 
 @serde
@@ -646,8 +658,9 @@ class AR18(AR):
                                 f"{course} can only be counted towards the "
                                 f"{self.program.name} component of a dual.",
                                 [course],
-                            )
-        return ValidateResult(Status.OK, 100.0, "", [])
+                                self.part,
+                    )
+        return ValidateResult(Status.OK, 100.0, "", [], self.part)
 
 
 @serde
@@ -681,9 +694,10 @@ class AR19(AR):
                                     f"{self.program.name} component for students "
                                     f"completing {plan_ref}",
                                     [course],
-                                )
+                                    self.part,
+                            )
 
-        return ValidateResult(Status.OK, 100.0, "", [])
+        return ValidateResult(Status.OK, 100.0, "", [], self.part)
 
 
 @serde
@@ -724,9 +738,10 @@ class AR20(AR):
                                             f"{[str(p) for p in self.plan_list_2]} "
                                             f"for students completing {plan_ref}.",
                                             [course],
-                                        )
+                                            self.part,
+                                )
 
-        return ValidateResult(Status.OK, 100.0, "", [])
+        return ValidateResult(Status.OK, 100.0, "", [], self.part)
 
 
 @serde
