@@ -20,7 +20,7 @@ class CourseRef(Param):
     org_code: str
     name: str
 
-    def validate(self, item: str) -> ValidateResult:
+    def validate(self, item: str) -> bool:
         """Validates that item matches the course code."""
         print(f"Validating {item} against {self.code}")
         if item == self.code:
@@ -37,7 +37,7 @@ class EquivalenceGroup(Param):
     courses: list[CourseRef]
     notes: str | None
 
-    def validate(self, item: str) -> ValidateResult:
+    def validate(self, item: str) -> bool:
         """Validates that item matches one of the course codes in the group."""
         for course in self.courses:
             if course.validate(item):
@@ -130,3 +130,14 @@ class ProgramRef(Param):
     org_code: str
     name: str
     abbreviation: str
+
+    def validate(self, item: str) -> bool:
+        """Validates that item matches the program code."""
+        print(f"Validating {item} against {self.code}")
+        if item == self.code:
+            return True
+        else:
+            return False
+        
+    def __str__(self) -> str:
+        return f"{self.code}"

@@ -99,35 +99,39 @@ class SR2(SR):
     options: list[CourseRef | EquivalenceGroup]
     type: str = "SR2"
 
-    def validate(self, plan: Plan, course_getter, degree_getter):
-        count = 0
-        badcourses = []
-        donecourses = []
-        for option in self.options:
-            if isinstance(option, EquivalenceGroup):
-                # Check if any course in the equivalence group is in the plan
-                found = False
-                for course_ref in option.courses:
-                    if course_ref.code in plan.courses:
-                        count += 2  # UPDATE UNITS
-                        donecourses.append(course_ref.code)
-                        found = True
+    def validate(self, plan: Plan,
+                 course_getter: Callable[[str], Awaitable[CourseDBModel | None]],
+                 degree_getter: Callable[[str, int], Awaitable[DegreeDBModel | None]]):
+        
+        async def _async_validate():
+            count = 0
+            badcourses = []
+            donecourses = []
+            
+            for option in self.options:
+                done = False
+                for course in plan.courses:
+                    if option.validate(course):
+                        course_model = await course_getter(course)
+                        count += course_model.num_units if course_model else 0
+                        donecourses.append(course)
+                        done = True
                         break
-                if not found:
-                    badcourses.extend([c.code for c in option.courses])
-            else:
-                if option.code in plan.courses:
-                    count += 2  # UPDATE UNITS
-                    donecourses.append(option.code)
-                else:
-                    badcourses.append(option.code)
+                if not done:
+                    badcourses.append(str(option))
+            
+            return count, badcourses, donecourses
+        
+        # Run the async validation
+        count, badcourses, donecourses = _run_async(_async_validate())
+        
         if count < self.n:
             return ValidateResult(Status.ERROR, count / self.n * 100.0,
                                   f"{count} units found in plan, "
                                   f"but {self.n} required. Add from: "
                                   f"{', '.join(badcourses)}", badcourses)
         elif count > self.m:
-            return ValidateResult(Status.WARN, count / self.m * 100.0,
+            return ValidateResult(Status.ERROR, count / self.m * 100.0,
                                   f"{count} units found in plan, "
                                   f"but {self.m} maximum. Remove from: "
                                   f"{', '.join(donecourses)}", donecourses)
@@ -146,31 +150,36 @@ class SR3(SR):
     options: list[CourseRef | EquivalenceGroup]
     type: str = "SR3"
 
-    def validate(self, plan: Plan, course_getter, degree_getter):
-        count = 0
-        badcourses = []
-        for option in self.options:
-            if isinstance(option, EquivalenceGroup):
-                # Check if any course in the equivalence group is in the plan
-                found = False
-                for course_ref in option.courses:
-                    if course_ref.code in plan.courses:
-                        count += 2  # UPDATE UNITS
-                        found = True
+    def validate(self, plan: Plan,
+                 course_getter: Callable[[str], Awaitable[CourseDBModel | None]],
+                 degree_getter: Callable[[str, int], Awaitable[DegreeDBModel | None]]):
+        
+        async def _async_validate():
+            count = 0
+            badcourses = []
+            
+            for option in self.options:
+                done = False
+                for course in plan.courses:
+                    if option.validate(course):
+                        course_model = await course_getter(course)
+                        count += course_model.num_units if course_model else 0
+                        done = True
                         break
-                if not found:
-                    badcourses.extend([c.code for c in option.courses])
-            else:
-                if option.code in plan.courses:
-                    count += 2  # UPDATE UNITS
-                else:
-                    badcourses.append(option.code)
+                if not done:
+                    badcourses.append(str(option))
+            
+            return count, badcourses
+        
+        # Run the async validation
+        count, badcourses = _run_async(_async_validate())
+        
         if count < self.n:
             return ValidateResult(Status.ERROR, count / self.n * 100.0,
                                   f"{count} units found in plan, "
                                   f"but {self.n} required. Add from: "
                                   f"{', '.join(badcourses)}", badcourses)
-        options = [option.code for option in self.options]
+        options = [str(option) for option in self.options]
         return ValidateResult(Status.OK, 100.0, f"Complete at least {self.n} units from the following {options}", options)
 
 
@@ -184,39 +193,43 @@ class SR4(SR):
     options: list[CourseRef | EquivalenceGroup]
     type: str = "SR4"
 
-    def validate(self, plan: Plan, course_getter, degree_getter):
-        count = 0
-        badcourses = []
-        donecourses = []
-        for option in self.options:
-            if isinstance(option, EquivalenceGroup):
-                # Check if any course in the equivalence group is in the plan
-                found = False
-                for course_ref in option.courses:
-                    if course_ref.code in plan.courses:
-                        count += 2  # UPDATE UNITS
-                        donecourses.append(course_ref.code)
-                        found = True
+    def validate(self, plan: Plan,
+                 course_getter: Callable[[str], Awaitable[CourseDBModel | None]],
+                 degree_getter: Callable[[str, int], Awaitable[DegreeDBModel | None]]):
+        
+        async def _async_validate():
+            count = 0
+            badcourses = []
+            donecourses = []
+            
+            for option in self.options:
+                done = False
+                for course in plan.courses:
+                    if option.validate(course):
+                        course_model = await course_getter(course)
+                        count += course_model.num_units if course_model else 0
+                        donecourses.append(course)
+                        done = True
                         break
-                if not found:
-                    badcourses.extend([c.code for c in option.courses])
-            else:
-                if option.code in plan.courses:
-                    count += 2  # UPDATE UNITS
-                    donecourses.append(option.code)
-                else:
-                    badcourses.append(option.code)
+                if not done:
+                    badcourses.append(str(option))
+            
+            return count, badcourses, donecourses
+        
+        # Run the async validation
+        count, badcourses, donecourses = _run_async(_async_validate())
+        
         if count < self.n:
             return ValidateResult(Status.ERROR, count / self.n * 100.0,
                                   f"{count} units found in plan, "
                                   f"but {self.n} required. Add from: "
                                   f"{', '.join(badcourses)}", badcourses)
         elif count > self.m:
-            return ValidateResult(Status.WARN, count / self.m * 100.0,
+            return ValidateResult(Status.ERROR, count / self.m * 100.0,
                                   f"{count} units found in plan, "
                                   f"but {self.m} maximum. Remove from: "
                                   f"{', '.join(donecourses)}", donecourses)
-        options = [option.code for option in self.options]
+        options = [str(option) for option in self.options]
         return ValidateResult(Status.OK, 100.0, f"Complete {self.n} to {self.m} units from the following {options}", options)
 
 
@@ -228,39 +241,43 @@ class SR5(SR):
     options: list[CourseRef | EquivalenceGroup]
     type: str = "SR5"
 
-    def validate(self, plan: Plan, course_getter, degree_getter):
-        count = 0
-        badcourses = []
-        donecourses = []
-        for option in self.options:
-            if isinstance(option, EquivalenceGroup):
-                # Check if any course in the equivalence group is in the plan
-                found = False
-                for course_ref in option.courses:
-                    if course_ref.code in plan.courses:
-                        count += 2  # UPDATE UNITS
-                        donecourses.append(course_ref.code)
-                        found = True
+    def validate(self, plan: Plan,
+                 course_getter: Callable[[str], Awaitable[CourseDBModel | None]],
+                 degree_getter: Callable[[str, int], Awaitable[DegreeDBModel | None]]):
+        
+        async def _async_validate():
+            count = 0
+            badcourses = []
+            donecourses = []
+            
+            for option in self.options:
+                done = False
+                for course in plan.courses:
+                    if option.validate(course):
+                        course_model = await course_getter(course)
+                        count += course_model.num_units if course_model else 0
+                        donecourses.append(course)
+                        done = True
                         break
-                if not found:
-                    badcourses.extend([c.code for c in option.courses])
-            else:
-                if option.code in plan.courses:
-                    count += 2  # UPDATE UNITS
-                    donecourses.append(option.code)
-                else:
-                    badcourses.append(option.code)
+                if not done:
+                    badcourses.append(str(option))
+            
+            return count, badcourses, donecourses
+        
+        # Run the async validation
+        count, badcourses, donecourses = _run_async(_async_validate())
+        
         if count < self.n:
             return ValidateResult(Status.ERROR, count / self.n * 100.0,
                                   f"{count} units found in plan, "
                                   f"but {self.n} required. Add from: "
                                   f"{', '.join(badcourses)}", badcourses)
         elif count > self.n:
-            return ValidateResult(Status.WARN, count / self.n * 100.0,
+            return ValidateResult(Status.ERROR, count / self.n * 100.0,
                                   f"{count} units found in plan, "
                                   f"but {self.n} required. Remove from: "
                                   f"{', '.join(donecourses)}", donecourses)
-        options = [option.code for option in self.options]
+        options = [str(option) for option in self.options]
         return ValidateResult(Status.OK, 100.0, f"Complete exactly {self.n} units from the following", options)
 
 
@@ -273,15 +290,19 @@ class SR6(SR):
     type: str = "SR6"
 
     def validate(self, plan: Plan, course_getter, degree_getter):
-        option_codes = [opt.code for opt in self.options]
-        if any(code in option_codes for code in plan.specialisations.get(self.part, {})):
-            options = [option.code for option in options]
-            return ValidateResult(Status.OK, 100.0, f"Complete one {self.plan_type} from the following", options)
-        else:
-            return ValidateResult(Status.ERROR, None,
-                                  f"No {self.plan_type} found in plan. "
-                                  f"Add from: {', '.join(option_codes)}",
-                                  option_codes)
+        for option in self.options:
+            for specialisation in plan.specialisations.get(self.part, []):
+                if option.validate(specialisation):
+                    # If the specialisation matches the option code
+                    # we consider it valid
+                    return ValidateResult(Status.OK, 100.0,
+                                          f"Complete one {self.plan_type} from the following: {', '.join(str(opt) for opt in self.options)}",
+                                          [str(opt) for opt in self.options])
+
+        return ValidateResult(Status.ERROR, None,
+                              f"No {self.plan_type} found in plan. "
+                              f"Add from: {', '.join(str(opt) for opt in self.options)}",
+                              [str(opt) for opt in self.options])
 
 @serde
 class SR7(SR):
@@ -293,21 +314,35 @@ class SR7(SR):
     type: str = "SR7"
 
     def validate(self, plan: Plan, course_getter, degree_getter):
-        option_codes = [opt.code for opt in self.options]
-        count = sum(1 for code in plan.specialisations.get(self.part, {})
-                    if code in option_codes)
+        count = 0
+        doneoptions = []
+        notdoneoptions = []
+        for option in self.options:
+            done = False
+            for specialisation in plan.specialisations.get(self.part, []):
+                if option.validate(specialisation):
+                    count += 1
+                    done = True
+                    doneoptions.append(str(option))
+                    break
+            if not done:
+                notdoneoptions.append(str(option))
+        
+        option_codes = [str(opt) for opt in self.options]
+        
         if count < self.n:
             return ValidateResult(Status.ERROR, None,
                                   f"{count} {self.plan_types} found in plan, "
                                   f"but {self.n} required. Add from: "
-                                  f"{', '.join(option_codes)}", option_codes)
+                                  f"{', '.join(option_codes)}", notdoneoptions)
         elif count > self.n:
-            return ValidateResult(Status.WARN, None,
+            return ValidateResult(Status.ERROR, None,
                                   f"{count} {self.plan_types} found in plan, "
                                   f"but {self.n} required. Remove from: "
-                                  f"{', '.join(option_codes)}", option_codes)
-        options = [option.code for option in self.options]
-        return ValidateResult(Status.OK, 100.0, f"Complete exactly {self.n} {self.plan_types} from the following {options}", options)
+                                  f"{', '.join(option_codes)}", doneoptions)
+        return ValidateResult(Status.OK, 100.0,
+                              f"Complete exactly {self.n} {self.plan_types} "
+                              f"from following {option_codes}", option_codes)
 
 
 @serde
@@ -321,21 +356,35 @@ class SR8(SR):
     type: str = "SR8"
 
     def validate(self, plan: Plan, course_getter, degree_getter):
-        option_codes = [opt.code for opt in self.options]
-        count = sum(1 for code in plan.specialisations.get(self.part, {})
-                    if code in option_codes)
+        count = 0
+        doneoptions = []
+        notdoneoptions = []
+        for option in self.options:
+            done = False
+            for specialisation in plan.specialisations.get(self.part, []):
+                if option.validate(specialisation):
+                    count += 1
+                    done = True
+                    doneoptions.append(str(option))
+                    break
+            if not done:
+                notdoneoptions.append(str(option))
+        
+        option_codes = [str(opt) for opt in self.options]
+        
         if count < self.n:
             return ValidateResult(Status.ERROR, None,
                                   f"{count} {self.plan_types} found in plan, "
                                   f"but {self.n} required. Add from: "
-                                  f"{', '.join(option_codes)}", option_codes)
+                                  f"{', '.join(option_codes)}", notdoneoptions)
         elif count > self.m:
-            return ValidateResult(Status.WARN, None,
+            return ValidateResult(Status.ERROR, None,
                                   f"{count} {self.plan_types} found in plan, "
                                   f"but {self.m} maximum. Remove from: "
-                                  f"{', '.join(option_codes)}", option_codes)
-        options = [option.code for option in self.options]
-        return ValidateResult(Status.OK, 100.0, f"Complete {self.n} to {self.m} {self.plan_types} from the following {options}", options)
+                                  f"{', '.join(option_codes)}", doneoptions)
+        return ValidateResult(Status.OK, 100.0,
+                              f"Complete {self.n} to {self.m} {self.plan_types} "
+                              f"from following {option_codes}", option_codes)
     
 
 def create_sr_from_dict(data: dict) -> SR:
