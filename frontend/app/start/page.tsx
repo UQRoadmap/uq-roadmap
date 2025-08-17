@@ -7,7 +7,7 @@ import { Button } from '@/components/button'
 import { Textarea } from "@/components/textarea";
 import { APIDegreeRead, DegreeSummary } from "../api/degree/types";
 import BetterDropdown from "../../components/custom/Dropdown";
-import { APIPlanCreateUpdate, APIPlanRead } from "../api/plan/types";
+import { APIPlanCreateUpdate, JacksonPlan, LucasReadPlan } from "../api/plan/types";
 import { useRouter } from "next/navigation";
 
 function buildArrayFrom(num: number, len: number = 8) {
@@ -82,7 +82,7 @@ export default function Home() {
             start_year: startYear,
             end_year: endYear,
             start_sem: startSemester,
-            course_dates: {},
+            course_dates_input: {},
             course_reqs: {},
             specialisations: {}
         }
@@ -105,7 +105,7 @@ export default function Home() {
                 return;
             }
 
-            const newPlan: APIPlanRead = await res.json();
+            const newPlan: JacksonPlan = await res.json();
 
             console.log("Plan created successfully:", newPlan);
             router.push(`/plan/${newPlan.plan_id}`);

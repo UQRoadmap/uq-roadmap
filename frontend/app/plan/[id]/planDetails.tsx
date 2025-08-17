@@ -11,10 +11,10 @@ import { DndContext, DragEndEvent, useSensor, useSensors  } from '@dnd-kit/core'
 import { Course, DegreeReq } from '@/types/course';
 import { v4 as uuidv4 } from "uuid";
 import ProgressCircle from '@/components/custom/progressCircle';
-import { Plan } from '@/types/plan';
 import { Dialog, DialogBody, DialogTitle } from '@/components/dialog';
 import { Textarea } from '@/components/textarea';
 import { Button } from '@/components/button';
+import { JacksonPlan } from '@/app/api/plan/types';
 
 
 function SemesterSection({ semester, courses, setPaletteOpen, setActiveId, setDelete, courseReqs}:
@@ -114,8 +114,8 @@ function SemesterSection({ semester, courses, setPaletteOpen, setActiveId, setDe
     );
 }
 
-export function PlanDetailClient({initialPlan, courses} : {initialPlan: Plan, courses: Course[]}) {
-    const [plan, setPlan] = useState<Plan>(initialPlan);
+export function PlanDetailClient({initialPlan, courses} : {initialPlan: JacksonPlan, courses: Course[]}) {
+    const [plan, setPlan] = useState<JacksonPlan>(initialPlan);
     const [isPaletteOpen, setPaletteOpen] = useState(false);
     const [sem, setSem] = useState(undefined);
     const [isReversed, setIsReversed] = useState(false);
@@ -220,10 +220,10 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: Plan, co
 
         let targetSemIndex;
         if (isReversed) {
-            const totalSemesters = (plan.endYear - plan.startYear + 1) * 2
-            targetSemIndex = totalSemesters - 1 - ((year - plan.startYear) * 2 + (semNum - 1));
+            const totalSemesters = (plan.end_year - plan.start_year + 1) * 2
+            targetSemIndex = totalSemesters - 1 - ((year - plan.start_year) * 2 + (semNum - 1));
         } else {
-            targetSemIndex = (year - plan.startYear) * 2 + (semNum - 1);
+            targetSemIndex = (year - plan.start_year) * 2 + (semNum - 1);
         }
 
         const targetIndex = parseInt(targetIndexStr, 10);
@@ -262,10 +262,10 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: Plan, co
 
         let targetSemIndex;
         if (isReversed) {
-            const totalSemesters = (plan.endYear - plan.startYear + 1) * 2;
-            targetSemIndex = totalSemesters - 1 - ((year - plan.startYear) * 2 + (semNum - 1));
+            const totalSemesters = (plan.end_year - plan.start_year + 1) * 2;
+            targetSemIndex = totalSemesters - 1 - ((year - plan.start_year) * 2 + (semNum - 1));
         } else {
-            targetSemIndex = (year - plan.startYear) * 2 + (semNum - 1);
+            targetSemIndex = (year - plan.start_year) * 2 + (semNum - 1);
         }
 
         const targetIndex = parseInt(targetIndexStr, 10);
@@ -288,10 +288,10 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: Plan, co
 
         let targetSemIndex;
         if (isReversed) {
-            const totalSemesters = (plan.endYear - plan.startYear + 1) * 2;
-            targetSemIndex = totalSemesters - 1 - ((year - plan.startYear) * 2 + (semNum - 1));
+            const totalSemesters = (plan.end_year - plan.start_year + 1) * 2;
+            targetSemIndex = totalSemesters - 1 - ((year - plan.start_year) * 2 + (semNum - 1));
         } else {
-            targetSemIndex = (year - plan.startYear) * 2 + (semNum - 1);
+            targetSemIndex = (year - plan.start_year) * 2 + (semNum - 1);
         }
 
         setCourses(prevCourses => {
@@ -318,7 +318,10 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: Plan, co
         if (plan) {
             const newSemesters: number[] = [];
             const newCourses: Course[][] = [];
-            for (let year = plan.startYear; year <= plan.endYear; year++) {
+            console.log(`START: ${plan.start_year}`)
+            console.log(`END: ${plan.end_year}`)
+
+            for (let year = plan.start_year; year <= plan.end_year; year++) {
                 newSemesters.push(Number(`${year}1`));
                 newSemesters.push(Number(`${year}2`));
                 newCourses.push([]);
@@ -326,13 +329,15 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: Plan, co
             }
             setSemesters(newSemesters);
             setCourses(newCourses);
+            console.log("SEMESTERS")
+            console.log(semesters)
         }
     }, [plan]);
 
     async function DeletePlan() {
         if (typeof window === "undefined" || !plan) return;
         const possibleKeys = [
-            `plan-${plan.id}`,
+            `plan-${plan.plan_id}`,
         ].filter(Boolean) as string[];
 
         possibleKeys.forEach((k) => {
@@ -365,8 +370,8 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: Plan, co
             setPlan(updatedPlan);
 
             // Update localStorage
-            if (plan && plan.id) {
-                localStorage.setItem(`plans_${plan.id}`, planDialogData);
+            if (plan && plan.plan_id) {
+                localStorage.setItem(`plans_${plan.plan_id}`, planDialogData);
             }
 
             setIsPlanDialogOpen(false);
@@ -402,16 +407,16 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: Plan, co
                                     </div>
                                 </div>
                                 <div className='my-4 text-xl text-white'>
-                                    {plan.degree}
+                                    {plan.degree.title}
                                 </div>
                                 <div className='flex text-white italic'>
                                     <div>
-                                        Planned Completion Date: {plan.endYear} Semester {plan.startSem}
+                                        Planned Completion Date: {plan.end_year} Semester {plan.start_sem}
                                     </div>
                                 </div>
                             </div>
                             <div className='flex flex-wrap items-center gap-x-6 gap-y-2'>
-                                <ProgressCircle percentage={plan.percentage || 0} />
+                                <ProgressCircle percentage={87} />
                             </div>
                         </>
                     ) : (
