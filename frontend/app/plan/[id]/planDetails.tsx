@@ -14,6 +14,7 @@ import ProgressCircle from '@/components/custom/progressCircle';
 import { Plan } from '@/types/plan';
 import { Dialog, DialogBody, DialogTitle } from '@/components/dialog';
 import { Textarea } from '@/components/textarea';
+import { Button } from '@/components/button';
 
 
 function SemesterSection({ semester, courses, setPaletteOpen, setActiveId, setDelete, courseReqs}:
@@ -499,7 +500,7 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: Plan, co
                         />
                     </div>
                     <div className="mt-4 flex justify-end gap-2">
-                        <button
+                        <Button
                             onClick={() => {
                                 setIsPlanDialogOpen(false);
                                 setPlanDialogData(plan ? JSON.stringify(plan, null, 2) : "");
@@ -507,13 +508,14 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: Plan, co
                             className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50"
                         >
                             Cancel
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                             onClick={savePlanData}
-                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                            className="px-4 py-2 text-white rounded"
+                            accent
                         >
                             Save Changes
-                        </button>
+                        </Button>
                     </div>
                 </DialogBody>
             </Dialog>
