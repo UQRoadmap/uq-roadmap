@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { BACKEND_BASE_URL } from "../common";
-import { APIPlanCreateUpdate, APIPlanRead } from "./types";
+import MapToPlan, { APIPlanCreateUpdate, APIPlanRead } from "./types";
 
 export async function GET() {
     try {
@@ -16,7 +16,7 @@ export async function GET() {
         }
 
         const plans: APIPlanRead[] = await res.json();
-        return NextResponse.json(plans);
+        return NextResponse.json(plans.map(MapToPlan));
     } catch (err) {
         console.error(err);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
@@ -42,7 +42,8 @@ export async function POST(req: Request) {
         }
 
         const plan: APIPlanRead = await res.json();
-        return NextResponse.json(plan);
+
+        return NextResponse.json(MapToPlan(plan));
     } catch (err) {
         console.error(err);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
