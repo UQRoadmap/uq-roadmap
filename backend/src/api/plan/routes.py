@@ -42,7 +42,12 @@ async def create(db: DbSession, plan_in: PlanCreateUpdate) -> PlanDBModel:
             detail=f"The degree with the id '{plan_in.degree_id}' can not be found",
         )
 
-    return await create_plan(db, degree, plan_in)
+    try:
+        return await create_plan(db, degree, plan_in)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="The provided start year is after the provided end year."
+        ) from e
 
 
 @r.put("/{plan_id}", response_model=PlanRead)

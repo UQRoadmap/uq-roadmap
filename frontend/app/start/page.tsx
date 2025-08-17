@@ -10,11 +10,16 @@ import BetterDropdown from "../../components/custom/Dropdown";
 import { APIPlanCreateUpdate, APIPlanRead } from "../api/plan/types";
 import { useRouter } from "next/navigation";
 
+function buildArrayFrom(num: number, len: number = 8) {
+    return Array.from({ length: len }, (_, i) => num + i + 1);
+}
+
 export default function Home() {
     const router = useRouter();
 
     const [selectedDegree, setSelectedDegree] = useState<DegreeSummary | null>(null);
     const [startYear, setStartYear] = useState<number | null>(null);
+    const [endYear, setEndYear] = useState<number | null>(null);
     const [startSemester, setStartSemester] = useState<1 | 2>(1);
     const [planName, setPlanName] = useState<string>("");
 
@@ -54,8 +59,8 @@ export default function Home() {
             return;
         }
 
-        if (!startYear) {
-            console.warn("Form submitted but start year is null...")
+        if (!startYear || !endYear) {
+            console.warn("Form submitted but start year is null or end year is null...")
             return;
         }
 
@@ -75,6 +80,7 @@ export default function Home() {
             name: planName,
             degree_id: degree.degree_id,
             start_year: startYear,
+            end_year: endYear,
             start_sem: startSemester,
             course_dates: {},
             course_reqs: {},
@@ -102,7 +108,7 @@ export default function Home() {
             const newPlan: APIPlanRead = await res.json();
 
             console.log("Plan created successfully:", newPlan);
-            router.push(`/plans/${newPlan.plan_id}`);
+            router.push(`/plan/${newPlan.plan_id}`);
         } catch (err) {
             console.error(err);
             alert("An unexpected error occurred. Please try again.");
@@ -159,6 +165,18 @@ export default function Home() {
                                 />
                                 : <></>)
                             }
+
+                            {(startYear != null ?
+                                <BetterDropdown
+                                    label="End Year"
+                                    options={buildArrayFrom(startYear, 8)}
+                                    value={endYear}
+                                    onChange={setEndYear}
+                                    displayValue={(v) => v?.toString() ?? ""}
+                                    id="end-year"
+                                    isEnabled={!!startYear}
+                                />
+                                : <></>)}
                         </FieldGroup>
                         <div className="flex justify-center mt-5">
                             <Button type="submit" accent disabled={!selectedDegree}>

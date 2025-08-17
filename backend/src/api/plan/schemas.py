@@ -38,7 +38,7 @@ class PlanCreateUpdate(UQRoadmapBase):
 
     start_year: int
     start_sem: Literal[1, 2]
-    end_year: int | None = None
+    end_year: int
 
     # maps (year, sem) -> course_codes e.g., 'CSSE2310"
     course_dates: dict[tuple[int, int], list[str]]

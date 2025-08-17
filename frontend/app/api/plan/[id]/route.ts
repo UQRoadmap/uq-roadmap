@@ -1,26 +1,26 @@
 import { NextResponse } from "next/server"
-import { APIPlanCreateUpdate, APIPlanRead } from "../types";
+import MapToPlan, { APIPlanCreateUpdate, APIPlanRead } from "../types";
 import { BACKEND_BASE_URL } from "../../common";
 
-export async function GET(
-    req: Request,
-    { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
 
     try {
         const res = await fetch(`${BACKEND_BASE_URL}/plan/${id}`);
+        if (res.status == 404) {
+            console.debug(`Couldn't find plan under id: ${id}`)
+            return NextResponse.json({})
+        }
         if (!res.ok) {
-
             const errorText = await res.text();
             return NextResponse.json(
                 { error: errorText || `Failed to fetch plan ${id}` },
                 { status: res.status }
             );
         }
-
         const plan: APIPlanRead = await res.json();
-        return NextResponse.json(plan);
+        
+        return NextResponse.json(MapToPlan(plan));
     } catch (err) {
         console.error(err);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });

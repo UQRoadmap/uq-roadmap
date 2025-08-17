@@ -219,7 +219,7 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: Plan, co
 
         let targetSemIndex;
         if (isReversed) {
-            const totalSemesters = (plan.endYear - plan.startYear + 1) * 2;
+            const totalSemesters = (plan.endYear - plan.startYear + 1) * 2
             targetSemIndex = totalSemesters - 1 - ((year - plan.startYear) * 2 + (semNum - 1));
         } else {
             targetSemIndex = (year - plan.startYear) * 2 + (semNum - 1);
@@ -313,10 +313,6 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: Plan, co
     const [semesters, setSemesters] = useState<number[]>([]);
     const [stateCourses, setCourses] = useState<Course[][]>([]);
 
-    const validate = {
-        "status": 1, "percentage": 0.2, "relevant": ["csse2310", "csse2010", "csse3010"], "message": "Core Courses"
-    };
-
     useEffect(() => {
         if (plan) {
             const newSemesters: number[] = [];
@@ -373,7 +369,8 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: Plan, co
             }
 
             setIsPlanDialogOpen(false);
-        } catch (error) {
+        } catch (e) {
+            console.error(e)
             alert("Invalid JSON format. Please check your data.");
         }
     };
@@ -408,7 +405,7 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: Plan, co
                                 </div>
                                 <div className='flex text-white italic'>
                                     <div>
-                                        Planned Completion Date: {plan.plannedCompleteSem.substring(0, 4)} Semester {plan.plannedCompleteSem.substring(4)}
+                                        Planned Completion Date: {plan.endYear} Semester {plan.startSem}
                                     </div>
                                 </div>
                             </div>

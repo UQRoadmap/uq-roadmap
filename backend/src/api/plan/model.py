@@ -23,7 +23,7 @@ class PlanDBModel(BaseDBModel):
     name: Mapped[str]
     start_year: Mapped[int]
     start_sem: Mapped[int]
-    end_year: Mapped[int | None]
+    end_year: Mapped[int]
 
     # maps (year, sem) -> course_codes e.g., 'CSSE2310"
     course_dates: Mapped[dict[tuple[int, int], list[str]]] = mapped_column(JSON)
