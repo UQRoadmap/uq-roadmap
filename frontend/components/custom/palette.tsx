@@ -94,7 +94,7 @@ export default function CommandPalette({draggable, clickable, setActiveId, activ
             <li className="p-2">
           {query === '' && <h2 className="mt-4 mb-2 px-3 text-sm font-semibold text-white">Recent searches</h2>}
           <ul className="space-y-2 text-sm text-gray-300">
-            {(query === '' ? recent : filteredcourses).map((course) => (
+            {filteredcourses.map((course) => (
               <Draggable
             id={course.id}
             key={course.id}
