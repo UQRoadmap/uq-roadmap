@@ -3,7 +3,7 @@
 import datetime
 import logging
 
-from api.courses.models import CourseDBModel, CourseOfferingDBModel, CourseSecatDBModel, CourseSecatQuestionsDBModel
+from api.course.models import CourseDBModel, CourseOfferingDBModel, CourseSecatDBModel, CourseSecatQuestionsDBModel
 from common.enums import CourseMode
 from common.reqs_parsing import parse_requirement
 from common.schemas import SecatInfo
@@ -70,6 +70,8 @@ def transform_scraped_course(scraped: ScrapedCourse) -> CourseDBModel:
 
     semesters_str = None if len(unique_sems) == 0 else ",".join(str(sem) for sem in unique_sems)
 
+    secat = _transform_scraped_secat(scraped.secat) if scraped.secat else None
+
     return CourseDBModel(
         category=category,
         code=code,
@@ -89,7 +91,8 @@ def transform_scraped_course(scraped: ScrapedCourse) -> CourseDBModel:
         class_hours=scraped.class_hours,
         course_enquries=scraped.course_enquries,
         offerings=offerings,
-        secat=_transform_scraped_secat(scraped.secat) if scraped.secat else None,
+        secat=secat,
+        score=scraped.secat.get_avg_score() if scraped.secat else None,
         assessment={ASSESSMENT_ITEMS_KEY: [a.model_dump(mode="python") for a in scraped.latest_assessment]}
         if scraped.latest_assessment
         else None,

@@ -4,13 +4,14 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
 from api.config import CONFIG
-from api.courses.routes import router as courses_router
+from api.course.routes import router as courses_router
 from api.database.service import db_engine, setup_database
 from api.degree.routes import router as degree_router
-from api.plans.routes import router as plan_router
+from api.plan.routes import router as plan_router
 from common.logging import configure_logging
 
 
@@ -22,10 +23,18 @@ async def lifespan(_: FastAPI) -> AsyncGenerator:
     yield
 
 
-app = FastAPI(lifespan=lifespan)
-app.include_router(degree_router, prefix="/degrees", tags=["degrees"])
-app.include_router(courses_router, prefix="/courses", tags=["courses"])
-app.include_router(plan_router, prefix="/plans", tags=["plans"])
+app = FastAPI(lifespan=lifespan, root_path=CONFIG.root_path)
+app.include_router(degree_router, prefix="/degree", tags=["degrees"])
+app.include_router(courses_router, prefix="/course", tags=["courses"])
+app.include_router(plan_router, prefix="/plan", tags=["plans"])
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[CONFIG.frontend_url, "http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")

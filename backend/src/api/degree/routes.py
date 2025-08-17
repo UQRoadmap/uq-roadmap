@@ -6,8 +6,8 @@ from fastapi import APIRouter, HTTPException, status
 
 from api.database.deps import DbSession
 from api.degree.models import DegreeDBModel
-from api.degree.schemas import DegreeRead
-from api.degree.service import get_all_degrees, get_degree, get_degree_by_id
+from api.degree.schemas import DegreeRead, DegreeSummary
+from api.degree.service import get_all_degrees, get_degree, get_degree_by_id, get_degrees_summary
 
 r = router = APIRouter()
 
@@ -16,6 +16,12 @@ r = router = APIRouter()
 async def get_many(session: DbSession) -> list[DegreeDBModel]:
     """Get all the degrees."""
     return await get_all_degrees(session)
+
+
+@r.get("/summary")
+async def get_summary(session: DbSession) -> list[DegreeSummary]:
+    """Get all the degrees."""
+    return await get_degrees_summary(session)
 
 
 @r.get("/simple", response_model=DegreeRead)

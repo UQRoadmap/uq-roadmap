@@ -6,12 +6,11 @@ from pprint import pprint
 from serde import serde
 from serde.json import from_dict
 
-from api.courses.models import CourseDBModel
+from api.course.models import CourseDBModel
 from api.degree.models import DegreeDBModel
-from api.plan import Plan
+from api.plan.plan import Plan
 from common.reqs_parsing import CourseRequirementKind, RequirementRead, parse_requirement
 from degree.aux_rule import AR
-from degree.params import CourseRef, ProgramRef
 from degree.sr_rule import SR
 from degree.validate_result import Status, ValidateResult
 

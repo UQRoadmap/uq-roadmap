@@ -1,179 +1,205 @@
 "use client"
-import { useState, FormEvent, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 
 import { Field, FieldGroup, Fieldset, Label } from '@/components/fieldset'
-import { Combobox, ComboboxLabel, ComboboxOption } from '@/components/combobox'
 import { Button } from '@/components/button'
 
-import MajorSelect from './major-comp'
-import { v4 } from "uuid";
 import { Textarea } from "@/components/textarea";
+import { APIDegreeRead, DegreeSummary } from "../api/degree/types";
+import BetterDropdown from "../../components/custom/Dropdown";
+import { APIPlanCreateUpdate, APIPlanRead } from "../api/plan/types";
+import { useRouter } from "next/navigation";
 
-type Degree = { name: string; offerings: string[], id: string };
-
-const degrees: Degree[] = [
-    {
-        name: "Bachelor of Software Engineering",
-        id: "2",
-        offerings: [
-            "2020",
-            "2021",
-            "2022",
-            "2023",
-            "2024",
-            "2025",
-            "2026",
-        ],
-    },
-    {
-        name: "Bachelor of Computer Science",
-        id: "1",
-        offerings: [
-            "2020",
-            "2021",
-            "2022",
-            "2023",
-            "2024",
-            "2025",
-            "2026",
-        ],
-    },
-];
+function buildArrayFrom(num: number, len: number = 8) {
+    return Array.from({ length: len }, (_, i) => num + i + 1);
+}
 
 export default function Home() {
-  const [selectedDegree, setSelectedDegree] = useState<Degree | null>(null);
-  const [selectedMajor, setSelectedMajor] = useState<string | null>(null);
-  const [selectedMinor, setSelectedMinor] = useState<string | null>(null);
-  const [selectedOffering, setSelectedOffering] = useState<string | null>(null);
-  const [graduationYear, setGraduationYear] = useState<string | null>(null);
-  const [graduationSem, setGraduationSem] = useState<string | null>(null);
-  const [planName, setPlanName] = useState<string>("");
-  
-  const router = useRouter();
+    const router = useRouter();
 
-  // Set default selections when degree changes
-  useEffect(() => {
-    if (selectedDegree) {
-      // Set default value only for offering
-      if (selectedDegree.offerings && selectedDegree.offerings.length > 0) {
-        setSelectedOffering(selectedDegree.offerings[0]);
-      }
-      
-      // Set major and minor to null by default
-      setSelectedMajor(null);
-      setSelectedMinor(null);
-    }
-  }, [selectedDegree]);
+    const [selectedDegree, setSelectedDegree] = useState<DegreeSummary | null>(null);
+    const [startYear, setStartYear] = useState<number | null>(null);
+    const [endYear, setEndYear] = useState<number | null>(null);
+    const [startSemester, setStartSemester] = useState<1 | 2>(1);
+    const [planName, setPlanName] = useState<string>("");
 
-  // Set default graduation year and semester when offering is selected
-    //   useEffect(() => {
-    //     if (selectedOffering && selectedDegree) {
-    //       const offerYear = parseInt(selectedOffering, 10);
-    //       if (!Number.isNaN(offerYear)) {
-    //         // Calculate the earliest graduation year based on units
-    //         const earliestGradYear = offerYear + (selectedDegree.units > 0 ? Math.floor(selectedDegree.units / 16) : 0);
-    //         setGraduationYear(String(earliestGradYear));
-            
-    //         // Set earliest graduation semester
-    //         setGraduationSem("Semester 1");
-    //       }
-    //     }
-    //   }, [selectedOffering, selectedDegree]);
+    const [degreeSummaries, setDegreeSummaries] = useState<DegreeSummary[]>([])
 
-  const semToNumber = (sem: string) => {
-    if (sem !== "Summer Semester") {
-        return sem.split(" ")[1]
-    }
-    else if (sem === "Summer Semester") return 3;
-    else return "Unknown";
-  }
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    console.log("Form submitted. Selected degree:", selectedDegree);
-    if (selectedDegree) {
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
-        const id = v4();
-        const offeringYear = parseInt(selectedOffering || "0", 10);
-        
-        // Create the payload object to match the DegreeDBModel structure
-        const payload = {
-          id: id,
-          degree_id: id,
-          startYear: offeringYear,
-          title: selectedDegree.name,
-          json: {
-            plan_id: id,
-            degree_id: selectedDegree.id,
-            degree: selectedDegree.name,
-            planName: planName || `${selectedDegree.name} Plan` // Default name if none provided
-          }
-        };
-        
-        
-        // Store data in localStorage with plans_ prefix
-        localStorage.setItem(`plans_${id}`, JSON.stringify(payload));
-        
-        const result = await fetch(`${baseUrl}/plan/${id}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-        });
-
-        if (result.status === 200) {
-            const id = await result.json();
-            router.push(`/plan/${id}`)
+    useEffect(() => {
+        async function fetchDegrees() {
+            try {
+                const res = await fetch("/api/degree/summary");
+                if (!res.ok) {
+                    console.error(await res.text())
+                    throw new Error("Failed to fetch degrees");
+                }
+                const data: DegreeSummary[] = await res.json();
+                setDegreeSummaries(data);
+            } catch (err) {
+                console.error("Error fetching degrees:", err);
+            }
         }
-        // need to handle validation error
-        else {
-            console.error("Unexpected error occurred, try again later")
-        }
-    }
-  };
+        fetchDegrees()
+    }, []);
 
-  return (
-    <div className="font-sans grid mt-2grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 max-w-7xl mx-auto px-4">
-        <form onSubmit={handleSubmit}>
-        <Fieldset>
-            <h1 className="text-3xl"> Start Your UQ Journey </h1>
-            <FieldGroup>
-                <Field>
-                    <Label> Plan Name </Label>
-                    <Textarea
-                        resizable={false}
-                        value={planName}
-                        onChange={(e) => setPlanName(e.target.value)}
-                        placeholder="Enter a name for your plan"
-                    />
-                </Field>
-                <Field>
-                    <Label> Degree </Label>
-                    <Combobox
-                        name="degree"
-                        options={degrees}
-                        displayValue={(degree) => degree?.name}
-                        aria-label="Your degree"
-                        value={selectedDegree}
-                        onChange={setSelectedDegree}
-                    >
-                        {degree => (
-                            <ComboboxOption value={degree}>
-                                <ComboboxLabel>{degree.name}</ComboboxLabel>
-                            </ComboboxOption>
-                        )}
-                    </Combobox>
-                </Field>
-                <MajorSelect
-                    name="Offerings"
-                    options={selectedDegree?.offerings ?? []}
-                    disabled={!selectedDegree}
-                    setter={setSelectedOffering}
-                />
-            </FieldGroup>
-            <Button type="submit" accent className="mt-5" disabled={!selectedDegree}> Add Courses </Button>
-        </Fieldset>
-        </form>
-    </div>
-  )
+    // Set default selections when degree changes
+    useEffect(() => {
+        if (selectedDegree) {
+            if (selectedDegree.years && selectedDegree.years.length > 0) {
+                setStartYear(selectedDegree.years[0]);
+            }
+        }
+    }, [selectedDegree]);
+
+    const [loading, setLoading] = useState<boolean>(false);
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        setLoading(true);
+        console.log(loading);
+        e.preventDefault();
+        console.log("Form submitted. Selected degree:", selectedDegree);
+        if (!selectedDegree) {
+            return;
+        }
+
+        if (!startYear || !endYear) {
+            console.warn("Form submitted but start year is null or end year is null...")
+            return;
+        }
+
+        const res = await fetch(`/api/degree?degree_code=${selectedDegree.degree_code}&year=${startYear}`)
+        if (res.status == 404) {
+            console.error("Degree not found", await res.text());
+            return
+        }
+        if (!res.ok) {
+            console.error("Unexpected error:", await res.text());
+            return;
+        }
+
+        const degree: APIDegreeRead = await res.json();
+
+        const createPayload: APIPlanCreateUpdate = {
+            name: planName,
+            degree_id: degree.degree_id,
+            start_year: startYear,
+            end_year: endYear,
+            start_sem: startSemester,
+            course_dates: {},
+            course_reqs: {},
+            specialisations: {}
+        }
+
+        try {
+            console.log(createPayload)
+            const res = await fetch("/api/plan", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(createPayload),
+            });
+
+            if (res.status === 404) {
+                alert("Selected degree could not be found for this year.");
+                return;
+            }
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                alert(`Failed to create plan: ${errorText}`);
+                return;
+            }
+
+            const newPlan: APIPlanRead = await res.json();
+            router.push(`/plan/${newPlan.plan_id}`);
+        } catch (err) {
+            console.error(err);
+            alert("An unexpected error occurred. Please try again.");
+        }
+
+    };
+
+    return (
+        <div className="font-sans grid mt-2grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 max-w-7xl mx-auto px-4">
+            <div className="font-sans flex flex-col items-center py-8 max-w-3xl mx-auto px-12">
+                <form onSubmit={handleSubmit}>
+                    <Fieldset>
+                        <h1 className="text-3xl"> Start Your UQ Journey </h1>
+                        <FieldGroup>
+                            <Field>
+                                <Label> Plan Name </Label>
+                                <Textarea
+                                    resizable={false}
+                                    value={planName}
+                                    onChange={(e) => setPlanName(e.target.value)}
+                                    placeholder="Enter a name for your plan"
+                                />
+                            </Field>
+                            <BetterDropdown
+                                label="Degree"
+                                options={degreeSummaries}
+                                value={selectedDegree ?? null}
+                                onChange={setSelectedDegree}
+                                displayValue={(d) => d?.title ?? ""}
+                                isEnabled
+                            />
+
+                            {(selectedDegree != null ?
+                                <BetterDropdown
+                                    label="Start Year"
+                                    options={selectedDegree?.years ?? []}
+                                    value={startYear ?? (selectedDegree?.years?.[0] ?? null)}
+                                    onChange={setStartYear}
+                                    displayValue={(y) => y?.toString() ?? ""}
+                                    id="start-year"
+                                    isEnabled={!!selectedDegree}
+                                />
+                                : <></>)
+                            }
+                            {(startYear != null ?
+                                <BetterDropdown
+                                    label="Start Semester"
+                                    options={[1, 2]}
+                                    value={startSemester}
+                                    onChange={setStartSemester}
+                                    displayValue={(v) => `Semester ${v}`}
+                                    id="start-semester"
+                                    isEnabled={!!startYear}
+                                />
+                                : <></>)
+                            }
+
+                            {(startYear != null ?
+                                <BetterDropdown
+                                    label="End Year"
+                                    options={buildArrayFrom(startYear, 8)}
+                                    value={endYear}
+                                    onChange={setEndYear}
+                                    displayValue={(v) => v?.toString() ?? ""}
+                                    id="end-year"
+                                    isEnabled={!!startYear}
+                                />
+                                : <></>)}
+                        </FieldGroup>
+                        <div className="flex justify-center mt-5">
+                            {loading ? (
+                                <Button type="submit" accent disabled className="flex items-center justify-center">
+                                    <span
+                                        className="inline-block h-5 w-5 mr-1 animate-spin rounded-full border-2 border-white border-t-transparent"
+                                        role="status"
+                                        aria-hidden="true"
+                                    />
+                                    Creating...
+                                </Button>
+                            ) : (
+                                <Button type="submit" accent disabled={!selectedDegree}>
+                                    Create Plan
+                                </Button>
+                            )}
+                        </div>
+                    </Fieldset>
+                </form>
+            </div>
+        </div>
+    )
 }

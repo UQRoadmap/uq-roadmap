@@ -2,9 +2,9 @@
 
 from fastapi import APIRouter, HTTPException, status
 
-from api.courses.models import CourseDBModel
-from api.courses.schemas import CourseRead, CourseReadDetailed
-from api.courses.service import get_all_courses, get_course_by_full_code
+from api.course.models import CourseDBModel
+from api.course.schemas import CourseRead, CourseReadDetailed
+from api.course.service import get_all_courses, get_course_by_full_code
 from api.database.deps import DbSession
 from common.enums import CourseLevel
 

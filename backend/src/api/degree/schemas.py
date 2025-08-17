@@ -14,3 +14,11 @@ class DegreeRead(UQRoadmapBase):
 
     title: str
     degree_url: str | None = None
+
+
+class DegreeSummary(UQRoadmapBase):
+    """Degrees summary."""
+
+    title: str
+    degree_code: str
+    years: list[int]

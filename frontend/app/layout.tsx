@@ -30,9 +30,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white h-full`}
       >
         <div id="portal-root"></div>
-        <Header />
-        <main className="min-h-screen bg-white">{children}</main>
-        <Footer />
+        <div className="min-h-screen">
+            <Header />
+            <main className="min-h-screen bg-white">{children}</main>
+            <Footer />
+        </div>
       </body>
     </html>
   );

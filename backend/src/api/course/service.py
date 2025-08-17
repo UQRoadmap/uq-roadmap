@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from api.courses.models import CourseDBModel
+from api.course.models import CourseDBModel
 from common.enums import CourseLevel
 
 

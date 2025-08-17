@@ -5,6 +5,7 @@ from uuid import UUID
 
 from api.degree.schemas import DegreeRead
 from common.schemas import UQRoadmapBase
+from degree.validate_result import ValidateResult
 
 
 class PlanRead(UQRoadmapBase):
@@ -29,6 +30,8 @@ class PlanRead(UQRoadmapBase):
 
     courses: list[str]
 
+    validation_results: list[ValidateResult] | None = None
+
 
 class PlanCreateUpdate(UQRoadmapBase):
     """Plan create/update schema."""
@@ -38,7 +41,7 @@ class PlanCreateUpdate(UQRoadmapBase):
 
     start_year: int
     start_sem: Literal[1, 2]
-    end_year: int | None = None
+    end_year: int
 
     # maps (year, sem) -> course_codes e.g., 'CSSE2310"
     course_dates: dict[tuple[int, int], list[str]]

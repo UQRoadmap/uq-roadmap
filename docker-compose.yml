@@ -25,10 +25,21 @@ services:
       - 8080:8080
     environment:
       - DB_URL=postgresql+asyncpg://admin:password@database:5432/uqroadmap
+      - FRONTEND_URL=frontend:3000
     depends_on:
       database:
         condition: service_healthy
         restart: true
+  frontend:
+    container_name: frontend
+    build:
+      context: frontend
+    restart: always
+    command: yarn dev
+    environment:
+      - BACKEND_URL=backend:8080
+    ports:
+      - 3000:3000
 
 volumes:
   db-data:

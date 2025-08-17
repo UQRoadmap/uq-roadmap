@@ -61,6 +61,7 @@ class CourseRead(UQRoadmapBase):
         return [CourseSemester(s) for s in self.semesters_str.split(",")]
 
     secat: SecatInfo | None
+    score: float | None
 
     assessment: CourseAssessment | None
 

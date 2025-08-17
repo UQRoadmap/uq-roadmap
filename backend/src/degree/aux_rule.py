@@ -1,15 +1,15 @@
 """Classes for auxiliary rules."""
 
-from serde import AdjacentTagging, serde
+from serde import serde
+from serde.json import from_dict
 
-from api.plan import Plan
+from api.plan.plan import Plan
 from degree.params import CourseRef, ProgramRef
 from degree.validate_result import Status, ValidateResult
 from typing import Callable, Awaitable
-from api.courses.models import CourseDBModel
+from api.course.models import CourseDBModel
 from api.degree.models import DegreeDBModel
 import asyncio
-
 from serde.json import from_dict
 
 
@@ -755,6 +755,7 @@ class ARUnknown(AR):
 def create_ar_from_dict(data: dict) -> AR:
     """Factory function to create correct AR subclass from dict."""
     ar_type = data.get("type", "AR")
+
 
     type_map = {
         "AR1": AR1,

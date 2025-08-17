@@ -1,21 +1,22 @@
 """Plans service."""
 
 from collections.abc import Awaitable, Callable
-from pprint import pprint
 from uuid import UUID
 
 from serde.json import from_dict
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.courses.models import CourseDBModel
-from api.courses.service import get_course_by_full_code
+from api.course.models import CourseDBModel
+from api.course.service import get_course_by_full_code
 from api.degree.models import DegreeDBModel
 from api.degree.service import get_degree
-from api.plan import Plan
-from api.plans.model import PlanDBModel
-from api.plans.schemas import PlanCreateUpdate
+from api.plan.model import PlanDBModel
+from api.plan.plan import Plan
+from api.plan.schemas import PlanCreateUpdate
+from degree.aux_rule import create_ar_from_dict
 from degree.degree import Degree
+from degree.sr_rule import create_sr_from_dict
 from degree.validate_result import ValidateResult
 
 from degree.aux_rule import AR, create_ar_from_dict
@@ -35,6 +36,9 @@ async def get_plan(session: AsyncSession, plan_id: UUID) -> PlanDBModel | None:
 
 async def create_plan(session: AsyncSession, degree: DegreeDBModel, plan_in: PlanCreateUpdate) -> PlanDBModel:
     """Create a plan."""
+    if plan_in.start_year > plan_in.end_year:
+        raise ValueError
+
     model = PlanDBModel(
         degree=degree,
         name=plan_in.name,

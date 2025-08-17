@@ -1,61 +1,58 @@
-import { Plan } from '@/types/plan';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server"
+import MapToPlan, { APIPlanCreateUpdate, APIPlanRead } from "../types";
+import { BACKEND_BASE_URL } from "../../common";
 
-const data = [{
-    name: "My Plan",
-    degree: "Bachelor Engineering (Honours) and Master of Engineering",
-    percentage: 29,
-    plannedCompleteSem: "20252",
-    unitsRemaining: 8,
-    startYear: 2024,
-    endYear: 2026,
-    id: "123",
-    major: ["Design"],
-    minor: ["Data Science"],
-    programReqs: ["Core Courses", "Electives"]
-}];
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
 
-export async function GET(
-  request: Request,
-  params: { params: Promise<{ id: string }> }
-) {
-      const res = await fetch(`http://localhost:8080/plans/${id}`);
-
-      if (!res.ok) {
-        return NextResponse.json(
-          { error: 'Failed to fetch from external API' },
-          { status: res.status }
-        );
-      }
-
-      const apiCourses = await res.json();
-      const courses: Course[] = apiCourses.map(mapToCourse);
-      console.log(courses)
-      if (!courses || courses.length === 0) {
-        return NextResponse.json({ error: 'No courses found' }, { status: 404 });
-      }
-
-      return NextResponse.json(courses);
+    try {
+        const res = await fetch(`${BACKEND_BASE_URL}/plan/${id}`);
+        if (res.status == 404) {
+            console.debug(`Couldn't find plan under id: ${id}`)
+            return NextResponse.json({})
+        }
+        if (!res.ok) {
+            const errorText = await res.text();
+            return NextResponse.json(
+                { error: errorText || `Failed to fetch plan ${id}` },
+                { status: res.status }
+            );
+        }
+        const plan: APIPlanRead = await res.json();
+        
+        return NextResponse.json(MapToPlan(plan));
     } catch (err) {
-      console.error('Error fetching courses:', err);
-      return NextResponse.json(
-        { error: 'Internal server error' },
-        { status: 500 }
-      );
+        console.error(err);
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
-  const { id } = await params.params
-
-  const plan = data.find(value => value.id === id);
-  if (!plan) {
-    return NextResponse.json({ error: 'Not found' }, { status: 404 });
-  }
-  return NextResponse.json(plan);
 }
 
-export async function POST(request: Request) {
-  // return all plans or handle body as needed
-  console.log(request);
-  const body = await request.json();
-  console.log(body);
-  return NextResponse.json(body.id);
+export async function PUT(
+    req: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    const { id } = await params;
+
+    try {
+        const body: APIPlanCreateUpdate = await req.json();
+        const res = await fetch(`${BACKEND_BASE_URL}/plan/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+        });
+
+        if (!res.ok) {
+            const errorText = await res.text();
+            return NextResponse.json(
+                { error: errorText || `Failed to update plan ${id}` },
+                { status: res.status }
+            );
+        }
+
+        const plan: APIPlanRead = await res.json();
+        return NextResponse.json(MapToPlan(plan));
+    } catch (err) {
+        console.error(err);
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    }
 }
