@@ -15,9 +15,11 @@ class ValidateResult:
     percentage: float | None | int
     message: str
     relevant: list[str]
+    part: str
 
-    def __init__(self, status: Status, percentage: float | None | int, message: str, relevant: list[str]):
+    def __init__(self, status: Status, percentage: float | None | int, message: str, relevant: list[str], part: str):
         self.status = status
         self.percentage = percentage
         self.message = message
         self.relevant = relevant
+        self.part = part

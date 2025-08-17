@@ -13,7 +13,9 @@ class SR:
     part: str
 
     def validate(self, plan: Plan, course_getter, degree_getter) -> ValidateResult:
-        return ValidateResult(Status.ERROR, None, "Should not be seeing this - validating abstract SR", plan.courses)
+        return ValidateResult(
+            Status.ERROR, None, "Should not be seeing this - validating abstract SR", plan.courses, self.part
+        )
 
 
 @serde
@@ -38,6 +40,7 @@ class SR1(SR):
                 count / self.n * 100.0,
                 f"{count} units found in plan, but {self.n} required. Add from: {', '.join(badcourses)}",
                 badcourses,
+                self.part,
             )
         elif badcourses:
             return ValidateResult(
@@ -45,9 +48,12 @@ class SR1(SR):
                 (self.n - len(badcourses)) / self.n * 100.0,
                 f"{', '.join(badcourses)} need to be in the plan",
                 badcourses,
+                self.part,
             )
         options = [option.code for option in self.options]
-        return ValidateResult(Status.OK, 100.0, f"Complete {self.n} units for ALL of the following {options}", options)
+        return ValidateResult(
+            Status.OK, 100.0, f"Complete {self.n} units for ALL of the following {options}", options, self.part
+        )
 
 
 @serde
@@ -75,6 +81,7 @@ class SR2(SR):
                 count / self.n * 100.0,
                 f"{count} units found in plan, but {self.n} required. Add from: {', '.join(badcourses)}",
                 badcourses,
+                self.part,
             )
         elif count > self.m:
             return ValidateResult(
@@ -82,6 +89,7 @@ class SR2(SR):
                 count / self.m * 100.0,
                 f"{count} units found in plan, but {self.m} maximum. Remove from: {', '.join(donecourses)}",
                 donecourses,
+                self.part,
             )
         if badcourses:
             return ValidateResult(
@@ -89,10 +97,15 @@ class SR2(SR):
                 (self.n - len(badcourses)) / self.n * 100.0,
                 f"{', '.join(badcourses)} need to be in the plan",
                 badcourses,
+                self.part,
             )
         options = [option.code for option in self.options]
         return ValidateResult(
-            Status.OK, 100.0, f"Complete {self.n} to {self.m} units for ALL of the following {options}", options
+            Status.OK,
+            100.0,
+            f"Complete {self.n} to {self.m} units for ALL of the following {options}",
+            options,
+            self.part,
         )
 
 
@@ -118,10 +131,11 @@ class SR3(SR):
                 count / self.n * 100.0,
                 f"{count} units found in plan, but {self.n} required. Add from: {', '.join(badcourses)}",
                 badcourses,
+                self.part,
             )
         options = [option.code for option in self.options]
         return ValidateResult(
-            Status.OK, 100.0, f"Complete at least {self.n} units from the following {options}", options
+            Status.OK, 100.0, f"Complete at least {self.n} units from the following {options}", options, self.part
         )
 
 
@@ -150,6 +164,7 @@ class SR4(SR):
                 count / self.n * 100.0,
                 f"{count} units found in plan, but {self.n} required. Add from: {', '.join(badcourses)}",
                 badcourses,
+                self.part,
             )
         elif count > self.m:
             return ValidateResult(
@@ -157,10 +172,11 @@ class SR4(SR):
                 count / self.m * 100.0,
                 f"{count} units found in plan, but {self.m} maximum. Remove from: {', '.join(donecourses)}",
                 donecourses,
+                self.part,
             )
         options = [option.code for option in self.options]
         return ValidateResult(
-            Status.OK, 100.0, f"Complete {self.n} to {self.m} units from the following {options}", options
+            Status.OK, 100.0, f"Complete {self.n} to {self.m} units from the following {options}", options, self.part
         )
 
 
@@ -188,6 +204,7 @@ class SR5(SR):
                 count / self.n * 100.0,
                 f"{count} units found in plan, but {self.n} required. Add from: {', '.join(badcourses)}",
                 badcourses,
+                self.part,
             )
         elif count > self.n:
             return ValidateResult(
@@ -195,9 +212,12 @@ class SR5(SR):
                 count / self.n * 100.0,
                 f"{count} units found in plan, but {self.n} required. Remove from: {', '.join(donecourses)}",
                 donecourses,
+                self.part,
             )
         options = [option.code for option in self.options]
-        return ValidateResult(Status.OK, 100.0, f"Complete exactly {self.n} units from the following", options)
+        return ValidateResult(
+            Status.OK, 100.0, f"Complete exactly {self.n} units from the following", options, self.part
+        )
 
 
 @serde
@@ -212,13 +232,16 @@ class SR6(SR):
         option_codes = [opt.code for opt in self.options]
         if any(code in option_codes for code in plan.specialisations.get(self.part, {})):
             options = [option.code for option in options]
-            return ValidateResult(Status.OK, 100.0, f"Complete one {self.plan_type} from the following", options)
+            return ValidateResult(
+                Status.OK, 100.0, f"Complete one {self.plan_type} from the following", options, self.part
+            )
         else:
             return ValidateResult(
                 Status.ERROR,
                 None,
                 f"No {self.plan_type} found in plan. Add from: {', '.join(option_codes)}",
                 option_codes,
+                self.part,
             )
 
 
@@ -240,6 +263,7 @@ class SR7(SR):
                 None,
                 f"{count} {self.plan_types} found in plan, but {self.n} required. Add from: {', '.join(option_codes)}",
                 option_codes,
+                self.part,
             )
         elif count > self.n:
             return ValidateResult(
@@ -249,10 +273,15 @@ class SR7(SR):
                 f"but {self.n} required. Remove from: "
                 f"{', '.join(option_codes)}",
                 option_codes,
+                self.part,
             )
         options = [option.code for option in self.options]
         return ValidateResult(
-            Status.OK, 100.0, f"Complete exactly {self.n} {self.plan_types} from the following {options}", options
+            Status.OK,
+            100.0,
+            f"Complete exactly {self.n} {self.plan_types} from the following {options}",
+            options,
+            self.part,
         )
 
 
@@ -275,6 +304,7 @@ class SR8(SR):
                 None,
                 f"{count} {self.plan_types} found in plan, but {self.n} required. Add from: {', '.join(option_codes)}",
                 option_codes,
+                self.part,
             )
         elif count > self.m:
             return ValidateResult(
@@ -284,10 +314,15 @@ class SR8(SR):
                 f"but {self.m} maximum. Remove from: "
                 f"{', '.join(option_codes)}",
                 option_codes,
+                self.part,
             )
         options = [option.code for option in self.options]
         return ValidateResult(
-            Status.OK, 100.0, f"Complete {self.n} to {self.m} {self.plan_types} from the following {options}", options
+            Status.OK,
+            100.0,
+            f"Complete {self.n} to {self.m} {self.plan_types} from the following {options}",
+            options,
+            self.part,
         )
 
 

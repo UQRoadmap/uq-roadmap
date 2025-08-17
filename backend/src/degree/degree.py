@@ -103,7 +103,7 @@ class PartTree:
                     flag = False
             if flag:
                 results.extend(temp_results)
-                results.append(ValidateResult(Status.ERROR, None, "", []))
+                results.append(ValidateResult(Status.ERROR, None, "", [], self.part))
         elif requirements.kind == CourseRequirementKind.AND:
             for child in requirements.value:
                 results.extend(self.evaluate_requirement(child, plan))
@@ -137,7 +137,14 @@ class Degree:
     # An entry might be A and B or A.1 OR B.1
     rule_logic: list[str]
 
-    def validate(
+    def prefix(self, prefix: str):
+        self.part_references = {(prefix + "." + key): val for key, val in self.part_references.items()}
+        for ar in self.aux:
+            ar.part = prefix + "." + ar.part
+        for sr in self.srs:
+            sr.part = prefix + "." + sr.part
+
+    async def validate(
         self, plan: Plan, course_getter: CourseCallback, degree_getter: DegreeCallback
     ) -> list[ValidateResult]:
         tree = PartTree("", [], {}, course_getter, degree_getter)
@@ -150,6 +157,15 @@ class Degree:
         for rule in self.rule_logic:
             requirements = parse_requirement(rule)
             results.extend(tree.evaluate_requirement(requirements, plan))
+
+        # Validate sub-degrees :)
+        for prefix, specs in plan.specialisations.items():
+            for spec_code in specs:
+                sub_degree: Degree = await degree_getter((spec_code, self.year))
+                sub_degree.prefix(prefix)
+                results.extend(sub_degree.validate(plan, course_getter, degree_getter))
+                pprint(sub_degree.code)
+                pprint(sub_degree.part_references)
 
         return results
 
