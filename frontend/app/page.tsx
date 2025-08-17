@@ -27,12 +27,9 @@ export default function Homepage() {
                                 Get started
                             </Button>
                             <a
-                                href="/about/"
+                                href="https://github.com/tristanduncombe/uq-roadmap"
+                                target="_blank"
                                 className="text-sm/6 font-semibold group"
-                                onClick={(e) => {
-                                    e.preventDefault(); // prevent navigation
-                                    alert("This doesn't go to anywhere because we spent most of our time deciphering UQs 'innovative' APIs and data formats -> looking at your course requirements JSON.");
-                                }}
                             >
                                 Learn more{' '}
                                 <span
