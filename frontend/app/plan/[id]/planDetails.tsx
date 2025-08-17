@@ -321,20 +321,72 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: JacksonP
             console.log(`START: ${plan.start_year}`)
             console.log(`END: ${plan.end_year}`)
 
+            // Create the semester structure
             for (let year = plan.start_year; year <= plan.end_year; year++) {
                 newSemesters.push(Number(`${year}1`));
                 newSemesters.push(Number(`${year}2`));
                 newCourses.push([]);
                 newCourses.push([]);
             }
+
+            // Populate courses from plan.course_tiles
+            if (plan.course_tiles && Object.keys(plan.course_tiles).length > 0) {
+                console.log("Loading courses from plan.course_tiles:", plan.course_tiles);
+
+                Object.entries(plan.course_tiles).forEach(([key, courseCode]) => {
+                    // Parse the key format: "20251-0" -> year=2025, sem=1, position=0
+                    const [semesterPart, positionStr] = key.split("-");
+                    const position = parseInt(positionStr, 10);
+
+                    // Extract year and semester from semesterPart (e.g., "20251")
+                    const year = Math.floor(parseInt(semesterPart, 10) / 10); // 2025
+                    const semesterNum = parseInt(semesterPart, 10) % 10 + 1; // 1 -> 2, 0 -> 1
+
+                    // Calculate the semester index in our array
+                    const semesterIndex = (year - plan.start_year) * 2 + (semesterNum - 1);
+
+                    // Find the course from the courses array
+                    const course = courses.find(c => c.code === courseCode);
+
+                    if (course && semesterIndex >= 0 && semesterIndex < newCourses.length) {
+                        // Create a course instance with the correct sem property and unique ID
+                        const courseInstance: Course = {
+                            ...course,
+                            id: uuidv4(), // Generate unique ID for this instance
+                            sem: key // Keep the original key as sem property
+                        };
+
+                        // Insert the course at the correct position
+                        // Ensure the array has enough slots
+                        while (newCourses[semesterIndex].length <= position) {
+                            newCourses[semesterIndex].push(null as any);
+                        }
+                        newCourses[semesterIndex][position] = courseInstance;
+
+                        console.log(`Loaded course ${courseCode} at semester ${semesterIndex}, position ${position}`);
+                    } else {
+                        console.warn(`Could not load course: ${courseCode} (key: ${key})`);
+                    }
+                });
+
+                // Remove null entries from arrays
+                newCourses.forEach((semesterCourses, index) => {
+                    newCourses[index] = semesterCourses.filter(course => course !== null);
+                });
+            }
+
             setSemesters(newSemesters);
             setCourses(newCourses);
-            console.log("SEMESTERS")
-            console.log(semesters)
+            console.log("SEMESTERS", newSemesters);
+            console.log("LOADED COURSES", newCourses);
         }
-    }, []);
+    }, [plan, courses]);
 
     useEffect(() => {
+        if (stateCourses.length === 0 || stateCourses.flat().length == 0) {
+            return;
+        }
+        if (plan) {
         console.log("Updating the state courses")
         console.log(JSON.stringify(stateCourses))
         let cur_sem = plan.start_sem;
@@ -373,6 +425,7 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: JacksonP
         }
 
         set_value();
+    }
 
     }, [stateCourses])
 
