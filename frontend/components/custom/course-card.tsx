@@ -5,15 +5,16 @@ import { Badge } from '@/components/badge'
 import { Checkbox, CheckboxField, CheckboxGroup } from '@/components/checkbox'
 import { Description, Fieldset, Label } from '@/components/fieldset'
 
-import { Course, DegreeReq } from '@/types/course'
+import { Course, DegreeReq, AssessmentItem } from '@/types/course'
 import { useState } from "react";
 import { createPortal } from "react-dom";
 
+import { CalendarIcon, BookOpenIcon, TagIcon, ClipboardDocumentListIcon } from "@heroicons/react/24/outline";
 export type CourseExtended = Course & {
   deleteMeth: (id: string, sem: string) => void
 }
 
-export default function CourseCard({id, code, name, units, sems, sem, secats, desc, degreeReq, completed, deleteMeth}: CourseExtended) {
+export default function CourseCard({id, code, name, units, sems, sem, assessment, secats, desc, degreeReq, completed, deleteMeth}: CourseExtended) {
     const [popupOpen, setPopupOpen] = useState<boolean>(false);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [modalData, setModalData] = useState<CourseDetailed | null>(null); // store the course whose details you want
@@ -26,7 +27,7 @@ export default function CourseCard({id, code, name, units, sems, sem, secats, de
     }
 
     function handleDets() {
-      setModalData({id, code, name, units, sem, sems, secats, desc, degreeReq, completed});  // pass in the course whose details to show
+      setModalData({id, code, name, units, sem, sems, secats, desc, degreeReq, assessment, completed});  // pass in the course whose details to show
       setPopupOpen(false);
       setIsModalOpen(true);
     }
@@ -35,7 +36,7 @@ export default function CourseCard({id, code, name, units, sems, sem, secats, de
       <Draggable
         id={id}
         key={id}
-        data={{id, code, name, units, sem, sems, secats, desc, degreeReq, completed}}
+        data={{id, code, name, units, sem, sems, secats, desc, degreeReq, assessment, completed}}
         disabled={false}
       >
         <Droppable key={id} id={id} full>
@@ -167,6 +168,70 @@ export function PaletteCourseCard({id, code, name, units, sem, sems, secats, des
     )
 }
 
+export function AssessmentList(assessment: AssessmentItem[]) {
+  console.log(assessment)
+  return (
+    <div className="space-y-4">
+      {assessment.map((item, idx) => (
+        <div
+          key={idx}
+          className="rounded-xl border border-gray-200 bg-white shadow-md p-4 hover:shadow-lg transition"
+        >
+          {/* Header: Task + Weight */}
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <ClipboardDocumentListIcon className="w-5 h-5 text-gray-500" />
+              {item.task}
+            </h3>
+            <span className="text-sm font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded-md">
+              {item.weight}%
+            </span>
+          </div>
+
+          {/* Category */}
+          <div className="mt-2 flex items-center text-sm text-gray-500 gap-2">
+            <TagIcon className="w-4 h-4" />
+            {item.category}
+          </div>
+
+          {/* Description */}
+          {item.description && (
+            <p className="mt-3 text-gray-700 text-sm">{item.description}</p>
+          )}
+
+          {/* Extra details row */}
+          <div className="mt-4 flex flex-wrap gap-4 text-sm text-gray-600">
+            {item.due_date && (
+              <div className="flex items-center gap-1">
+                <CalendarIcon className="w-4 h-4" />
+                <span>{item.due_date}</span>
+              </div>
+            )}
+            {item.mode && (
+              <div className="flex items-center gap-1">
+                <BookOpenIcon className="w-4 h-4" />
+                <span>{item.mode}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Learning outcomes */}
+          {item.learning_outcomes?.length > 0 && (
+            <div className="mt-4">
+              <h4 className="text-sm font-medium text-gray-700">Learning Outcomes:</h4>
+              <ul className="list-disc list-inside text-sm text-gray-600 mt-1">
+                {item.learning_outcomes.map((lo, i) => (
+                  <li key={i}>{lo}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -184,7 +249,7 @@ export function BigModal({ isModalOpen, setIsModalOpen, modalData }: {
   const [activeTab, setActiveTab] = useState<"general" | "extra" | "prereqs" | "secats" | "assessment">("general");
 
   if (!modalData) return null;
-
+  console.log(modalData)
   return (
     <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
       <div className="flex flex-col space-y-5">
@@ -254,7 +319,7 @@ export function BigModal({ isModalOpen, setIsModalOpen, modalData }: {
           )}
 
           {activeTab === "assessment" && (
-            <div> </div>
+            <div><AssessmentList assessment={modalData.assessment}/> </div>
           )}
         </div>
       </div>

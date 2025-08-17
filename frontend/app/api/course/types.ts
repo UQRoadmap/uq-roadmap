@@ -11,7 +11,7 @@ export type ApiCourse = {
     attendance_mode: string,
     active: boolean,
     semesters_str: string,
-    score?: number
+    score?: number,
     secat: {
       num_enrolled: number,
       num_responses: number,
@@ -46,8 +46,7 @@ export type ApiCourse = {
     semesters: string[],
 }
 
-
-export default function MapToCourse(apiCourse: ApiCourse): Course {
+export function MapToCourse(apiCourse: ApiCourse): Course {
   return {
     id: apiCourse.course_id,
     code: apiCourse.full_code,
@@ -61,6 +60,24 @@ export default function MapToCourse(apiCourse: ApiCourse): Course {
 
     degreeReq: { filler: ["filler"] },
     completed: false,
-    assessment?: apiCourse.assessment,
+    assessment: null,
+  };
+}
+
+export function MapToCourse2(apiCourse: ApiCourse): Course {
+  return {
+    id: apiCourse.course_id,
+    code: apiCourse.full_code,
+    name: apiCourse.name,
+
+    units: apiCourse.num_units,
+    sem: "filler",
+    sems: apiCourse.semesters,
+    secats: apiCourse.score ?? 0,
+    desc: apiCourse.description,
+
+    degreeReq: { filler: ["filler"] },
+    completed: false,
+    assessment: apiCourse.assessment.items ?? null,
   };
 }
