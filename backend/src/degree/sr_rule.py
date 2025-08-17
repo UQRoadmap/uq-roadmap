@@ -42,7 +42,7 @@ class SR:
     # Part, e.g. A or A.1
     part: str
 
-    def validate(self, plan: Plan) -> ValidateResult:
+    def validate(self, plan: Plan, course_getter, degree_getter) -> ValidateResult:
         return ValidateResult(Status.ERROR, None, "Should not be seeing this - validating abstract SR", plan.courses)
 
 
@@ -79,10 +79,12 @@ class SR1(SR):
         count, badcourses = _run_async(_async_validate())
         
         if count != self.n:
-            return ValidateResult(Status.ERROR, count / self.n * 100.0,
-                                  f"{count} units found in plan, "
-                                  f"but {self.n} required. Add from: "
-                                  f"{', '.join(badcourses)}", badcourses)
+            return ValidateResult(
+                Status.ERROR,
+                count / self.n * 100.0,
+                f"{count} units found in plan, but {self.n} required. Add from: {', '.join(badcourses)}",
+                badcourses,
+            )
         elif badcourses:
             return ValidateResult(Status.ERROR, (self.n - len(badcourses)) / self.n * 100.0,
                                   f"{', '.join(badcourses)} need to be in the plan", badcourses)
@@ -126,10 +128,12 @@ class SR2(SR):
         count, badcourses, donecourses = _run_async(_async_validate())
         
         if count < self.n:
-            return ValidateResult(Status.ERROR, count / self.n * 100.0,
-                                  f"{count} units found in plan, "
-                                  f"but {self.n} required. Add from: "
-                                  f"{', '.join(badcourses)}", badcourses)
+            return ValidateResult(
+                Status.ERROR,
+                count / self.n * 100.0,
+                f"{count} units found in plan, but {self.n} required. Add from: {', '.join(badcourses)}",
+                badcourses,
+            )
         elif count > self.m:
             return ValidateResult(Status.ERROR, count / self.m * 100.0,
                                   f"{count} units found in plan, "
@@ -220,10 +224,12 @@ class SR4(SR):
         count, badcourses, donecourses = _run_async(_async_validate())
         
         if count < self.n:
-            return ValidateResult(Status.ERROR, count / self.n * 100.0,
-                                  f"{count} units found in plan, "
-                                  f"but {self.n} required. Add from: "
-                                  f"{', '.join(badcourses)}", badcourses)
+            return ValidateResult(
+                Status.ERROR,
+                count / self.n * 100.0,
+                f"{count} units found in plan, but {self.n} required. Add from: {', '.join(badcourses)}",
+                badcourses,
+            )
         elif count > self.m:
             return ValidateResult(Status.ERROR, count / self.m * 100.0,
                                   f"{count} units found in plan, "
@@ -268,10 +274,12 @@ class SR5(SR):
         count, badcourses, donecourses = _run_async(_async_validate())
         
         if count < self.n:
-            return ValidateResult(Status.ERROR, count / self.n * 100.0,
-                                  f"{count} units found in plan, "
-                                  f"but {self.n} required. Add from: "
-                                  f"{', '.join(badcourses)}", badcourses)
+            return ValidateResult(
+                Status.ERROR,
+                count / self.n * 100.0,
+                f"{count} units found in plan, but {self.n} required. Add from: {', '.join(badcourses)}",
+                badcourses,
+            )
         elif count > self.n:
             return ValidateResult(Status.ERROR, count / self.n * 100.0,
                                   f"{count} units found in plan, "
@@ -449,9 +457,8 @@ def create_sr_from_dict(data: dict) -> SR:
         "SR7": SR7,
         "SR8": SR8,
     }
-    
+
     if sr_type in type_map:
         return from_dict(type_map[sr_type], data)
     else:
         return from_dict(SR, data)
-    

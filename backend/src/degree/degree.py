@@ -1,20 +1,117 @@
 """Degree requirements representation."""
 
 from collections.abc import Awaitable, Callable
+from pprint import pprint
 
 from serde import serde
 
 from api.courses.models import CourseDBModel
 from api.degree.models import DegreeDBModel
 from api.plan import Plan
-from degree.params import CourseRef, ProgramRef
+from common.reqs_parsing import parse_requirement, CourseRequirementKind, RequirementRead
 from degree.aux_rule import AR
-from common.reqs_parsing import parse_requirement
+from degree.params import CourseRef, ProgramRef
 from degree.sr_rule import SR
-from degree.validate_result import ValidateResult, Status
+from degree.validate_result import Status, ValidateResult
 
 CourseCallback = Callable[[str], Awaitable[CourseDBModel | None]]
 DegreeCallback = Callable[[str, int], Awaitable[DegreeDBModel | None]]
+
+
+class PartTree:
+    # e.g. A,  A.1, A.1.4.2, A.10, B.1.1.1.2 or A.2.B for specialisation
+    part: str
+    rules: list[AR | SR]
+    children: dict[str, "PartTree"]
+    course_getter: CourseCallback
+    degree_getter: DegreeCallback
+
+    def __init__(
+        self,
+        part: str,
+        rules: list[AR | SR],
+        children: dict[str, list["PartTree"]],
+        course_getter: CourseCallback,
+        degree_getter: DegreeCallback,
+    ):
+        self.part = part
+        self.rules = rules
+        self.children = children
+        self.course_getter = course_getter
+        self.degree_getter = degree_getter
+
+    def insert(self, part: str, rule: AR | SR):
+        # Insert at this node if exact match
+        if self.part == part:
+            self.rules.append(rule)
+            return
+
+        # Only descend if we're an ancestor, e.g. A.1.2 is ancestor for A.1.2.3.4.5
+        if self.part:
+            if not part.startswith(self.part + "."):
+                return
+            prefix_len = len(self.part.split("."))
+        else:
+            prefix_len = 0
+
+        # Compute the immediate child key: self.part plus the next segment from inserted part
+        tokens = part.split(".")
+        if prefix_len >= len(tokens):
+            # IMPOSSIBLE
+            return
+
+        child_key = ".".join(tokens[: prefix_len + 1])
+
+        if child_key not in self.children:
+            self.children[child_key] = PartTree(child_key, [], {}, self.course_getter, self.degree_getter)
+
+        self.children[child_key].insert(part, rule)
+
+    def evaluate(self, part: str, plan: Plan) -> list[ValidateResult]:
+        results = []
+        if self.part == part:
+            for rule in self.rules:
+                results.append(rule.validate(plan, self.course_getter, self.degree_getter))
+
+        if part.startswith(self.part):
+            for child in self.children.values():
+                results.extend(child.evaluate(part, plan))
+
+        return results
+
+    def evaluate_recursive(self, part: str, plan: Plan) -> list[ValidateResult]:
+        results = []
+        if self.part.startswith(part):
+            for rule in self.rules:
+                results.append(rule.validate(plan, self.course_getter, self.degree_getter))
+
+        if part.startswith(self.part + "."):
+            for child in self.children.values():
+                results.extend(child.evaluate(part, plan))
+
+        return results
+
+    def evaluate_requirement(self, requirements: RequirementRead, plan: Plan) -> list[ValidateResult]:
+        results = []
+        if requirements.kind == CourseRequirementKind.OR:
+            flag = True
+            temp_results = []
+            for child in requirements.value:
+                temp_results.extend(self.evaluate_requirement(child, plan))
+            for result in temp_results:
+                if result.status == Status.OK:
+                    flag = False
+            if flag:
+                results.extend(temp_results)
+                results.append(ValidateResult(Status.ERROR, None, "", []))
+        elif requirements.kind == CourseRequirementKind.AND:
+            for child in requirements.value:
+                results.extend(self.evaluate_requirement(child, plan))
+        elif requirements.kind == CourseRequirementKind.ATOMIC:
+            requirements.value = requirements.value.removeprefix("Part ")
+            results.extend(self.evaluate(requirements.value, plan))
+
+        return results
 
 
 @serde
@@ -43,10 +140,7 @@ class Degree:
     def validate(
         self, plan: Plan, course_getter: CourseCallback, degree_getter: DegreeCallback
     ) -> list[ValidateResult]:
-        # Things to do:
-        # -
-        results = []
-        errored_parts = set()
+        tree = PartTree("", [], {}, course_getter, degree_getter)
         for aux in self.aux:
             results.append(aux.validate(plan, course_getter, degree_getter))
             if results[-1].status == Status.ERROR:
@@ -57,10 +151,10 @@ class Degree:
             if results[-1].status == Status.ERROR:
                 errored_parts.add(srs.part)
 
+        results: list[ValidateResult] = []
         for rule in self.rule_logic:
-            parsed = parse_requirement(rule)
-            # TODO use this
-            pass
+            requirements = parse_requirement(rule)
+            results.extend(tree.evaluate_requirement(requirements, plan))
 
         return results
 

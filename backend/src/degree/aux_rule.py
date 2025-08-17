@@ -740,7 +740,7 @@ class ARUnknown(AR):
 def create_ar_from_dict(data: dict) -> AR:
     """Factory function to create correct AR subclass from dict."""
     ar_type = data.get("type", "AR")
-    
+
     type_map = {
         "AR1": AR1,
         "AR2": AR2,
@@ -761,7 +761,7 @@ def create_ar_from_dict(data: dict) -> AR:
         "AR20": AR20,
         "ARUnknown": ARUnknown,
     }
-    
+
     if ar_type in type_map:
         return from_dict(type_map[ar_type], data)
     else:
