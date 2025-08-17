@@ -11,9 +11,6 @@ import { DndContext, DragEndEvent, useSensor, useSensors } from '@dnd-kit/core';
 import { Course, DegreeReq } from '@/types/course';
 import { v4 as uuidv4 } from "uuid";
 import ProgressCircle from '@/components/custom/progressCircle';
-import { Dialog, DialogBody, DialogTitle } from '@/components/dialog';
-import { Textarea } from '@/components/textarea';
-import { Button } from '@/components/button';
 import { JacksonPlan, MapfromJacksonPlan } from '@/app/api/plan/types';
 
 
@@ -427,55 +424,12 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: JacksonP
 
     }, [stateCourses])
 
-    async function DeletePlan() {
-        if (typeof window === "undefined" || !plan) return;
-        const possibleKeys = [
-            `plan-${plan.plan_id}`,
-        ].filter(Boolean) as string[];
-
-    //     possibleKeys.forEach((k) => {
-    //         try {
-    //             localStorage.removeItem(k);
-    //         } catch (e) {
-    //             console.warn("Failed to remove localStorage key", k, e);
-    //         }
-    //     });
-
-    //     // Use Next.js client router to navigate back (ensure `const router = useRouter()` is declared in the component scope)
-    //     if (typeof window !== "undefined") {
-    //         router.push('/plan');
-    //     }
-    // }
 
     function sort() {
         setSemesters(prevSemesters => [...prevSemesters].reverse());
         setCourses(prevCourses => [...prevCourses].reverse());
         setIsReversed(prev => !prev);
     }
-
-    // Function to open the dialog with plan data
-    const openPlanDataDialog = () => {
-        setPlanDialogData(JSON.stringify(plan, null, 2));
-        setIsPlanDialogOpen(true);
-    };
-
-    // Function to save changes from the dialog
-    const savePlanData = () => {
-        try {
-            const updatedPlan = JSON.parse(planDialogData);
-            setPlan(updatedPlan);
-
-            // Update localStorage
-            if (plan && plan.plan_id) {
-                localStorage.setItem(`plans_${plan.plan_id}`, planDialogData);
-            }
-
-            setIsPlanDialogOpen(false);
-        } catch (e) {
-            console.error(e)
-            alert("Invalid JSON format. Please check your data.");
-        }
-    };
 
     return (
         <div>
