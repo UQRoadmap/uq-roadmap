@@ -4,11 +4,12 @@ from collections.abc import Awaitable, Callable
 from pprint import pprint
 
 from serde import serde
+from serde.json import from_dict
 
 from api.courses.models import CourseDBModel
 from api.degree.models import DegreeDBModel
 from api.plan import Plan
-from common.reqs_parsing import parse_requirement, CourseRequirementKind, RequirementRead
+from common.reqs_parsing import CourseRequirementKind, RequirementRead, parse_requirement
 from degree.aux_rule import AR
 from degree.params import CourseRef, ProgramRef
 from degree.sr_rule import SR
@@ -158,14 +159,16 @@ class Degree:
             requirements = parse_requirement(rule)
             results.extend(tree.evaluate_requirement(requirements, plan))
 
-        # Validate sub-degrees :)
-        for prefix, specs in plan.specialisations.items():
-            for spec_code in specs:
-                sub_degree: Degree = await degree_getter((spec_code, self.year))
-                sub_degree.prefix(prefix)
-                results.extend(sub_degree.validate(plan, course_getter, degree_getter))
-                pprint(sub_degree.code)
-                pprint(sub_degree.part_references)
+        # # Validate sub-degrees :)
+        # for prefix, specs in plan.specialisations.items():
+        #     for spec_code in specs:
+        #         dbm = await degree_getter(str(spec_code), int(self.year))
+        #         sub_degree: Degree = from_dict(Degree, dbm.details)
+        #         sub_degree.prefix(prefix)
+        #         pprint(sub_degree)
+        #         results.extend(await sub_degree.validate(plan, course_getter, degree_getter))
+        #         pprint(sub_degree.code)
+        #         pprint(sub_degree.part_references)
 
         return results
 

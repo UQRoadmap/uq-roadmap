@@ -231,7 +231,7 @@ class SR6(SR):
     def validate(self, plan: Plan, course_getter, degree_getter):
         option_codes = [opt.code for opt in self.options]
         if any(code in option_codes for code in plan.specialisations.get(self.part, {})):
-            options = [option.code for option in options]
+            options = [option.code for option in self.options]
             return ValidateResult(
                 Status.OK, 100.0, f"Complete one {self.plan_type} from the following", options, self.part
             )
