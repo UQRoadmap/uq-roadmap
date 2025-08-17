@@ -5,18 +5,19 @@ import { Badge } from '@/components/badge'
 import { Checkbox, CheckboxField, CheckboxGroup } from '@/components/checkbox'
 import { Description, Fieldset, Label } from '@/components/fieldset'
 
-import { Course, DegreeReq } from '@/types/course'
-import { useState } from "react";
+import { Course, DegreeReq, Secat, AssessmentItem } from '@/types/course'
+import { ApiCourse, ApiCourse2 } from '@/app/api/course/types'
+import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { CalendarIcon, BookOpenIcon, TagIcon, ClipboardDocumentListIcon } from "@heroicons/react/24/outline";
 export type CourseExtended = Course & {
-  deleteMeth: (id: string, sem: string) => void
 }
 
-export default function CourseCard({id, code, name, units, sems, sem, secats, desc, degreeReq, completed, deleteMeth}: CourseExtended) {
+export default function CourseCard({id, code, name, units, sems, sem, assessment, prereq, secat, secats, desc, degreeReq, completed, deleteMeth}: CourseExtended) {
     const [popupOpen, setPopupOpen] = useState<boolean>(false);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-    const [modalData, setModalData] = useState<CourseDetailed | null>(null); // store the course whose details you want
+    const [modalData, setModalData] = useState<Course | null>(null); // store the course whose details you want
 
     const categories = getCourseCategories(code, degreeReq);
     function handleDelete() {
@@ -26,7 +27,7 @@ export default function CourseCard({id, code, name, units, sems, sem, secats, de
     }
 
     function handleDets() {
-      setModalData({id, code, name, units, sem, sems, secats, desc, degreeReq, completed});  // pass in the course whose details to show
+      setModalData({id, code, name, secat, prereq, units, sem, sems, secats, desc, degreeReq, assessment, completed});  // pass in the course whose details to show
       setPopupOpen(false);
       setIsModalOpen(true);
     }
@@ -35,7 +36,7 @@ export default function CourseCard({id, code, name, units, sems, sem, secats, de
       <Draggable
         id={id}
         key={id}
-        data={{id, code, name, units, sem, sems, secats, desc, degreeReq, completed}}
+        data={{id, code, name, units, sem, sems, prereq, secat, secats, desc, degreeReq, assessment, completed}}
         disabled={false}
       >
         <Droppable key={id} id={id} full>
@@ -167,6 +168,98 @@ export function PaletteCourseCard({id, code, name, units, sem, sems, secats, des
     )
 }
 
+export  function SecatGraph({ secat }: { secat: Secat | null }) {
+  if (!secat || !secat.questions?.length) return <p>No data available</p>;
+
+  const data = secat.questions.map(q => ({
+    name: q.name,
+    'Strongly Agree': q.s_agree,
+    Agree: q.agree,
+    Neutral: q.middle,
+    Disagree: q.disagree,
+    'Strongly Disagree': q.s_disagree,
+  }));
+
+  const formatPercent = (value: number) => `${value.toFixed(2)}%`;
+
+  return (
+    <div style={{ width: '100%', height: 400 }}>
+      <ResponsiveContainer>
+        <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 80 }}>
+          <XAxis dataKey="name" angle={-35} textAnchor="end" interval={0} />
+          <YAxis tickFormatter={formatPercent} />
+          <Tooltip formatter={(value: number) => formatPercent(value)} />
+          <Legend verticalAlign="top" />
+          <Bar dataKey="Strongly Agree" stackId="a" fill="#22c55e" />
+          <Bar dataKey="Agree" stackId="a" fill="#a3e635" />
+          <Bar dataKey="Neutral" stackId="a" fill="#facc15" />
+          <Bar dataKey="Disagree" stackId="a" fill="#f87171" />
+          <Bar dataKey="Strongly Disagree" stackId="a" fill="#ef4444" />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+export function AssessmentList({assessment}:{assessment: AssessmentItem[] | null}) {
+  console.log(assessment)
+  if (!assessment || assessment.length === 0) {
+      return (
+        <div className="text-gray-500 italic text-sm">
+          No assessment information available.
+        </div>
+      );
+    }
+  return (
+    <div className="space-y-4">
+      {assessment.map((item, idx) => (
+        <div
+          key={idx}
+          className="rounded-xl border border-gray-200 bg-white shadow-md p-4 hover:shadow-lg transition"
+        >
+          {/* Header: Task + Weight */}
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <ClipboardDocumentListIcon className="w-5 h-5 text-gray-500" />
+              {item.task}
+            </h3>
+            <span className="text-sm font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded-md">
+              {item.weight * 100}%
+            </span>
+          </div>
+
+          {/* Category */}
+          <div className="mt-2 flex items-center text-sm text-gray-500 gap-2">
+            <TagIcon className="w-4 h-4" />
+            {item.category}
+          </div>
+
+          {/* Description */}
+          {item.description && (
+            <p className="mt-3 text-gray-700 text-sm">{item.description}</p>
+          )}
+
+          {/* Extra details row */}
+          <div className="mt-4 flex flex-wrap gap-4 text-sm text-gray-600">
+            {item.due_date && (
+              <div className="flex items-center gap-1">
+                <CalendarIcon className="w-4 h-4" />
+                <span>{item.due_date}</span>
+              </div>
+            )}
+            {item.mode && (
+              <div className="flex items-center gap-1">
+                <BookOpenIcon className="w-4 h-4" />
+                <span>{item.mode}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -176,15 +269,117 @@ interface ModalProps {
 export type CourseDetailed = Course & {
 }
 
+type Prereq =
+  | { kind: 'atomic'; value: string }
+  | { kind: 'or' | 'and'; value: Prereq[] };
+
+interface PrereqDisplayProps {
+  prereq: Prereq;
+  code: string,
+}
+
+function PrereqNode({ prereq, x = 0, y = 0 }: { prereq: Prereq; x?: number; y?: number }) {
+  if (prereq.kind === 'atomic') {
+    return (
+      <g>
+        <rect x={x} y={y} width={80} height={40} rx={8} ry={8} fill="#3b82f6" />
+        <text x={x + 40} y={y + 25} fill="white" textAnchor="middle" fontSize={12} fontWeight="bold">
+          {prereq.value}
+        </text>
+      </g>
+    );
+  }
+
+  const spacingX = 100;
+  const spacingY = 80;
+
+  return (
+    <g>
+      {prereq.value.map((child, i) => {
+        const childX = x + i * spacingX;
+        const childY = y + spacingY;
+
+        return (
+          <g key={i}>
+            {/* Draw line from parent to child */}
+            <line
+              x1={x + 40}
+              y1={y + 40}
+              x2={childX + 40}
+              y2={childY}
+              stroke="#9ca3af"
+              strokeWidth={2}
+            />
+            {/* Render child node */}
+            <PrereqNode prereq={child} x={childX} y={childY} />
+          </g>
+        );
+      })}
+
+      {/* Display AND / OR label at parent node */}
+      <rect x={x} y={y} width={80} height={40} rx={8} ry={8} fill="#10b981" />
+      <text x={x + 40} y={y + 25} fill="white" textAnchor="middle" fontSize={12} fontWeight="bold">
+        {prereq.kind.toUpperCase()}
+      </text>
+    </g>
+  );
+}
+
+export function PrereqDisplay({ prereq, code }: {prereq: Prereq | null, code: string}) {
+  if (!prereq) return <p>No prereq for this course</p>;
+  return (
+    <svg width="100%" height="300">
+      {/* Main course node */}
+      <g>
+        <rect x={200} y={20} width={80} height={40} rx={8} ry={8} fill="#f97316" />
+        <text x={240} y={45} fill="white"  textAnchor="middle" fontSize={12} fontWeight="bold">
+          {code}
+        </text>
+      </g>
+
+      {/* Render prereq tree below */}
+      <PrereqNode prereq={prereq} x={200} y={70} />
+    </svg>
+  );
+}
+
 export function BigModal({ isModalOpen, setIsModalOpen, modalData }: {
   isModalOpen: boolean;
   setIsModalOpen: (val: boolean) => void;
   modalData: CourseDetailed | null;
 }) {
-  const [activeTab, setActiveTab] = useState<"general" | "extra" | "prereqs" | "secats" | "assessment">("general");
+  const [activeTab, setActiveTab] = useState<"general" | "prereqs" | "secats" | "assessment">("general");
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [courseDatas, setCourseData] = useState<ApiCourse2 | null>(null);
 
+    // Fetch plans on component mount
+    useEffect(() => {
+        fetchCourse();
+    }, [modalData?.code]);
+
+    const fetchCourse = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const response = await fetch(`/api/course/${modalData?.code}`);
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to fetch plans');
+            }
+
+            const courseData: ApiCourse2 = await response.json();
+            console.log("dets",courseData)
+            setCourseData(courseData);
+        } catch (err) {
+            console.error('Error fetching plans:', err);
+            setError(err instanceof Error ? err.message : 'Failed to load plans');
+        } finally {
+            setLoading(false);
+        }
+    };
   if (!modalData) return null;
-
   return (
     <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
       <div className="flex flex-col space-y-5">
@@ -192,7 +387,7 @@ export function BigModal({ isModalOpen, setIsModalOpen, modalData }: {
 
         {/* Tabs */}
         <div className="flex border-b border-gray-200 mb-4">
-          {["general", "extra", "prereqs", "secats", "assessment"].map((tab) => (
+          {["general", "prereqs", "secats", "assessment"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab as typeof activeTab)}
@@ -241,20 +436,16 @@ export function BigModal({ isModalOpen, setIsModalOpen, modalData }: {
             </div>
           )}
 
-          {activeTab === "extra" && (
-            <div> </div>
-          )}
-
           {activeTab === "secats" && (
-            <div> </div>
+            <div> <SecatGraph secat={courseDatas?.secat}/> </div>
           )}
 
           {activeTab === "prereqs" && (
-            <div> </div>
+            <PrereqDisplay prereq={courseDatas?.prereq} code={courseDatas?.code }/>
           )}
 
           {activeTab === "assessment" && (
-            <div> </div>
+            <div><AssessmentList assessment={courseDatas?.assessment}/> </div>
           )}
         </div>
       </div>

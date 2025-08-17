@@ -267,7 +267,7 @@ export function PlanDetailClient({ initialPlan, courses }: { initialPlan: Plan, 
         setCourses(prevCourses => {
             const newCourses = prevCourses.map(sem => [...sem]);
 
-            const updatedCourse = { ...course, sem: targetId, id: uuidv4() };
+            const updatedCourse = { ...course, sem: targetId };
             newCourses[targetSemIndex].splice(targetIndex, 0, updatedCourse); // replace empty card
 
             console.log("insert", newCourses)
