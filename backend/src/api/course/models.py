@@ -113,6 +113,7 @@ class CourseDBModel(BaseDBModel):
     secat: Mapped[CourseSecatDBModel | None] = relationship(
         CourseSecatDBModel, cascade="all, delete-orphan", lazy="joined"
     )
+    score: Mapped[float | None]
 
     assessment: Mapped[dict | None] = mapped_column(JSON)
 

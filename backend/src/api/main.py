@@ -23,7 +23,7 @@ async def lifespan(_: FastAPI) -> AsyncGenerator:
     yield
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=lifespan, root_path=CONFIG.root_path)
 app.include_router(degree_router, prefix="/degree", tags=["degrees"])
 app.include_router(courses_router, prefix="/course", tags=["courses"])
 app.include_router(plan_router, prefix="/plan", tags=["plans"])

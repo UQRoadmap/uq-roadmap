@@ -11,6 +11,7 @@ class GeneralSettings(BaseSettings):
 
     db_url: str = Field()
     frontend_url: str = Field(default="")
+    root_path: str = Field(default="")
     log_level: LogLevel = Field(default=LogLevel.debug)
 
 
