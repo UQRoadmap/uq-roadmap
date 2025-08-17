@@ -7,20 +7,17 @@ import Pop from '@/components/custom/palette'
 
 import { MouseSensor, KeyboardSensor } from '@/components/custom-sensors'
 
-import { DndContext, DragEndEvent, useSensor, useSensors  } from '@dnd-kit/core';
+import { DndContext, DragEndEvent, useSensor, useSensors } from '@dnd-kit/core';
 import { Course, DegreeReq } from '@/types/course';
 import { v4 as uuidv4 } from "uuid";
-import ProgressCircle from '@/components/custom/progressCircle';
 import { Plan } from '@/types/plan';
-import { Dialog, DialogBody, DialogTitle } from '@/components/dialog';
-import { Textarea } from '@/components/textarea';
-import { Button } from '@/components/button';
+import PlanValidation from './planValidate';
 
 
-function SemesterSection({ semester, courses, setPaletteOpen, setActiveId, setDelete, courseReqs}:
+function SemesterSection({ semester, courses, setPaletteOpen, setActiveId, setDelete, courseReqs }:
     {
         semester: number; courses?: Course[], setPaletteOpen: (open: boolean) => void,
-        setActiveId: (id: string) => void, setDelete: (id:string, sem:string) => void,
+        setActiveId: (id: string) => void, setDelete: (id: string, sem: string) => void,
         courseReqs: DegreeReq
     }) {
     const [collapsed, setCollapsed] = useState(false);
@@ -42,7 +39,7 @@ function SemesterSection({ semester, courses, setPaletteOpen, setActiveId, setDe
 
     const getSemesterLabel = (sem: number) => {
         const year = Math.floor(sem / 10);
-        const semesterNum = sem % 10;type DegreeReq = Record<string, string[]>;
+        const semesterNum = sem % 10;
         return `${year} Semester ${semesterNum}`;
     };
 
@@ -88,7 +85,7 @@ function SemesterSection({ semester, courses, setPaletteOpen, setActiveId, setDe
                                     className={getColSpanClass(course ? course.units : 2)} // default empty to 2 units
                                 >
                                     {course ?
-                                        <CourseCard {...course} deleteMeth={setDelete} degreeReq={courseReqs}/>
+                                        <CourseCard {...course} deleteMeth={setDelete} degreeReq={courseReqs} />
                                         :
                                         <EmptyCourseCard id={`${semester}-${i}`} setPaletteOpen={setPaletteOpen} setActiveId={setActiveId} />
                                     }
@@ -114,12 +111,11 @@ function SemesterSection({ semester, courses, setPaletteOpen, setActiveId, setDe
     );
 }
 
-export function PlanDetailClient({initialPlan, courses} : {initialPlan: Plan, courses: Course[]}) {
+export function PlanDetailClient({ initialPlan, courses }: { initialPlan: Plan, courses: Course[] }) {
     const [plan, setPlan] = useState<Plan>(initialPlan);
     const [isPaletteOpen, setPaletteOpen] = useState(false);
     const [sem, setSem] = useState(undefined);
     const [isReversed, setIsReversed] = useState(false);
-
     const courseReqs: DegreeReq = {
         core: [
             "csse2310",
@@ -133,11 +129,10 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: Plan, co
     }
 
     const sensors = useSensors(
-      useSensor(MouseSensor),
-      useSensor(KeyboardSensor)
+        useSensor(MouseSensor),
+        useSensor(KeyboardSensor)
     );
-    const [isPlanDialogOpen, setIsPlanDialogOpen] = useState(false);
-    const [planDialogData, setPlanDialogData] = useState<string>("");
+
 
     function handleDragEnd(event: DragEndEvent) {
         const { active, over } = event;
@@ -327,24 +322,28 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: Plan, co
             setSemesters(newSemesters);
             setCourses(newCourses);
         }
+        console.log(semesters)
     }, [plan]);
 
-    async function DeletePlan() {
-        if (typeof window === "undefined" || !plan) return;
-        const possibleKeys = [
-            `plan-${plan.id}`,
-        ].filter(Boolean) as string[];
+    // async function DeletePlan() {
+    //     if (typeof window === "undefined" || !plan) return;
+    //     const possibleKeys = [
+    //         `plan-${plan.id}`,
+    //     ].filter(Boolean) as string[];
 
-        possibleKeys.forEach((k) => {
-            try {
-                localStorage.removeItem(k);
-            } catch (e) {
-                console.warn("Failed to remove localStorage key", k, e);
-            }
-        });
+    //     possibleKeys.forEach((k) => {
+    //         try {
+    //             localStorage.removeItem(k);
+    //         } catch (e) {
+    //             console.warn("Failed to remove localStorage key", k, e);
+    //         }
+    //     });
 
-        console.log("Deleted localStorage keys:", possibleKeys);
-    }
+    //     // Use Next.js client router to navigate back (ensure `const router = useRouter()` is declared in the component scope)
+    //     if (typeof window !== "undefined") {
+    //         router.push('/plan');
+    //     }
+    // }
 
     function sort() {
         setSemesters(prevSemesters => [...prevSemesters].reverse());
@@ -352,29 +351,22 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: Plan, co
         setIsReversed(prev => !prev);
     }
 
-    // Function to open the dialog with plan data
-    const openPlanDataDialog = () => {
-        setPlanDialogData(JSON.stringify(plan, null, 2));
-        setIsPlanDialogOpen(true);
-    };
-
-    // Function to save changes from the dialog
-    const savePlanData = () => {
-        try {
-            const updatedPlan = JSON.parse(planDialogData);
-            setPlan(updatedPlan);
-
-            // Update localStorage
-            if (plan && plan.id) {
-                localStorage.setItem(`plans_${plan.id}`, planDialogData);
+    useEffect(() => {
+        async function fetchDegrees() {
+            try {
+                const res = await fetch("/api/degree/summary");
+                if (!res.ok) {
+                    console.error(await res.text())
+                    throw new Error("Failed to fetch degrees");
+                }
+                // const data: DegreeSummary[] = await res.json();
+                // setDegreeSummaries(data);
+            } catch (err) {
+                console.error("Error fetching degrees:", err);
             }
-
-            setIsPlanDialogOpen(false);
-        } catch (e) {
-            console.error(e)
-            alert("Invalid JSON format. Please check your data.");
         }
-    };
+        fetchDegrees()
+    }, [semesters]);
 
     return (
         <div>
@@ -394,9 +386,7 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: Plan, co
                                                 <ChevronDownIcon />
                                             </DropdownButton>
                                             <DropdownMenu>
-                                                <DropdownItem onClick={() => openPlanDataDialog()}>Edit</DropdownItem>
                                                 <DropdownItem className="hover:cursor-pointer" onClick={() => sort()}>Reverse Sorting</DropdownItem>
-                                                <DropdownItem className="hover:cursor-pointer" onClick={async () => await DeletePlan()}>Delete</DropdownItem>
                                             </DropdownMenu>
                                         </Dropdown>
                                     </div>
@@ -411,7 +401,7 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: Plan, co
                                 </div>
                             </div>
                             <div className='flex flex-wrap items-center gap-x-6 gap-y-2'>
-                                <ProgressCircle percentage={plan.percentage || 0} />
+                                <PlanValidation plan={plan}/>
                             </div>
                         </>
                     ) : (
@@ -474,51 +464,6 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: Plan, co
                     </div>
                 </DndContext>
             </div>
-
-
-            {/* Dialog for Plan Data */}
-            <Dialog
-                open={isPlanDialogOpen}
-                onClose={(open: boolean) => {
-                    setIsPlanDialogOpen(open);
-                    if (!open) {
-                        // reset edits when dialog is closed without saving
-                        setPlanDialogData(plan ? JSON.stringify(plan, null, 2) : "");
-                    }
-                }}
-            >
-                <DialogTitle>Plan Data</DialogTitle>
-                <div className="text-sm text-gray-600 mt-2">
-                    Edit the raw plan JSON. Saving will overwrite the current plan and update localStorage.
-                </div>
-                <DialogBody className="sm:max-w-4xl bg-white shadow-lg border border-gray-200 opacity-100 mt-4">
-                    <div className="mt-2">
-                        <Textarea
-                            value={planDialogData}
-                            onChange={(e) => setPlanDialogData((e.target as HTMLTextAreaElement).value)}
-                            className="font-mono text-sm h-96 w-full"
-                        />
-                    </div>
-                    <div className="mt-4 flex justify-end gap-2">
-                        <Button
-                            onClick={() => {
-                                setIsPlanDialogOpen(false);
-                                setPlanDialogData(plan ? JSON.stringify(plan, null, 2) : "");
-                            }}
-                            className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50"
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            onClick={savePlanData}
-                            className="px-4 py-2 text-white rounded"
-                            accent
-                        >
-                            Save Changes
-                        </Button>
-                    </div>
-                </DialogBody>
-            </Dialog>
         </div>
     );
 }

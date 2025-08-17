@@ -52,7 +52,11 @@ export default function Home() {
         }
     }, [selectedDegree]);
 
+    const [loading, setLoading] = useState<boolean>(false);
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        setLoading(true);
+        console.log(loading);
         e.preventDefault();
         console.log("Form submitted. Selected degree:", selectedDegree);
         if (!selectedDegree) {
@@ -88,6 +92,7 @@ export default function Home() {
         }
 
         try {
+            console.log(createPayload)
             const res = await fetch("/api/plan", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -106,8 +111,6 @@ export default function Home() {
             }
 
             const newPlan: APIPlanRead = await res.json();
-
-            console.log("Plan created successfully:", newPlan);
             router.push(`/plan/${newPlan.plan_id}`);
         } catch (err) {
             console.error(err);
@@ -179,9 +182,20 @@ export default function Home() {
                                 : <></>)}
                         </FieldGroup>
                         <div className="flex justify-center mt-5">
-                            <Button type="submit" accent disabled={!selectedDegree}>
-                                Create Plan
-                            </Button>
+                            {loading ? (
+                                <Button type="submit" accent disabled className="flex items-center justify-center">
+                                    <span
+                                        className="inline-block h-5 w-5 mr-1 animate-spin rounded-full border-2 border-white border-t-transparent"
+                                        role="status"
+                                        aria-hidden="true"
+                                    />
+                                    Creating...
+                                </Button>
+                            ) : (
+                                <Button type="submit" accent disabled={!selectedDegree}>
+                                    Create Plan
+                                </Button>
+                            )}
                         </div>
                     </Fieldset>
                 </form>

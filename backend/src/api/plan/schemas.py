@@ -5,6 +5,7 @@ from uuid import UUID
 
 from api.degree.schemas import DegreeRead
 from common.schemas import UQRoadmapBase
+from degree.validate_result import ValidateResult
 
 
 class PlanRead(UQRoadmapBase):
@@ -28,6 +29,8 @@ class PlanRead(UQRoadmapBase):
     specialisations: dict[str, list[str]]
 
     courses: list[str]
+
+    validation_results: list[ValidateResult] | None = None
 
 
 class PlanCreateUpdate(UQRoadmapBase):
