@@ -289,7 +289,9 @@ class SR6(SR):
     options: list[ProgramRef]
     type: str = "SR6"
 
-    def validate(self, plan: Plan, course_getter, degree_getter):
+    def validate(self, plan: Plan,
+                 course_getter: Callable[[str], Awaitable[CourseDBModel | None]],
+                 degree_getter: Callable[[str, int], Awaitable[DegreeDBModel | None]]):
         for option in self.options:
             for specialisation in plan.specialisations.get(self.part, []):
                 if option.validate(specialisation):
@@ -313,7 +315,9 @@ class SR7(SR):
     options: list[ProgramRef]
     type: str = "SR7"
 
-    def validate(self, plan: Plan, course_getter, degree_getter):
+    def validate(self, plan: Plan,
+                 course_getter: Callable[[str], Awaitable[CourseDBModel | None]],
+                 degree_getter: Callable[[str, int], Awaitable[DegreeDBModel | None]]):
         count = 0
         doneoptions = []
         notdoneoptions = []
@@ -355,7 +359,9 @@ class SR8(SR):
     options: list[ProgramRef]
     type: str = "SR8"
 
-    def validate(self, plan: Plan, course_getter, degree_getter):
+    def validate(self, plan: Plan,
+                 course_getter: Callable[[str], Awaitable[CourseDBModel | None]],
+                 degree_getter: Callable[[str, int], Awaitable[DegreeDBModel | None]]):
         count = 0
         doneoptions = []
         notdoneoptions = []
