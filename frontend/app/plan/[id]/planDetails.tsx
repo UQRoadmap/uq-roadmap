@@ -7,7 +7,7 @@ import Pop from '@/components/custom/palette'
 
 import { MouseSensor, KeyboardSensor } from '@/components/custom-sensors'
 
-import { DndContext, DragEndEvent, useSensor, useSensors  } from '@dnd-kit/core';
+import { DndContext, DragEndEvent, useSensor, useSensors } from '@dnd-kit/core';
 import { Course, DegreeReq } from '@/types/course';
 import { v4 as uuidv4 } from "uuid";
 import ProgressCircle from '@/components/custom/progressCircle';
@@ -17,10 +17,10 @@ import { Button } from '@/components/button';
 import { JacksonPlan, MapfromJacksonPlan } from '@/app/api/plan/types';
 
 
-function SemesterSection({ semester, courses, setPaletteOpen, setActiveId, setDelete, courseReqs}:
+function SemesterSection({ semester, courses, setPaletteOpen, setActiveId, setDelete, courseReqs }:
     {
         semester: number; courses?: Course[], setPaletteOpen: (open: boolean) => void,
-        setActiveId: (id: string) => void, setDelete: (id:string, sem:string) => void,
+        setActiveId: (id: string) => void, setDelete: (id: string, sem: string) => void,
         courseReqs: DegreeReq
     }) {
     const [collapsed, setCollapsed] = useState(false);
@@ -42,7 +42,7 @@ function SemesterSection({ semester, courses, setPaletteOpen, setActiveId, setDe
 
     const getSemesterLabel = (sem: number) => {
         const year = Math.floor(sem / 10);
-        const semesterNum = sem % 10;type DegreeReq = Record<string, string[]>;
+        const semesterNum = sem % 10;
         return `${year} Semester ${semesterNum}`;
     };
 
@@ -88,7 +88,7 @@ function SemesterSection({ semester, courses, setPaletteOpen, setActiveId, setDe
                                     className={getColSpanClass(course ? course.units : 2)} // default empty to 2 units
                                 >
                                     {course ?
-                                        <CourseCard {...course} deleteMeth={setDelete} degreeReq={courseReqs}/>
+                                        <CourseCard {...course} deleteMeth={setDelete} degreeReq={courseReqs} />
                                         :
                                         <EmptyCourseCard id={`${semester}-${i}`} setPaletteOpen={setPaletteOpen} setActiveId={setActiveId} />
                                     }
@@ -119,7 +119,6 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: JacksonP
     const [isPaletteOpen, setPaletteOpen] = useState(false);
     const [sem, setSem] = useState(undefined);
     const [isReversed, setIsReversed] = useState(false);
-
     const courseReqs: DegreeReq = {
         core: [
             "csse2310",
@@ -133,11 +132,10 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: JacksonP
     }
 
     const sensors = useSensors(
-      useSensor(MouseSensor),
-      useSensor(KeyboardSensor)
+        useSensor(MouseSensor),
+        useSensor(KeyboardSensor)
     );
-    const [isPlanDialogOpen, setIsPlanDialogOpen] = useState(false);
-    const [planDialogData, setPlanDialogData] = useState<string>("");
+
 
     function handleDragEnd(event: DragEndEvent) {
         const { active, over } = event;
@@ -382,16 +380,19 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: JacksonP
             `plan-${plan.plan_id}`,
         ].filter(Boolean) as string[];
 
-        possibleKeys.forEach((k) => {
-            try {
-                localStorage.removeItem(k);
-            } catch (e) {
-                console.warn("Failed to remove localStorage key", k, e);
-            }
-        });
+    //     possibleKeys.forEach((k) => {
+    //         try {
+    //             localStorage.removeItem(k);
+    //         } catch (e) {
+    //             console.warn("Failed to remove localStorage key", k, e);
+    //         }
+    //     });
 
-        console.log("Deleted localStorage keys:", possibleKeys);
-    }
+    //     // Use Next.js client router to navigate back (ensure `const router = useRouter()` is declared in the component scope)
+    //     if (typeof window !== "undefined") {
+    //         router.push('/plan');
+    //     }
+    // }
 
     function sort() {
         setSemesters(prevSemesters => [...prevSemesters].reverse());
@@ -441,9 +442,7 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: JacksonP
                                                 <ChevronDownIcon />
                                             </DropdownButton>
                                             <DropdownMenu>
-                                                <DropdownItem onClick={() => openPlanDataDialog()}>Edit</DropdownItem>
                                                 <DropdownItem className="hover:cursor-pointer" onClick={() => sort()}>Reverse Sorting</DropdownItem>
-                                                <DropdownItem className="hover:cursor-pointer" onClick={async () => await DeletePlan()}>Delete</DropdownItem>
                                             </DropdownMenu>
                                         </Dropdown>
                                     </div>
@@ -521,51 +520,6 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: JacksonP
                     </div>
                 </DndContext>
             </div>
-
-
-            {/* Dialog for Plan Data */}
-            <Dialog
-                open={isPlanDialogOpen}
-                onClose={(open: boolean) => {
-                    setIsPlanDialogOpen(open);
-                    if (!open) {
-                        // reset edits when dialog is closed without saving
-                        setPlanDialogData(plan ? JSON.stringify(plan, null, 2) : "");
-                    }
-                }}
-            >
-                <DialogTitle>Plan Data</DialogTitle>
-                <div className="text-sm text-gray-600 mt-2">
-                    Edit the raw plan JSON. Saving will overwrite the current plan and update localStorage.
-                </div>
-                <DialogBody className="sm:max-w-4xl bg-white shadow-lg border border-gray-200 opacity-100 mt-4">
-                    <div className="mt-2">
-                        <Textarea
-                            value={planDialogData}
-                            onChange={(e) => setPlanDialogData((e.target as HTMLTextAreaElement).value)}
-                            className="font-mono text-sm h-96 w-full"
-                        />
-                    </div>
-                    <div className="mt-4 flex justify-end gap-2">
-                        <Button
-                            onClick={() => {
-                                setIsPlanDialogOpen(false);
-                                setPlanDialogData(plan ? JSON.stringify(plan, null, 2) : "");
-                            }}
-                            className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50"
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            onClick={savePlanData}
-                            className="px-4 py-2 text-white rounded"
-                            accent
-                        >
-                            Save Changes
-                        </Button>
-                    </div>
-                </DialogBody>
-            </Dialog>
         </div>
     );
 }

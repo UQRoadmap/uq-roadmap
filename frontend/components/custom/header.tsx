@@ -7,7 +7,7 @@ import Link from 'next/link'
 import Logo from './logo'
 
 const navigation = [
-  { name: 'Plan', href: '/plan' },
+  { name: 'Plans', href: '/plan' },
 ]
 
 export default function Header() {

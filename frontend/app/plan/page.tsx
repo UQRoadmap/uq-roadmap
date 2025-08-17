@@ -100,7 +100,7 @@ export default function PlanPage() {
 
     return (
         <>
-            <main className="max-w-7xl mx-auto px-8 mt-4">
+            <main className="max-w-7xl mx-auto px-8 my-4">
                 <h1 className="text-2xl font-bold mb-6">Your Plans</h1>
 
                 {plans.length === 0 && (
