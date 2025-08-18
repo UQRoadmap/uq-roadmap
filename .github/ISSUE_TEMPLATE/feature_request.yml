@@ -1,0 +1,26 @@
+name: Feature Request
+description: Suggest a new feature or improvement
+labels: [feature]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - frontend
+        - backend
+        - scraper
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What's the feature? Why is it useful?
+    validations:
+      required: true
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Possible Implementation
+      description: Any thoughts on how to implement it?

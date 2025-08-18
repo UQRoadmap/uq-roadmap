@@ -34,3 +34,12 @@ jobs:
       run: |
         cd frontend
         npm run build
+
+    - name: Build Failure
+      uses: rjstone/discord-webhook-notify@v1
+      if: failure()
+      with:
+        severity: error
+        username: GitHub
+        details: ❌ Frontend Build Failed!
+        webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
