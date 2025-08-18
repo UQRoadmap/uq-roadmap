@@ -1,0 +1,39 @@
+name: Static Analysis and Linting
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  type_checking:
+    name: Run mypy for static type checking - this will be moved to ty when its done
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install the project
+        run: uv sync --locked --all-extras --dev
+        working-directory: ./backend
+
+      - name: Run mypy
+        run: uv run mypy .
+        working-directory: ./backend
+
+  formatting:
+    name: Use 'ruff' to do formatting and some checking
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: astral-sh/ruff-action@v3
+        with:
+            args: check --fix
+            version: "latest"
+            src: './backend'
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+            commit_message: 'automated styling fixes'
