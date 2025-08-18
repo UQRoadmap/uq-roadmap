@@ -26,7 +26,7 @@ class PlanDBModel(BaseDBModel):
     end_year: Mapped[int]
 
     # maps (year, sem) -> course_codes e.g., 'CSSE2310"
-    course_dates: Mapped[dict[tuple[int, int], list[str]]] = mapped_column(JSON)
+    course_dates_input: Mapped[dict[str, list[str]]] = mapped_column(JSON)
 
     # maps (part) -> course_code list
     course_reqs: Mapped[dict[str, list[str]]] = mapped_column(JSON)
@@ -37,4 +37,11 @@ class PlanDBModel(BaseDBModel):
     @hybrid_property
     def courses(self) -> list[str]:
         """Get full list of course codes (.e.g, "CSSE2310")."""
-        return [course for course_list in self.course_dates.values() for course in course_list]
+        return [course for course_list in self.course_dates_input.values() for course in course_list]
+
+    @hybrid_property
+    def course_dates(self) -> dict[tuple[int, int], list[str]]:
+        return {
+            tuple(map(int, k.replace("(", "").replace(")", "").split(","))): v
+            for k, v in self.course_dates_input.items()
+        }

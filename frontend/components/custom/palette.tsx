@@ -32,8 +32,6 @@ export default function CommandPalette({
   const [modalCourse, setModalCourse] = useState<CourseDetailed | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const activeCourse = courses.find(c => c.id === activeId) as Course;
-
   // memoize filtering to avoid re-runs
   const filteredcourses = useMemo(() => {
     const q = query.toLowerCase();

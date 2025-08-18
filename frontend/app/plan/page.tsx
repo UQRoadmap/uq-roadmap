@@ -6,11 +6,11 @@ import { Button } from "@/components/button";
 import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from "@/components/dropdown";
 import { EllipsisVerticalIcon } from "@heroicons/react/16/solid";
 import { Dialog, DialogActions, DialogBody, DialogDescription, DialogTitle } from "@/components/dialog";
-import { APIPlanRead } from "@/app/api/plan/types";
+import { JacksonPlan } from "@/app/api/plan/types";
 
 export default function PlanPage() {
     const router = useRouter();
-    const [plans, setPlans] = useState<APIPlanRead[]>([]);
+    const [plans, setPlans] = useState<JacksonPlan[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -33,7 +33,7 @@ export default function PlanPage() {
                 throw new Error(errorData.error || 'Failed to fetch plans');
             }
 
-            const plansData: APIPlanRead[] = await response.json();
+            const plansData: JacksonPlan[] = await response.json();
             setPlans(plansData);
         } catch (err) {
             console.error('Error fetching plans:', err);
@@ -71,28 +71,6 @@ export default function PlanPage() {
 
     const handleRefresh = () => {
         fetchPlans();
-    };
-
-    const calculateProgress = (plan: APIPlanRead) => {
-        const totalCourses = plan.courses.length;
-        const scheduledCourses = Object.values(plan.course_dates).flat().length;
-        const completedPercentage = totalCourses > 0 ? Math.round((scheduledCourses / totalCourses) * 100) : 0;
-        return {
-            scheduled: scheduledCourses,
-            total: totalCourses,
-            percentage: completedPercentage
-        };
-    };
-
-    const getEndYear = (plan: APIPlanRead) => {
-        if (plan.end_year) return plan.end_year;
-
-        // Calculate end year from course_dates if not explicitly set
-        const years = Object.keys(plan.course_dates)
-            .map(key => parseInt(key.split(',')[0]))
-            .filter(year => !isNaN(year));
-
-        return years.length > 0 ? Math.max(...years) : plan.start_year;
     };
 
     if (loading) {
@@ -140,8 +118,8 @@ export default function PlanPage() {
 
                 <ul className="space-y-4">
                     {plans.map((plan) => {
-                        const progress = calculateProgress(plan);
-                        const endYear = getEndYear(plan);
+                        const progress = 82;
+                        const endYear = plan.end_year;
 
                         return (
                             <li key={plan.plan_id} className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
@@ -196,13 +174,13 @@ export default function PlanPage() {
 
                                     <div className="mt-4">
                                         <div className="flex justify-between text-sm mb-1">
-                                            <span>Courses Scheduled: {progress.scheduled} of {progress.total}</span>
-                                            <span>{progress.percentage}% Scheduled</span>
+                                            <span>Courses Scheduled: HELP of 82</span>
+                                            <span>82% Scheduled</span>
                                         </div>
                                         <div className="w-full bg-gray-200 rounded-full h-2.5">
                                             <div
                                                 className="bg-blue-600 h-2.5 rounded-full"
-                                                style={{ width: `${progress.percentage}%` }}
+                                                style={{ width: `$50%` }}
                                             ></div>
                                         </div>
                                     </div>

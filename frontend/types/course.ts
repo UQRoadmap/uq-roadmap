@@ -9,8 +9,22 @@ export type Course = {
   secats: number,
   desc: string,
 
-  degreeReq: DegreeReq;
-  completed: boolean;
+  degreeReq: DegreeReq,
+  completed: boolean,
+  assessment?: AssessmentItem[]
+};
+
+
+export type AssessmentItem = {
+  task: string;
+  category: string;
+  description: string;
+  weight: number;
+  due_date: string;
+  mode: string;
+  learning_outcomes: string[];
+  hurdle: boolean;
+  identity_verified: boolean;
   assessment: AssessmentItem[] | null,
   secat: Secat | null,
   prereq: object | null,
@@ -28,18 +42,6 @@ export type Secat = {
     disagree: number;
     s_disagree: number;
   }[];
-};
-
-export type AssessmentItem = {
-  task: string;
-  category: string;
-  description: string;
-  weight: number;
-  due_date: string;
-  mode: string;
-  learning_outcomes: string[];
-  hurdle: boolean;
-  identity_verified: boolean;
 };
 
 export type DegreeReq = Record<string, string[]>;

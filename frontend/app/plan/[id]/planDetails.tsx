@@ -10,8 +10,8 @@ import { MouseSensor, KeyboardSensor } from '@/components/custom-sensors'
 import { DndContext, DragEndEvent, useSensor, useSensors } from '@dnd-kit/core';
 import { Course, DegreeReq } from '@/types/course';
 import { v4 as uuidv4 } from "uuid";
-import { Plan } from '@/types/plan';
-import PlanValidation from './planValidate';
+import ProgressCircle from '@/components/custom/progressCircle';
+import { JacksonPlan, MapfromJacksonPlan } from '@/app/api/plan/types';
 
 
 function SemesterSection({ semester, courses, setPaletteOpen, setActiveId, setDelete, courseReqs }:
@@ -111,8 +111,8 @@ function SemesterSection({ semester, courses, setPaletteOpen, setActiveId, setDe
     );
 }
 
-export function PlanDetailClient({ initialPlan, courses }: { initialPlan: Plan, courses: Course[] }) {
-    const [plan, setPlan] = useState<Plan>(initialPlan);
+export function PlanDetailClient({initialPlan, courses} : {initialPlan: JacksonPlan, courses: Course[]}) {
+    const [plan, setPlan] = useState<JacksonPlan>(initialPlan);
     const [isPaletteOpen, setPaletteOpen] = useState(false);
     const [sem, setSem] = useState(undefined);
     const [isReversed, setIsReversed] = useState(false);
@@ -215,10 +215,10 @@ export function PlanDetailClient({ initialPlan, courses }: { initialPlan: Plan, 
 
         let targetSemIndex;
         if (isReversed) {
-            const totalSemesters = (plan.endYear - plan.startYear + 1) * 2
-            targetSemIndex = totalSemesters - 1 - ((year - plan.startYear) * 2 + (semNum - 1));
+            const totalSemesters = (plan.end_year - plan.start_year + 1) * 2
+            targetSemIndex = totalSemesters - 1 - ((year - plan.start_year) * 2 + (semNum - 1));
         } else {
-            targetSemIndex = (year - plan.startYear) * 2 + (semNum - 1);
+            targetSemIndex = (year - plan.start_year) * 2 + (semNum - 1);
         }
 
         const targetIndex = parseInt(targetIndexStr, 10);
@@ -257,17 +257,17 @@ export function PlanDetailClient({ initialPlan, courses }: { initialPlan: Plan, 
 
         let targetSemIndex;
         if (isReversed) {
-            const totalSemesters = (plan.endYear - plan.startYear + 1) * 2;
-            targetSemIndex = totalSemesters - 1 - ((year - plan.startYear) * 2 + (semNum - 1));
+            const totalSemesters = (plan.end_year - plan.start_year + 1) * 2;
+            targetSemIndex = totalSemesters - 1 - ((year - plan.start_year) * 2 + (semNum - 1));
         } else {
-            targetSemIndex = (year - plan.startYear) * 2 + (semNum - 1);
+            targetSemIndex = (year - plan.start_year) * 2 + (semNum - 1);
         }
 
         const targetIndex = parseInt(targetIndexStr, 10);
         setCourses(prevCourses => {
             const newCourses = prevCourses.map(sem => [...sem]);
 
-            const updatedCourse = { ...course, sem: targetId };
+            const updatedCourse = { ...course, sem: targetId, id: uuidv4() };
             newCourses[targetSemIndex].splice(targetIndex, 0, updatedCourse); // replace empty card
 
             console.log("insert", newCourses)
@@ -283,10 +283,10 @@ export function PlanDetailClient({ initialPlan, courses }: { initialPlan: Plan, 
 
         let targetSemIndex;
         if (isReversed) {
-            const totalSemesters = (plan.endYear - plan.startYear + 1) * 2;
-            targetSemIndex = totalSemesters - 1 - ((year - plan.startYear) * 2 + (semNum - 1));
+            const totalSemesters = (plan.end_year - plan.start_year + 1) * 2;
+            targetSemIndex = totalSemesters - 1 - ((year - plan.start_year) * 2 + (semNum - 1));
         } else {
-            targetSemIndex = (year - plan.startYear) * 2 + (semNum - 1);
+            targetSemIndex = (year - plan.start_year) * 2 + (semNum - 1);
         }
 
         setCourses(prevCourses => {
@@ -313,60 +313,123 @@ export function PlanDetailClient({ initialPlan, courses }: { initialPlan: Plan, 
         if (plan) {
             const newSemesters: number[] = [];
             const newCourses: Course[][] = [];
-            for (let year = plan.startYear; year <= plan.endYear; year++) {
+            console.log(`START: ${plan.start_year}`)
+            console.log(`END: ${plan.end_year}`)
+
+            // Create the semester structure
+            for (let year = plan.start_year; year <= plan.end_year; year++) {
                 newSemesters.push(Number(`${year}1`));
                 newSemesters.push(Number(`${year}2`));
                 newCourses.push([]);
                 newCourses.push([]);
             }
+
+            // Populate courses from plan.course_tiles
+            if (plan.course_tiles && Object.keys(plan.course_tiles).length > 0) {
+                console.log("Loading courses from plan.course_tiles:", plan.course_tiles);
+
+                Object.entries(plan.course_tiles).forEach(([key, courseCode]) => {
+                    // Parse the key format: "20251-0" -> year=2025, sem=1, position=0
+                    const [semesterPart, positionStr] = key.split("-");
+                    const position = parseInt(positionStr, 10);
+
+                    // Extract year and semester from semesterPart (e.g., "20251")
+                    const year = Math.floor(parseInt(semesterPart, 10) / 10); // 2025
+                    const semesterNum = parseInt(semesterPart, 10) % 10 + 1; // 1 -> 2, 0 -> 1
+
+                    // Calculate the semester index in our array
+                    const semesterIndex = (year - plan.start_year) * 2 + (semesterNum - 1);
+
+                    // Find the course from the courses array
+                    const course = courses.find(c => c.code === courseCode);
+
+                    if (course && semesterIndex >= 0 && semesterIndex < newCourses.length) {
+                        // Create a course instance with the correct sem property and unique ID
+                        const courseInstance: Course = {
+                            ...course,
+                            id: uuidv4(), // Generate unique ID for this instance
+                            sem: key // Keep the original key as sem property
+                        };
+
+                        // Insert the course at the correct position
+                        // Ensure the array has enough slots
+                        while (newCourses[semesterIndex].length <= position) {
+                            newCourses[semesterIndex].push(null as any);
+                        }
+                        newCourses[semesterIndex][position] = courseInstance;
+
+                        console.log(`Loaded course ${courseCode} at semester ${semesterIndex}, position ${position}`);
+                    } else {
+                        console.warn(`Could not load course: ${courseCode} (key: ${key})`);
+                    }
+                });
+
+                // Remove null entries from arrays
+                newCourses.forEach((semesterCourses, index) => {
+                    newCourses[index] = semesterCourses.filter(course => course !== null);
+                });
+            }
+
             setSemesters(newSemesters);
             setCourses(newCourses);
+            console.log("SEMESTERS", newSemesters);
+            console.log("LOADED COURSES", newCourses);
         }
-        console.log(semesters)
-    }, [plan]);
+    }, [plan, courses]);
 
-    // async function DeletePlan() {
-    //     if (typeof window === "undefined" || !plan) return;
-    //     const possibleKeys = [
-    //         `plan-${plan.id}`,
-    //     ].filter(Boolean) as string[];
+    useEffect(() => {
+        if (stateCourses.length === 0 || stateCourses.flat().length == 0) {
+            return;
+        }
+        if (plan) {
+        console.log("Updating the state courses")
+        console.log(JSON.stringify(stateCourses))
+        let cur_sem = plan.start_sem;
+        let cur_year = plan.start_year;
+        let row_num = 0;
+        let new_courses: Course[]
+        let key: string;
+        plan.course_tiles = {} // reset it
+        while (row_num < stateCourses.length) {
+            console.log(`Currently at ROW: ${row_num}`)
+            console.log(`Currently at YEAR: ${cur_year}`)
+            console.log(`Currently at SEM: ${cur_sem}`)
+            new_courses = stateCourses[row_num]
+            console.log(`There is ${new_courses.length} courses in this row`)
+            for (let idx = 0; idx < new_courses.length; idx++) {
+                key = `${cur_year}${cur_sem - 1}-${idx}`;
+                console.log(`Setting ${key} -> ${new_courses[idx].code}`)
+                plan.course_tiles[key] = new_courses[idx].code
+            }
+            console.log(`Course tiles is now: ${JSON.stringify(plan.course_tiles)}`)
+            if (cur_sem == 2) {
+                cur_sem = 1;
+                cur_year += 1
+            } else {
+                cur_sem += 1
+            }
+            row_num += 1;
+        }
 
-    //     possibleKeys.forEach((k) => {
-    //         try {
-    //             localStorage.removeItem(k);
-    //         } catch (e) {
-    //             console.warn("Failed to remove localStorage key", k, e);
-    //         }
-    //     });
+        const body = MapfromJacksonPlan(plan, plan.degree.degree_id);
+        async function set_value(){
+            await fetch(`/api/plan/${plan.plan_id}`, {method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+            })
+        }
 
-    //     // Use Next.js client router to navigate back (ensure `const router = useRouter()` is declared in the component scope)
-    //     if (typeof window !== "undefined") {
-    //         router.push('/plan');
-    //     }
-    // }
+        set_value();
+    }
+
+    }, [stateCourses])
+
 
     function sort() {
         setSemesters(prevSemesters => [...prevSemesters].reverse());
         setCourses(prevCourses => [...prevCourses].reverse());
         setIsReversed(prev => !prev);
     }
-
-    useEffect(() => {
-        async function fetchDegrees() {
-            try {
-                const res = await fetch("/api/degree/summary");
-                if (!res.ok) {
-                    console.error(await res.text())
-                    throw new Error("Failed to fetch degrees");
-                }
-                // const data: DegreeSummary[] = await res.json();
-                // setDegreeSummaries(data);
-            } catch (err) {
-                console.error("Error fetching degrees:", err);
-            }
-        }
-        fetchDegrees()
-    }, [semesters]);
 
     return (
         <div>
@@ -392,16 +455,16 @@ export function PlanDetailClient({ initialPlan, courses }: { initialPlan: Plan, 
                                     </div>
                                 </div>
                                 <div className='my-4 text-xl text-white'>
-                                    {plan.degree}
+                                    {plan.degree.title}
                                 </div>
                                 <div className='flex text-white italic'>
                                     <div>
-                                        Planned Completion Date: {plan.endYear} Semester {plan.startSem}
+                                        Planned Completion Date: {plan.end_year} Semester {plan.start_sem}
                                     </div>
                                 </div>
                             </div>
                             <div className='flex flex-wrap items-center gap-x-6 gap-y-2'>
-                                <PlanValidation plan={plan}/>
+                                <ProgressCircle percentage={87} />
                             </div>
                         </>
                     ) : (

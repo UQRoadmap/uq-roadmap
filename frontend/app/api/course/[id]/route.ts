@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Course } from '@/types/course'
-import MapToCourse2 from '../types';
+import { MapToCourse2 } from '../types';
 import { BACKEND_BASE_URL } from '../../common';
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {

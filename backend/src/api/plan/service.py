@@ -33,16 +33,13 @@ async def get_plan(session: AsyncSession, plan_id: UUID) -> PlanDBModel | None:
 
 async def create_plan(session: AsyncSession, degree: DegreeDBModel, plan_in: PlanCreateUpdate) -> PlanDBModel:
     """Create a plan."""
-    if plan_in.start_year > plan_in.end_year:
-        raise ValueError
-
     model = PlanDBModel(
         degree=degree,
         name=plan_in.name,
         start_year=plan_in.start_year,
         start_sem=plan_in.start_sem,
         end_year=plan_in.end_year,
-        course_dates=plan_in.course_dates,
+        course_dates_input=plan_in.course_dates_input,
         course_reqs=plan_in.course_reqs,
         specialisations=plan_in.specialisations,
     )
@@ -61,7 +58,7 @@ def update_plan(plan: PlanDBModel, degree: DegreeDBModel, plan_in: PlanCreateUpd
     plan.start_year = plan_in.start_year
     plan.start_sem = plan_in.start_sem
     plan.end_year = plan_in.end_year
-    plan.course_dates = plan_in.course_dates
+    plan.course_dates_input = plan_in.course_dates_input
     plan.course_reqs = plan_in.course_reqs
     plan.specialisations = plan_in.specialisations
 

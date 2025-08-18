@@ -1,9 +1,9 @@
 import { notFound } from 'next/navigation';
 import { PlanDetailClient } from './planDetails';
-import { Plan } from '@/types/plan';
 import { Course } from '@/types/course';
+import { JacksonPlan } from '@/app/api/plan/types';
 
-async function getPlan(id: string): Promise<Plan | null> {
+async function getPlan(id: string): Promise<JacksonPlan | null> {
     const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
     const res = await fetch(`${baseUrl}/plan/${id}`);
     if (!res.ok) {
