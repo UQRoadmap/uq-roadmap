@@ -1,0 +1,59 @@
+name: Pull Request
+description: Structured PR form
+title: "[PR]: "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for contributing! Please fill out the details below.
+        
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      description: Short summary of the changes
+      placeholder: "Fix login bug on frontend..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type of Change
+      options:
+        - Bug fix
+        - Feature
+        - Refactor
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area of Code
+      options:
+        - Frontend
+        - Backend
+        - Scraper
+    validations:
+      required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: Explain what you changed and why
+      placeholder: "This PR fixes..."
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: Code compiles locally
+        - label: Tests pass
+        - label: Documentation updated (if needed)
+        - label: No linting errors
