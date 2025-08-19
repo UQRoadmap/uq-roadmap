@@ -1,4 +1,5 @@
 use axum::{Json, Router, http::StatusCode, response::IntoResponse, routing::get};
+mod verifier;
 use serde::{Deserialize, Serialize};
 use tracing::{debug, info};
 use uuid::Uuid;
