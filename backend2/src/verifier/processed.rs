@@ -2,6 +2,10 @@ use anyhow::bail;
 use nom::AsChar;
 use nom::IResult;
 use nom::Parser;
+use nom::bytes::take_while_m_n;
+use nom::combinator::all_consuming;
+use nom::combinator::map;
+use nom::sequence::pair;
 use std::{
     ops::{Range, RangeInclusive},
     str::FromStr,
@@ -9,38 +13,32 @@ use std::{
 
 use nom::bytes::{take_while, take_while1};
 
-pub struct ProgramCode {
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct CourseCode {
     prefix: String,
     postfix: String,
 }
 
-impl FromStr for ProgramCode {
-    type Err = anyhow::Error;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let IResult::Ok((rem, (a, b))) = (
-            take_while1(AsChar::is_alpha),
-            take_while1(AsChar::is_dec_digit),
-        )
-            .parse(s)
-        else {
-            bail!("NO");
-        };
-
-        Ok(ProgramCode {
-            prefix: a.to_owned(),
-            postfix: b.to_owned(),
-        })
-    }
+struct ProgramCode {
+    code: String,
 }
 
-pub struct Program {
-    units: Option<RangeInclusive<i64>>,
-    code: ProgramCode,
-    org_name: String,
-    org_code: String,
-    name: String,
-    abbreviation: String,
+fn is_alpha_ascii(c: char) -> bool {
+    c.is_ascii_alphabetic()
+}
+
+fn parse_course_code(input: &str) -> IResult<&str, CourseCode> {
+    map(
+        all_consuming(pair(
+            take_while_m_n(4, 4, is_alpha_ascii),
+            take_while_m_n(4, 4, |c: char| c.is_ascii_digit()),
+        )),
+        |(prefix, postfix): (&str, &str)| CourseCode {
+            prefix: prefix.to_string(),
+            postfix: postfix.to_string(),
+        },
+    )
+    .parse(input)
 }
 
 pub enum AuxiliaryRule {

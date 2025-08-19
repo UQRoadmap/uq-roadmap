@@ -1,8 +1,8 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-
     flake-utils.url = "github:numtide/flake-utils";
+    rust-overlay.url = "github:oxalica/rust-overlay";
   };
 
   outputs =
@@ -10,26 +10,37 @@
       self,
       nixpkgs,
       flake-utils,
+      rust-overlay,
       ...
     }:
     flake-utils.lib.eachDefaultSystem (
       system:
       let
-        pkgs = nixpkgs.legacyPackages.${system};
+        overlays = [ (import rust-overlay) ];
+        pkgs = import nixpkgs {
+          inherit system overlays;
+        };
       in
       {
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
-            cargo
-            rustc
-            rustfmt
+            openssl
+            pkg-config
             clippy
             rust-analyzer
             glib
             cargo-watch
+            rustfmt
+            (rust-bin.selectLatestNightlyWith (
+              toolchain:
+              toolchain.default.override {
+                extensions = [
+                  "rust-src"
+                  "rustc-codegen-cranelift-preview"
+                ];
+              }
+            ))
           ];
-
-          nativeBuildInputs = [ pkgs.pkg-config ];
 
           env.RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
         };
