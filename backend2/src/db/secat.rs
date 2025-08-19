@@ -3,7 +3,7 @@ use sqlx::{PgPool, prelude::FromRow, query_as};
 use utoipa::ToSchema;
 use uuid::Uuid;
 
-#[derive(Serialize, Deserialize, Debug, FromRow, Clone, ToSchema)]
+#[derive(Serialize, Deserialize, Debug, FromRow, Clone, ToSchema, sqlx::Type)]
 pub struct SecatQuestion {
     question_id: Uuid,
     secat_id: Uuid,
@@ -22,7 +22,7 @@ pub struct Secat {
     num_enrolled: i32,
     num_responses: i32,
     response_rate: f32,
-    questions: Vec<SecatQuestion>,
+    questions: Option<Vec<SecatQuestion>>,
 }
 
 impl SecatQuestion {
@@ -37,24 +37,38 @@ impl SecatQuestion {
 
 impl Secat {
     async fn load_by_course_id(db: &PgPool, course_id: Uuid) -> Self {
-        // secat_id      uuid PRIMARY KEY,
-        // course_id     uuid REFERENCES courses(course_id),
-        // num_enrolled  bigint NOT NULL,
-        // num_responses bigint NOT NULL,
-        // response_rate real NOT NULL
         query_as!(
             Secat,
             r#"
             SELECT
-              secat_id, course_id, num_enrolled, num_responses,
-              response_rate
-            FROM secats
+                s.secat_id,
+                s.course_id,
+                s.num_enrolled,
+                s.num_responses,
+                s.response_rate,
+                COALESCE(ARRAY_AGG((q.question_id, q.secat_id, q.name, q.strongly_agree, q.agree, q.middle, q.disagree, q.strongly_disagree)), '{}') AS "questions: Vec<SecatQuestion>"
+            FROM secats as s
+            LEFT JOIN LATERAL (
+                SELECT
+                    q.question_id,
+                    q.secat_id,
+                    q.name,
+                    q.strongly_agree,
+                    q.agree,
+                    q.middle,
+                    q.disagree,
+                    q.strongly_disagree
+                FROM secat_questions AS q
+                WHERE q.secat_id = s.secat_id
+                ORDER BY q.question_id
+            ) AS q ON TRUE
             WHERE course_id = $1
+            GROUP BY s.secat_id, s.course_id, s.num_enrolled, s.num_responses, s.response_rate
             "#,
             course_id
         )
         .fetch_optional(db)
-        .await
+        .await.unwrap().unwrap()
     }
 
     async fn store(&self, db: &PgPool) {

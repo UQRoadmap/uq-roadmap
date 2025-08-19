@@ -1,0 +1,52 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                s.secat_id,\n                s.course_id,\n                s.num_enrolled,\n                s.num_responses,\n                s.response_rate,\n                COALESCE(ARRAY_AGG((q.question_id, q.secat_id, q.name, q.strongly_agree, q.agree, q.middle, q.disagree, q.strongly_disagree)), '{}') AS \"questions: Vec<SecatQuestion>\"\n            FROM secats as s\n            LEFT JOIN LATERAL (\n                SELECT\n                    q.question_id,\n                    q.secat_id,\n                    q.name,\n                    q.strongly_agree,\n                    q.agree,\n                    q.middle,\n                    q.disagree,\n                    q.strongly_disagree\n                FROM secat_questions AS q\n                WHERE q.secat_id = s.secat_id\n                ORDER BY q.question_id\n            ) AS q ON TRUE\n            WHERE course_id = $1\n            GROUP BY s.secat_id, s.course_id, s.num_enrolled, s.num_responses, s.response_rate\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "secat_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "course_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "num_enrolled",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "num_responses",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 4,
+        "name": "response_rate",
+        "type_info": "Float4"
+      },
+      {
+        "ordinal": 5,
+        "name": "questions: Vec<SecatQuestion>",
+        "type_info": "RecordArray"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      null
+    ]
+  },
+  "hash": "47375a0354f61483e63ec03e4f71dad443daaca92fe8225fcff5ca7fff78abf5"
+}
