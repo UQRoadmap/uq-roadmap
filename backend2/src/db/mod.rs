@@ -1,10 +1,12 @@
 //! Minimal sqlx setup: pool init, migrations, and helpers.
 
 pub mod course;
+pub mod seed;
 
 use anyhow::Context;
 use sqlx::{PgPool, postgres::PgPoolOptions};
 use std::time::Duration;
+use tracing::{error, warn};
 
 /// Runs database migrations and returns a DbPool.
 /// Call this once at startup! Don't re-run it.
@@ -35,6 +37,17 @@ pub async fn init() -> anyhow::Result<PgPool> {
 
     // Run any db migrations
     sqlx::migrate!("./migrations").run(&pool).await?;
+
+    // One last thing. Spawn up some async tasks to seed the DB (can happen while the server is running, no issue).
+    tokio::task::spawn({
+        let pool = pool.clone();
+        async move {
+            let e = seed::courses::seed_courses(pool).await;
+            if let Err(e) = e {
+                warn!(err=?e, "Failure seeding courses");
+            }
+        }
+    });
 
     Ok(pool)
 }

@@ -1,0 +1,4 @@
+data/program_meta.json filter=lfs diff=lfs merge=lfs -text
+data/complete_courses.json filter=lfs diff=lfs merge=lfs -text
+data/plans.json filter=lfs diff=lfs merge=lfs -text
+data/program_details.json filter=lfs diff=lfs merge=lfs -text
