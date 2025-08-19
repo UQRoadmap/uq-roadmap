@@ -19,6 +19,9 @@ from degree.degree import Degree
 from degree.sr_rule import create_sr_from_dict
 from degree.validate_result import ValidateResult
 
+from degree.aux_rule import AR, create_ar_from_dict
+from degree.sr_rule import SR, create_sr_from_dict
+
 
 async def get_plans(session: AsyncSession) -> list[PlanDBModel]:
     """Get plan with id."""
@@ -114,4 +117,4 @@ async def validate_plan(session: AsyncSession, plan_model: PlanDBModel) -> list[
     if "srs" in vals:
         degree.srs = [create_sr_from_dict(sr_data) for sr_data in vals["srs"]]
 
-    return degree.validate(plan, _get_course_wrapper(session), _get_degree_wrapper(session))
+    return await degree.validate(plan, _get_course_wrapper(session), _get_degree_wrapper(session))
