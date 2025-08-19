@@ -1,3 +1,5 @@
+mod verifier;
+
 use axum::{
     Json, Router,
     http::StatusCode,
