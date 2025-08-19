@@ -1,11 +1,20 @@
 mod verifier;
 
+use aide::{
+    IntoApi,
+    axum::{
+        ApiRouter, IntoApiResponse,
+        routing::{get, post},
+    },
+    openapi::{Info, OpenApi},
+    swagger::Swagger,
+};
 use axum::{
-    Json, Router,
+    Extension, Json, ServiceExt,
     http::StatusCode,
     response::{Html, IntoResponse},
-    routing::get,
 };
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tracing::{debug, info};
 
@@ -19,24 +28,46 @@ async fn main() {
 
     let app = app();
 
+    let mut api = OpenApi {
+        info: Info {
+            description: Some("an example API".to_string()),
+            ..Info::default()
+        },
+        ..OpenApi::default()
+    };
+
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
         .await
         .unwrap();
 
     debug!("Listening on {}", listener.local_addr().unwrap());
-    axum::serve(listener, app).await.unwrap();
+    axum::serve(
+        listener,
+        app.finish_api(&mut api)
+            .layer(Extension(api))
+            .into_make_service(),
+    )
+    .await
+    .unwrap();
 }
 
-fn app() -> Router {
-    Router::new().route("/", get(test))
+async fn serve_api(Extension(api): Extension<OpenApi>) -> impl IntoResponse {
+    Json::<OpenApi>(api)
 }
 
-#[derive(Serialize, Deserialize)]
+fn app() -> ApiRouter {
+    ApiRouter::new()
+        .api_route("/", get(test))
+        .route("/api.json", axum::routing::get(serve_api))
+        .route("/swagger", Swagger::new("/api.json").axum_route())
+}
+
+#[derive(Serialize, Deserialize, JsonSchema)]
 struct Response {
     magic: String,
 }
 
-async fn test() -> impl IntoResponse {
+async fn test() -> impl IntoApiResponse {
     let response = Response {
         magic: "Hello".to_string(),
     };

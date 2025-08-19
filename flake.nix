@@ -26,6 +26,7 @@
             clippy
             rust-analyzer
             glib
+            cargo-watch
           ];
 
           nativeBuildInputs = [ pkgs.pkg-config ];
