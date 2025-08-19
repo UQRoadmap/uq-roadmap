@@ -1,9 +1,12 @@
 //! The raw program requirements representation.
 //! Deserialized from json directly via serde.
 
+use aide::axum::IntoApiResponse;
+use axum::{Json, http::StatusCode};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use std::collections::HashMap;
+use std::{collections::HashMap, fs::File, io::Read, path::Path};
+use tracing::{error, info};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -234,4 +237,26 @@ pub struct Degree {
     pub program_requirements: ProgramRequirements,
     pub year_options: Vec<String>,
     pub routes: HashMap<String, Value>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct ProgramDetail {
+    pub program_id: String,
+    pub data: HashMap<String, Option<Degree>>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct ProgramDetails {
+    program_details: Vec<ProgramDetail>,
+}
+
+pub async fn test() -> impl IntoApiResponse {
+    let path = Path::new("../backend/data/program_details.json");
+    let mut file = File::open(path).unwrap();
+    let mut contents = String::new();
+    file.read_to_string(&mut contents);
+    let degree: ProgramDetails = serde_json::from_str(&contents).unwrap();
+    info!(degree=?degree.program_details[0]);
+
+    (StatusCode::OK, Json(degree.program_details[0].clone()))
 }
