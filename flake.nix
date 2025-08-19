@@ -26,8 +26,6 @@
           packages = with pkgs; [
             openssl
             pkg-config
-            clippy
-            rust-analyzer
             glib
             cargo-watch
             rustfmt
@@ -37,12 +35,14 @@
                 extensions = [
                   "rust-src"
                   "rustc-codegen-cranelift-preview"
+                  "rust-analyzer"
+                  "clippy"
                 ];
               }
             ))
           ];
 
-          env.RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
+          RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
         };
       }
     );
