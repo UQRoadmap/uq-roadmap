@@ -1,3 +1,4 @@
+cd backend2
 echo "Running cargo sqlx prepare..."
 if ! cargo sqlx prepare --check; then
     echo "SQLx prepare failed. Run 'cargo sqlx prepare' and try again."
