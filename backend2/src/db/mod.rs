@@ -1,6 +1,6 @@
 //! Minimal sqlx setup: pool init, migrations, and helpers.
 
-pub mod course;
+pub mod course_details;
 mod secat;
 pub mod seed;
 

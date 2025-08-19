@@ -37,25 +37,24 @@ impl SecatQuestion {
 
 impl Secat {
     async fn load_by_course_id(db: &PgPool, course_id: Uuid) -> Self {
-        // query_as!(
-        //     Course,
-        //     r#"
-        //     SELECT
-        //       course_id, category, code, name, description,
-        //       level as "level: _",
-        //       num_units,
-        //       attendance_mode as "attendance_mode: _",
-        //       active,
-        //       semesters as "semesters: _"
-        //     FROM courses
-        //     WHERE category = $1 AND code = $2
-        //     "#,
-        //     category,
-        //     code
-        // )
-        // .fetch_optional(db)
-        // .await
-        todo!()
+        // secat_id      uuid PRIMARY KEY,
+        // course_id     uuid REFERENCES courses(course_id),
+        // num_enrolled  bigint NOT NULL,
+        // num_responses bigint NOT NULL,
+        // response_rate real NOT NULL
+        query_as!(
+            Secat,
+            r#"
+            SELECT
+              secat_id, course_id, num_enrolled, num_responses,
+              response_rate
+            FROM secats
+            WHERE course_id = $1
+            "#,
+            course_id
+        )
+        .fetch_optional(db)
+        .await
     }
 
     async fn store(&self, db: &PgPool) {

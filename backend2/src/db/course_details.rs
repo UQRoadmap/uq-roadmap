@@ -116,7 +116,7 @@ pub enum CourseMode {
 }
 
 #[derive(Serialize, Deserialize, Debug, FromRow, Clone, ToSchema)]
-pub struct Course {
+pub struct CourseDetails {
     pub course_id: Uuid,
     pub category: String,
     pub code: String,
@@ -129,9 +129,9 @@ pub struct Course {
     pub semesters: Vec<CourseSemester>,
 }
 
-pub async fn insert(db: &PgPool, course: &Course) -> Result<Course, sqlx::Error> {
+pub async fn insert(db: &PgPool, course: &CourseDetails) -> Result<CourseDetails, sqlx::Error> {
     query_as!(
-        Course,
+        CourseDetails,
         r#"
         INSERT INTO courses
           (course_id, category, code, name, description, level, num_units, attendance_mode, active, semesters)
@@ -164,9 +164,9 @@ pub async fn get_by_category_code(
     db: &PgPool,
     category: &str,
     code: &str,
-) -> Result<Option<Course>, sqlx::Error> {
+) -> Result<Option<CourseDetails>, sqlx::Error> {
     query_as!(
-        Course,
+        CourseDetails,
         r#"
         SELECT
           course_id, category, code, name, description,
@@ -187,28 +187,30 @@ pub async fn get_by_category_code(
 
 #[sqlx::test(migrations = "./migrations")]
 async fn roundtrip_insert_and_get(pool: PgPool) {
-    let course = crate::db::course::Course {
+    let course = crate::db::course_details::CourseDetails {
         course_id: Uuid::new_v4(),
         category: "CSSE".to_string(),
         code: "2310".to_string(),
         name: "Computer Systems Principles and Programming".to_string(),
         description: "Intro to UNIX, OS/Networks, C programming".to_string(),
-        level: crate::db::course::CourseLevel::Undergraduate,
+        level: crate::db::course_details::CourseLevel::Undergraduate,
         num_units: 2,
-        attendance_mode: crate::db::course::CourseMode::Internal,
+        attendance_mode: crate::db::course_details::CourseMode::Internal,
         active: true,
         semesters: vec![
-            crate::db::course::CourseSemester::Sem1,
-            crate::db::course::CourseSemester::Sem2,
+            crate::db::course_details::CourseSemester::Sem1,
+            crate::db::course_details::CourseSemester::Sem2,
         ],
     };
 
     // Insert
-    let inserted = crate::db::course::insert(&pool, &course).await.unwrap();
+    let inserted = crate::db::course_details::insert(&pool, &course)
+        .await
+        .unwrap();
     assert_eq!(inserted.course_id, course.course_id);
 
     // Fetch
-    let fetched = crate::db::course::get_by_category_code(&pool, "CSSE", "2310")
+    let fetched = crate::db::course_details::get_by_category_code(&pool, "CSSE", "2310")
         .await
         .unwrap()
         .expect("should exist");

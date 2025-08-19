@@ -10,7 +10,7 @@ use utoipa::OpenApi;
     ),
     components(
         schemas(
-            crate::db::course::Course
+            crate::db::course_details::CourseDetails
         ),
     ),
     tags(

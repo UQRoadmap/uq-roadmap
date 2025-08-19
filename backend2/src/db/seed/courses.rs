@@ -1,12 +1,12 @@
 //! Seeding: load courses from JSON and insert into DB (courses only).
 
-use crate::db::course::{self, Course, CourseLevel, CourseMode, CourseSemester};
+use crate::db::course_details::{self, CourseDetails, CourseLevel, CourseMode, CourseSemester};
 use anyhow::{Context, Result};
 use serde::Deserialize;
 use sqlx::PgPool;
 use std::fs::File;
 use std::io::BufReader;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use tracing::log::{info, warn};
 use uuid::Uuid;
 
@@ -16,6 +16,7 @@ const COURSES_FILE: &str = "complete_courses.json";
 #[derive(Debug, Deserialize)]
 struct JsonCourse {
     // TODO this does not parse properly. It was just a quick copilot struct that was supposed to match the json but didnt. Will require actually thinking about the problem :(
+    // Ideally the scraping is just flat out moved to the scraping module, including this struct. Then we can just have the functionality here convert it into the various course_detail, secat, secat_question structs.
     category: String,
     code: String,
     name: String,
@@ -72,11 +73,11 @@ pub async fn seed_courses(db: PgPool) -> Result<usize> {
 
     for jc in courses {
         // Skip if (category, code) already exists.
-        if let Some(_) = course::get_by_category_code(&db, &jc.category, &jc.code).await? {
+        if let Some(_) = course_details::get_by_category_code(&db, &jc.category, &jc.code).await? {
             continue;
         }
 
-        let model = Course {
+        let model = CourseDetails {
             course_id: Uuid::new_v4(),
             category: jc.category,
             code: jc.code,
@@ -89,7 +90,7 @@ pub async fn seed_courses(db: PgPool) -> Result<usize> {
             semesters: jc.semesters,
         };
 
-        match course::insert(&db, &model).await {
+        match course_details::insert(&db, &model).await {
             Ok(_) => inserted += 1,
             Err(e) => {
                 warn!(

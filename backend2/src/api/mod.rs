@@ -2,7 +2,7 @@ mod openapi;
 
 use crate::AppState;
 use crate::db;
-use crate::db::course::Course;
+use crate::db::course_details::CourseDetails;
 use axum::Router;
 use axum::response::IntoResponse;
 use axum::routing::get;
@@ -28,14 +28,14 @@ pub fn router() -> Router<AppState> {
     path = "/course/{category}/{code}",
     tag = "course",
     responses(
-        (status = 200, description = "Gets a course by its category and code", body = Course),
+        (status = 200, description = "Gets a course by its category and code", body = CourseDetails),
     ),
 )]
 async fn get_course_by_pair(
     State(AppState { db, .. }): State<AppState>,
     Path((category, code)): Path<(String, String)>,
 ) -> impl IntoResponse {
-    match db::course::get_by_category_code(&db, &category, &code).await {
+    match db::course_details::get_by_category_code(&db, &category, &code).await {
         Ok(Some(c)) => (StatusCode::OK, Json(c)).into_response(),
         Ok(None) => (
             StatusCode::NOT_FOUND,
