@@ -27,14 +27,14 @@ async fn main() {
 
     let mut api = OpenApi {
         info: Info {
-            description: Some("an example API".to_string()),
+            description: Some("UQRoadmap API".to_string()),
             ..Info::default()
         },
         ..OpenApi::default()
     };
 
     let listener =
-        tokio::net::TcpListener::bind("127.0.0.1:3000")
+        tokio::net::TcpListener::bind("0.0.0.0:8080")
             .await
             .unwrap();
 

@@ -1,11 +1,5 @@
 //! Auxiliary rules definitions.
 
-use nom::IResult;
-use nom::Parser;
-use nom::bytes::take_while_m_n;
-use nom::combinator::all_consuming;
-use nom::combinator::map;
-use nom::sequence::pair;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -164,26 +158,4 @@ pub enum AuxiliaryRuleKind {
         text: String,
         raw_params: Vec<serde_json::Value>,
     },
-}
-
-fn is_alpha_ascii(c: char) -> bool {
-    c.is_ascii_alphabetic()
-}
-
-fn parse_course_code(
-    input: &str,
-) -> IResult<&str, CourseCode> {
-    map(
-        all_consuming(pair(
-            take_while_m_n(4, 4, is_alpha_ascii),
-            take_while_m_n(4, 4, |c: char| {
-                c.is_ascii_digit()
-            }),
-        )),
-        |(prefix, postfix): (&str, &str)| CourseCode {
-            prefix: prefix.to_string(),
-            postfix: postfix.to_string(),
-        },
-    )
-    .parse(input)
 }

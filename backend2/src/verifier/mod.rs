@@ -1,4 +1,10 @@
 use aide::axum::{ApiRouter, routing::get};
+use nom::IResult;
+use nom::Parser;
+use nom::bytes::take_while_m_n;
+use nom::combinator::all_consuming;
+use nom::combinator::map;
+use nom::sequence::pair;
 use serde::{Deserialize, Serialize};
 
 pub mod aux_rule;
@@ -47,4 +53,26 @@ pub enum PartSymbol {
 
 pub fn router() -> ApiRouter {
     ApiRouter::new().api_route("/test", get(raw::test))
+}
+
+fn is_alpha_ascii(c: char) -> bool {
+    c.is_ascii_alphabetic()
+}
+
+fn parse_course_code(
+    input: &str,
+) -> IResult<&str, CourseCode> {
+    map(
+        all_consuming(pair(
+            take_while_m_n(4, 4, is_alpha_ascii),
+            take_while_m_n(4, 4, |c: char| {
+                c.is_ascii_digit()
+            }),
+        )),
+        |(prefix, postfix): (&str, &str)| CourseCode {
+            prefix: prefix.to_string(),
+            postfix: postfix.to_string(),
+        },
+    )
+    .parse(input)
 }
