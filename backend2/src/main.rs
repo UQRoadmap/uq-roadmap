@@ -1,4 +1,5 @@
 #![allow(dead_code)]
+mod db;
 mod verifier;
 
 use aide::{
@@ -6,22 +7,44 @@ use aide::{
     openapi::{Info, OpenApi},
     swagger::Swagger,
 };
+use anyhow::Context;
 use axum::{
-    Extension, Json, ServiceExt, http::StatusCode,
-    response::IntoResponse,
+    Extension, Json, ServiceExt, extract::State,
+    http::StatusCode, response::IntoResponse,
 };
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use sqlx::PgPool;
 use tracing::{debug, info};
 use uuid::Uuid;
 
+#[derive(Clone, Debug)]
+pub struct AppState {
+    pub db: PgPool,
+}
+
+fn app() -> ApiRouter<AppState> {
+    ApiRouter::new()
+        .api_route("/", get(test))
+        .api_route("/course", get(get_course))
+        .route("/api.json", axum::routing::get(serve_api))
+        .route(
+            "/swagger",
+            Swagger::new("/api.json").axum_route(),
+        )
+        .merge(verifier::router())
+}
+
 #[tokio::main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     // Enable logging:
     tracing_subscriber::fmt()
         .with_max_level(tracing::Level::DEBUG)
         .init();
-    info!("Test log");
+    info!("Server starting");
+
+    let db = db::init().await?;
+    let state = AppState { db };
 
     let app = app();
 
@@ -48,28 +71,17 @@ async fn main() {
             api.default_response::<String>()
         })
         .layer(Extension(api))
-        .into_make_service(),
+        .with_state(state),
     )
-    .await
-    .unwrap();
+    .await?;
+
+    Ok(())
 }
 
 async fn serve_api(
     Extension(api): Extension<OpenApi>,
 ) -> impl IntoResponse {
     Json::<OpenApi>(api)
-}
-
-fn app() -> ApiRouter {
-    ApiRouter::new()
-        .api_route("/", get(test))
-        .api_route("/course", get(get_course))
-        .route("/api.json", axum::routing::get(serve_api))
-        .route(
-            "/swagger",
-            Swagger::new("/api.json").axum_route(),
-        )
-        .merge(verifier::router())
 }
 
 #[derive(Serialize, Deserialize, JsonSchema)]

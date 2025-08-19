@@ -29,20 +29,20 @@
             glib
             cargo-watch
             rustfmt
-            (rust-bin.selectLatestNightlyWith (
-              toolchain:
-              toolchain.default.override {
-                extensions = [
-                  "rust-src"
-                  "rustc-codegen-cranelift-preview"
-                  "rust-analyzer"
-                  "clippy"
-                ];
-              }
-            ))
+            sqlx-cli
+            (rust-bin.nightly."2025-08-07".default.override {
+              extensions = [
+                "rust-src"
+                "rustc-codegen-cranelift-preview"
+                "rust-analyzer"
+                "clippy"
+              ];
+            })
           ];
 
           RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
+          DATABASE_URL = "postgres://admin:password@localhost:5432/uqroadmap";
+          RUSTFLAGS = "-Zcodegen-backend=cranelift -Zshare-generics=off";
         };
       }
     );

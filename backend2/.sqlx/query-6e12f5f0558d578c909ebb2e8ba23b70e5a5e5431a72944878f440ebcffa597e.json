@@ -1,0 +1,140 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        SELECT\n          course_id, category, code, name, description,\n          level as \"level: _\",\n          num_units,\n          attendance_mode as \"attendance_mode: _\",\n          active,\n          semesters as \"semesters: _\"\n        FROM courses\n        WHERE category = $1 AND code = $2\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "course_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "category",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "code",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "level: _",
+        "type_info": {
+          "Custom": {
+            "name": "course_level_t",
+            "kind": {
+              "Enum": [
+                "undergraduate",
+                "postgraduate",
+                "postgraduate coursework",
+                "uq college",
+                "non-award",
+                "other"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "num_units",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 7,
+        "name": "attendance_mode: _",
+        "type_info": {
+          "Custom": {
+            "name": "course_mode_t",
+            "kind": {
+              "Enum": [
+                "Work Experience",
+                "In Person",
+                "External",
+                "Internal",
+                "Weekend",
+                "July Intensive",
+                "Off-Shore",
+                "Off-Campus",
+                "Intensive",
+                "Web Based",
+                "Remote",
+                "Flexible Delivery"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "active",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 9,
+        "name": "semesters: _",
+        "type_info": {
+          "Custom": {
+            "name": "course_semester_t[]",
+            "kind": {
+              "Array": {
+                "Custom": {
+                  "name": "course_semester_t",
+                  "kind": {
+                    "Enum": [
+                      "Research Quarter 1",
+                      "Research Quarter 2",
+                      "Research Quarter 3",
+                      "Research Quarter 4",
+                      "SFC Enrolment Year",
+                      "Semester 1",
+                      "Semester 2",
+                      "Summer Semester",
+                      "Trimester 1",
+                      "Trimester 2",
+                      "Trimester 3",
+                      "UQ College Intake 1",
+                      "UQ College Intake 2",
+                      "Other"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "6e12f5f0558d578c909ebb2e8ba23b70e5a5e5431a72944878f440ebcffa597e"
+}

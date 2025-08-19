@@ -7,6 +7,8 @@ use nom::combinator::map;
 use nom::sequence::pair;
 use serde::{Deserialize, Serialize};
 
+use crate::AppState;
+
 pub mod aux_rule;
 pub mod raw;
 
@@ -51,7 +53,7 @@ pub enum PartSymbol {
     Num(i16),
 }
 
-pub fn router() -> ApiRouter {
+pub fn router() -> ApiRouter<AppState> {
     ApiRouter::new().api_route("/test", get(raw::test))
 }
 

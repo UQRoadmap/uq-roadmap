@@ -26,6 +26,11 @@ services:
     environment:
       - DATABASE_URL=postgresql+asyncpg://admin:password@database:5432/uqroadmap
       - FRONTEND_URL=frontend:3000
+      - DB_MAX_CONNS=10
+      - DB_MIN_CONNS=1
+      - DB_ACQUIRE_TIMEOUT_SECS=10
+      - DB_IDLE_TIMEOUT_SECS=300
+      - DB_MAX_LIFETIME_SECS=3600
   frontend:
     container_name: frontend
     build:
