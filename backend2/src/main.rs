@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 mod api;
 mod db;
+mod scraping;
 mod verifier;
 
 use axum::Router;
