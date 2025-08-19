@@ -5,16 +5,17 @@ import { Badge } from '@/components/badge'
 import { Checkbox, CheckboxField, CheckboxGroup } from '@/components/checkbox'
 import { Description, Fieldset, Label } from '@/components/fieldset'
 
-import { Course, DegreeReq, Secat, AssessmentItem } from '@/types/course'
-import { ApiCourse, ApiCourse2 } from '@/app/api/course/types'
+import { Course, Prereq, DetailedCourse, DegreeReq, Secat, AssessmentItem } from '@/types/course'
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { CalendarIcon, BookOpenIcon, TagIcon, ClipboardDocumentListIcon } from "@heroicons/react/24/outline";
+
 export type CourseExtended = Course & {
+    deleteMeth: (id: string, sem: string) => void,
 }
 
-export default function CourseCard({id, code, name, units, sems, sem, assessment, prereq, secat, secats, desc, degreeReq, completed, deleteMeth}: CourseExtended) {
+export default function CourseCard({id, code, name, units, sems, sem, secats, desc, degreeReq, completed, deleteMeth}: CourseExtended) {
     const [popupOpen, setPopupOpen] = useState<boolean>(false);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [modalData, setModalData] = useState<Course | null>(null); // store the course whose details you want
@@ -27,7 +28,7 @@ export default function CourseCard({id, code, name, units, sems, sem, assessment
     }
 
     function handleDets() {
-      setModalData({id, code, name, secat, prereq, units, sem, sems, secats, desc, degreeReq, assessment, completed});  // pass in the course whose details to show
+      setModalData({id, code, name, units, sem, sems, secats, desc, degreeReq, completed});  // pass in the course whose details to show
       setPopupOpen(false);
       setIsModalOpen(true);
     }
@@ -36,7 +37,7 @@ export default function CourseCard({id, code, name, units, sems, sem, assessment
       <Draggable
         id={id}
         key={id}
-        data={{id, code, name, units, sem, sems, prereq, secat, secats, desc, degreeReq, assessment, completed}}
+        data={{id, code, name, units, sem, sems, secats, desc, degreeReq, completed}}
         disabled={false}
       >
         <Droppable key={id} id={id} full>
@@ -168,7 +169,7 @@ export function PaletteCourseCard({id, code, name, units, sem, sems, secats, des
     )
 }
 
-export  function SecatGraph({ secat }: { secat: Secat | null }) {
+export  function SecatGraph({ secat }: { secat: Secat | null | undefined }) {
   if (!secat || !secat.questions?.length) return <p>No data available</p>;
 
   const data = secat.questions.map(q => ({
@@ -266,17 +267,6 @@ interface ModalProps {
   children: React.ReactNode;
 }
 
-export type CourseDetailed = Course & {
-}
-
-type Prereq =
-  | { kind: 'atomic'; value: string }
-  | { kind: 'or' | 'and'; value: Prereq[] };
-
-interface PrereqDisplayProps {
-  prereq: Prereq;
-  code: string,
-}
 
 function PrereqNode({ prereq, x = 0, y = 0 }: { prereq: Prereq; x?: number; y?: number }) {
   if (prereq.kind === 'atomic') {
@@ -325,7 +315,7 @@ function PrereqNode({ prereq, x = 0, y = 0 }: { prereq: Prereq; x?: number; y?: 
   );
 }
 
-export function PrereqDisplay({ prereq, code }: {prereq: Prereq | null, code: string}) {
+export function PrereqDisplay({ prereq, code }: {prereq: Prereq | null | undefined, code: string}) {
   if (!prereq) return <p>No prereq for this course</p>;
   return (
     <svg width="100%" height="300">
@@ -346,12 +336,12 @@ export function PrereqDisplay({ prereq, code }: {prereq: Prereq | null, code: st
 export function BigModal({ isModalOpen, setIsModalOpen, modalData }: {
   isModalOpen: boolean;
   setIsModalOpen: (val: boolean) => void;
-  modalData: CourseDetailed | null;
+  modalData: Course | null;
 }) {
   const [activeTab, setActiveTab] = useState<"general" | "prereqs" | "secats" | "assessment">("general");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [courseDatas, setCourseData] = useState<ApiCourse2 | null>(null);
+    const [courseDatas, setCourseData] = useState<DetailedCourse | null>(null);
 
     // Fetch plans on component mount
     useEffect(() => {
@@ -369,7 +359,7 @@ export function BigModal({ isModalOpen, setIsModalOpen, modalData }: {
                 throw new Error(errorData.error || 'Failed to fetch plans');
             }
 
-            const courseData: ApiCourse2 = await response.json();
+            const courseData: DetailedCourse = await response.json();
             console.log("dets",courseData)
             setCourseData(courseData);
         } catch (err) {
@@ -436,16 +426,16 @@ export function BigModal({ isModalOpen, setIsModalOpen, modalData }: {
             </div>
           )}
 
-          {activeTab === "secats" && (
-            <div> <SecatGraph secat={courseDatas?.secat}/> </div>
+          {activeTab === "secats" && courseDatas && (
+            <div> <SecatGraph secat={courseDatas.secat}/> </div>
           )}
 
-          {activeTab === "prereqs" && (
-            <PrereqDisplay prereq={courseDatas?.prereq} code={courseDatas?.code }/>
+          {activeTab === "prereqs" && courseDatas &&  (
+            <PrereqDisplay prereq={courseDatas.prereq} code={courseDatas.code }/>
           )}
 
-          {activeTab === "assessment" && (
-            <div><AssessmentList assessment={courseDatas?.assessment}/> </div>
+          {activeTab === "assessment" && courseDatas && (
+            <div><AssessmentList assessment={courseDatas.assessment}/> </div>
           )}
         </div>
       </div>

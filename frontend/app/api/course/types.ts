@@ -1,6 +1,6 @@
-import { Course} from '@/types/course'
+import { Course, DetailedCourse, Prereq} from '@/types/course'
 
-export type ApiCourse2 = {
+export type ApiDetailedCourse = {
     course_id: string,
     category: string,
     code: string,
@@ -44,7 +44,7 @@ export type ApiCourse2 = {
     },
     full_code: string,
     semesters: string[],
-    prerequisite: object | null,
+    prerequisite: Prereq | null,
 }
 
 export type ApiCourse = {
@@ -108,13 +108,10 @@ export default function MapToCourse(apiCourse: ApiCourse): Course {
 
     degreeReq: { filler: ["filler"] },
     completed: false,
-    assessment: null,
-    secat: null,
-    prereq: null,
   };
 }
 
-export function MapToCourse2(apiCourse: ApiCourse2): Course {
+export function MapToDetailedCourse(apiCourse: ApiDetailedCourse): DetailedCourse {
   return {
     id: apiCourse.course_id,
     code: apiCourse.full_code,

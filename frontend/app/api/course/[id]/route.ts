@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Course } from '@/types/course'
-import MapToCourse2 from '../types';
+import { DetailedCourse } from '@/types/course'
+import { MapToDetailedCourse }  from '../types';
 import { BACKEND_BASE_URL } from '../../common';
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -17,7 +17,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
             );
         }
         const apiCourse = await res.json();
-        const course: Course = MapToCourse2(apiCourse)
+        const course: DetailedCourse = MapToDetailedCourse(apiCourse)
         console.log(course)
         if (!course) {
             return NextResponse.json({ error: `No course found with ${id}` }, { status: 404 });
