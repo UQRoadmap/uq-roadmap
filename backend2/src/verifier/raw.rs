@@ -1,22 +1,27 @@
+//! The raw program requirements representation.
+//! Deserialized from json directly via serde.
+
 use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Params {}
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Status {}
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct ProgramRequirements {}
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Degree {
-    title: String,
-    params: Params,
-    status: Status,
-    program_requirements: ProgramRequirements,
-    year_options: Vec<String>,
-    routes: HashMap<String, String>,
+    pub title: String,
+    pub params: Params,
+    pub status: Status,
+    pub program_requirements: ProgramRequirements,
+    pub year_options: Vec<String>,
+    pub routes: HashMap<String, Value>,
 }
