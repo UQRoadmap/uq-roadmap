@@ -7,7 +7,7 @@ import {
   DialogPanel,
   DialogBackdrop,
 } from '@headlessui/react'
-import { BigModal, CourseDetailed } from '@/components/custom/course-card'
+import { BigModal } from '@/components/custom/course-card'
 import CourseCard from '@/components/custom/course-card'
 import { StarIcon, EyeIcon } from "@heroicons/react/20/solid"
 import {DragOverlay} from '@dnd-kit/core';
@@ -29,7 +29,7 @@ export default function CommandPalette({
   setDelete: (id: string, sem:string) => void, courseReqs:DegreeReq, courses: Course[]
 }) {
   const [query, setQuery] = useState('')
-  const [modalCourse, setModalCourse] = useState<CourseDetailed | null>(null)
+  const [modalCourse, setModalCourse] = useState<Course | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const activeCourse = courses.find(c => c.id === activeId) as Course;

@@ -11,9 +11,25 @@ export type Course = {
 
   degreeReq: DegreeReq;
   completed: boolean;
+};
+
+
+export type DetailedCourse = {
+  id: string;
+  code: string;
+  name: string;
+
+  units: number;
+  sem: string;
+  sems: string[];
+  secats: number,
+  desc: string,
+
+  degreeReq: DegreeReq;
+  completed: boolean;
   assessment: AssessmentItem[] | null,
   secat: Secat | null,
-  prereq: object | null,
+  prereq: Prereq | null,
 };
 
 export type Secat = {
@@ -29,6 +45,10 @@ export type Secat = {
     s_disagree: number;
   }[];
 };
+
+export type Prereq =
+  | { kind: 'atomic'; value: string }
+  | { kind: 'or' | 'and'; value: Prereq[] };
 
 export type AssessmentItem = {
   task: string;
