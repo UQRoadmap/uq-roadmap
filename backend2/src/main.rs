@@ -1,38 +1,19 @@
 #![allow(dead_code)]
+mod api;
 mod db;
 mod verifier;
 
-use aide::{
-    axum::{ApiRouter, IntoApiResponse, routing::get},
-    openapi::{Info, OpenApi},
-    swagger::Swagger,
-};
-use anyhow::Context;
-use axum::{
-    Extension, Json, ServiceExt, extract::State,
-    http::StatusCode, response::IntoResponse,
-};
-use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
+use axum::Router;
 use sqlx::PgPool;
 use tracing::{debug, info};
-use uuid::Uuid;
 
 #[derive(Clone, Debug)]
 pub struct AppState {
     pub db: PgPool,
 }
 
-fn app() -> ApiRouter<AppState> {
-    ApiRouter::new()
-        .api_route("/", get(test))
-        .api_route("/course", get(get_course))
-        .route("/api.json", axum::routing::get(serve_api))
-        .route(
-            "/swagger",
-            Swagger::new("/api.json").axum_route(),
-        )
-        .merge(verifier::router())
+fn app() -> Router<AppState> {
+    Router::new().merge(verifier::router()).merge(api::router())
 }
 
 #[tokio::main]
@@ -48,156 +29,10 @@ async fn main() -> anyhow::Result<()> {
 
     let app = app();
 
-    let mut api = OpenApi {
-        info: Info {
-            description: Some("UQRoadmap API".to_string()),
-            ..Info::default()
-        },
-        ..OpenApi::default()
-    };
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();
 
-    let listener =
-        tokio::net::TcpListener::bind("0.0.0.0:8080")
-            .await
-            .unwrap();
-
-    debug!(
-        "Listening on {}",
-        listener.local_addr().unwrap()
-    );
-    axum::serve(
-        listener,
-        app.finish_api_with(&mut api, |api| {
-            api.default_response::<String>()
-        })
-        .layer(Extension(api))
-        .with_state(state),
-    )
-    .await?;
+    debug!("Listening on {}", listener.local_addr().unwrap());
+    axum::serve(listener, app.with_state(state)).await?;
 
     Ok(())
-}
-
-async fn serve_api(
-    Extension(api): Extension<OpenApi>,
-) -> impl IntoResponse {
-    Json::<OpenApi>(api)
-}
-
-#[derive(Serialize, Deserialize, JsonSchema)]
-struct Response {
-    magic: String,
-}
-
-#[derive(Serialize, Deserialize, Debug, JsonSchema)]
-enum CourseSemester {
-    #[serde(rename = "Research Quarter 1")]
-    RQ1,
-    #[serde(rename = "Research Quarter 2")]
-    RQ2,
-    #[serde(rename = "Research Quarter 3")]
-    RQ3,
-    #[serde(rename = "Research Quarter 4")]
-    RQ4,
-    #[serde(rename = "SFC Enrolment Year")]
-    SFC,
-    #[serde(rename = "Semester 1")]
-    SEM1,
-    #[serde(rename = "Semester 2")]
-    SEM2,
-    #[serde(rename = "Summer Semester")]
-    SEMS,
-    #[serde(rename = "Trimester 1")]
-    TRIM1,
-    #[serde(rename = "Trimester 2")]
-    TRIM2,
-    #[serde(rename = "Trimester 3")]
-    TRIM3,
-    #[serde(rename = "UQ College Intake 1")]
-    COLLEGE1,
-    #[serde(rename = "UQ College Intake 2")]
-    COLLEGE2,
-    #[serde(rename = "Other")]
-    OTHER,
-}
-
-#[derive(Serialize, Deserialize, JsonSchema)]
-enum CourseLevel {
-    #[serde(rename = "undergraduate")]
-    Undergraduate,
-    #[serde(rename = "postgraduate")]
-    Postgraduate,
-    #[serde(rename = "postgraduate coursework")]
-    PostgraduateCoursework,
-    #[serde(rename = "uq college")]
-    UQCollege,
-    #[serde(rename = "non-award")]
-    NonAward,
-    #[serde(rename = "other")]
-    OTHER,
-}
-
-#[derive(Serialize, Deserialize, JsonSchema)]
-enum CourseMode {
-    #[serde(rename = "Work Experience")]
-    WorkExperience,
-    #[serde(rename = "In Person")]
-    InPerson,
-    #[serde(rename = "External")]
-    External,
-    #[serde(rename = "Internal")]
-    Internal,
-    #[serde(rename = "Weekend")]
-    Weekend,
-    #[serde(rename = "July Intensive")]
-    JulyIntensive,
-    #[serde(rename = "Off-Shore")]
-    OffShore,
-    #[serde(rename = "Off-Campus")]
-    OffCampus,
-    #[serde(rename = "Intensive")]
-    Intensive,
-    #[serde(rename = "Web Based")]
-    WebBased,
-    #[serde(rename = "Remote")]
-    Remote,
-    #[serde(rename = "Flexible Delivery")]
-    Flexible,
-}
-
-#[derive(Serialize, Deserialize)]
-struct CourseResponse {
-    course_id: Uuid,
-    category: String,
-    code: String,
-    name: String,
-    description: String,
-    level: CourseLevel,
-    num_units: u8,
-    attendance_mode: CourseMode,
-    active: bool,
-    semesters: Vec<CourseSemester>,
-}
-
-async fn test() -> impl IntoApiResponse {
-    let response = Response {
-        magic: "Hello".to_string(),
-    };
-    (StatusCode::OK, Json(response))
-}
-
-async fn get_course() -> impl IntoApiResponse {
-    let response = CourseResponse {
-        course_id: Uuid::new_v4(),
-        category: "CSSE".to_string(),
-        code: "2310".to_string(),
-        name: "Computer Systems Principles and Programming".to_string(),
-        description: "CSSE2310 is an introduction to UNIX (Linux), the principles of computer systems (networks and operating systems) and systems programming in C.".to_string(),
-        level: CourseLevel::Undergraduate,
-        num_units: 2,
-        attendance_mode: CourseMode::Internal,
-        active: true,
-        semesters: vec![CourseSemester::SEM1, CourseSemester::SEM2]
-    };
-    (StatusCode::OK, Json(response))
 }

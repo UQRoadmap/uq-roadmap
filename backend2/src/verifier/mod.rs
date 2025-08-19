@@ -1,4 +1,5 @@
-use aide::axum::{ApiRouter, routing::get};
+use axum::Router;
+use axum::routing::get;
 use nom::IResult;
 use nom::Parser;
 use nom::bytes::take_while_m_n;
@@ -17,18 +18,14 @@ pub type Level = u16;
 
 /// Course code. Of the format CCCCNNNN.
 /// where C is a alpha character, N is a digit.
-#[derive(
-    Debug, Clone, PartialEq, Eq, Serialize, Deserialize,
-)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CourseCode {
     pub prefix: String,
     pub postfix: String,
 }
 
 /// Program code. Of the format TODO.
-#[derive(
-    Debug, Clone, PartialEq, Eq, Serialize, Deserialize,
-)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ProgramCode {
     pub code: String,
 }
@@ -38,38 +35,30 @@ pub struct ProgramCode {
 /// Part      ::= Char Suffix*
 /// Suffix    ::= "." ( Number | Char )
 /// Number    ::= Digit+
-#[derive(
-    Debug, Clone, PartialEq, Eq, Serialize, Deserialize,
-)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct PartLabel {
     symbols: Vec<PartSymbol>,
 }
 
-#[derive(
-    Debug, Clone, PartialEq, Eq, Serialize, Deserialize,
-)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum PartSymbol {
     Char(char),
     Num(i16),
 }
 
-pub fn router() -> ApiRouter<AppState> {
-    ApiRouter::new().api_route("/test", get(raw::test))
+pub fn router() -> Router<AppState> {
+    Router::new().route("/test", get(raw::test))
 }
 
 fn is_alpha_ascii(c: char) -> bool {
     c.is_ascii_alphabetic()
 }
 
-fn parse_course_code(
-    input: &str,
-) -> IResult<&str, CourseCode> {
+fn parse_course_code(input: &str) -> IResult<&str, CourseCode> {
     map(
         all_consuming(pair(
             take_while_m_n(4, 4, is_alpha_ascii),
-            take_while_m_n(4, 4, |c: char| {
-                c.is_ascii_digit()
-            }),
+            take_while_m_n(4, 4, |c: char| c.is_ascii_digit()),
         )),
         |(prefix, postfix): (&str, &str)| CourseCode {
             prefix: prefix.to_string(),

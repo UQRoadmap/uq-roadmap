@@ -1,17 +1,10 @@
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool, query_as};
+use utoipa::ToSchema;
 use uuid::Uuid;
 
-#[derive(
-    Serialize,
-    Deserialize,
-    Debug,
-    JsonSchema,
-    sqlx::Type,
-    Clone,
-    Copy,
-)]
+#[derive(Serialize, Deserialize, Debug, JsonSchema, sqlx::Type, Clone, Copy, ToSchema)]
 #[sqlx(type_name = "course_semester_t")]
 pub enum CourseSemester {
     #[serde(rename = "Research Quarter 1")]
@@ -58,15 +51,7 @@ pub enum CourseSemester {
     Other,
 }
 
-#[derive(
-    Serialize,
-    Deserialize,
-    JsonSchema,
-    sqlx::Type,
-    Debug,
-    Clone,
-    Copy,
-)]
+#[derive(Serialize, Deserialize, JsonSchema, sqlx::Type, Debug, Clone, Copy, ToSchema)]
 #[sqlx(type_name = "course_level_t")]
 pub enum CourseLevel {
     #[serde(rename = "undergraduate")]
@@ -89,15 +74,7 @@ pub enum CourseLevel {
     Other,
 }
 
-#[derive(
-    Serialize,
-    Deserialize,
-    JsonSchema,
-    sqlx::Type,
-    Debug,
-    Clone,
-    Copy,
-)]
+#[derive(Serialize, Deserialize, JsonSchema, sqlx::Type, Debug, Clone, Copy, ToSchema)]
 #[sqlx(type_name = "course_mode_t")]
 pub enum CourseMode {
     #[serde(rename = "Work Experience")]
@@ -138,7 +115,7 @@ pub enum CourseMode {
     Flexible,
 }
 
-#[derive(Serialize, Deserialize, Debug, FromRow, Clone)]
+#[derive(Serialize, Deserialize, Debug, FromRow, Clone, ToSchema)]
 pub struct Course {
     pub course_id: Uuid,
     pub category: String,
@@ -152,10 +129,7 @@ pub struct Course {
     pub semesters: Vec<CourseSemester>,
 }
 
-pub async fn insert(
-    db: &PgPool,
-    course: &Course,
-) -> Result<Course, sqlx::Error> {
+pub async fn insert(db: &PgPool, course: &Course) -> Result<Course, sqlx::Error> {
     query_as!(
         Course,
         r#"
@@ -209,4 +183,38 @@ pub async fn get_by_category_code(
     )
     .fetch_optional(db)
     .await
+}
+
+#[sqlx::test(migrations = "./migrations")]
+async fn roundtrip_insert_and_get(pool: PgPool) {
+    let course = crate::db::course::Course {
+        course_id: Uuid::new_v4(),
+        category: "CSSE".to_string(),
+        code: "2310".to_string(),
+        name: "Computer Systems Principles and Programming".to_string(),
+        description: "Intro to UNIX, OS/Networks, C programming".to_string(),
+        level: crate::db::course::CourseLevel::Undergraduate,
+        num_units: 2,
+        attendance_mode: crate::db::course::CourseMode::Internal,
+        active: true,
+        semesters: vec![
+            crate::db::course::CourseSemester::Sem1,
+            crate::db::course::CourseSemester::Sem2,
+        ],
+    };
+
+    // Insert
+    let inserted = crate::db::course::insert(&pool, &course).await.unwrap();
+    assert_eq!(inserted.course_id, course.course_id);
+
+    // Fetch
+    let fetched = crate::db::course::get_by_category_code(&pool, "CSSE", "2310")
+        .await
+        .unwrap()
+        .expect("should exist");
+
+    assert_eq!(fetched.course_id, course.course_id);
+    assert_eq!(fetched.level as u8, course.level as u8);
+    assert_eq!(fetched.semesters.len(), 2);
+    assert!(fetched.active);
 }

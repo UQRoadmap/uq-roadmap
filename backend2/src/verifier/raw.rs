@@ -1,16 +1,14 @@
 //! The raw program requirements representation.
 //! Deserialized from json directly via serde.
 
-use aide::axum::IntoApiResponse;
-use axum::{Json, http::StatusCode};
+use axum::{Json, http::StatusCode, response::IntoResponse};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use std::{
-    collections::HashMap, fs::File, io::Read, path::Path,
-};
+use std::{collections::HashMap, fs::File, io::Read, path::Path};
 use tracing::info;
+use utoipa::ToSchema;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Param {
     pub name: String,
@@ -19,7 +17,7 @@ pub struct Param {
     pub value: Option<ParamValue>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 #[serde(untagged)]
 pub enum ParamValue {
     Int(i64),
@@ -28,7 +26,7 @@ pub enum ParamValue {
     Arr(Vec<HashMap<String, Value>>),
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct AuxiliaryRule {
     pub code: String,
@@ -36,7 +34,7 @@ pub struct AuxiliaryRule {
     pub params: Vec<Param>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct SelectionRule {
     pub code: String,
@@ -44,7 +42,7 @@ pub struct SelectionRule {
     pub params: Vec<Param>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct ComponentPayloadHeader {
     #[serde(rename = "partUID")]
@@ -61,7 +59,7 @@ pub struct ComponentPayloadHeader {
     pub selection_rule: Option<SelectionRule>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct CurriculumReference {
     pub units_maximum: Option<i64>,
@@ -80,7 +78,7 @@ pub struct CurriculumReference {
     pub state: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct WildCardItem {
     pub code: String,
@@ -91,7 +89,7 @@ pub struct WildCardItem {
     pub r#type: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EquivalenceGroup {
     pub order_number: i64,
@@ -99,33 +97,24 @@ pub struct EquivalenceGroup {
     pub curriculum_reference: CurriculumReference,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 #[serde(rename_all = "camelCase", tag = "rowType")]
 pub enum ComponentPayloadLeaf {
-    #[serde(
-        rename = "curriculumReference",
-        alias = "CurriculumReference"
-    )]
+    #[serde(rename = "curriculumReference", alias = "CurriculumReference")]
     CurriculumReference {
         order_number: Option<i64>,
         notes: Option<String>,
         curriculum_reference: CurriculumReference,
     },
 
-    #[serde(
-        rename = "equivalenceGroup",
-        alias = "EquivalenceGroup"
-    )]
+    #[serde(rename = "equivalenceGroup", alias = "EquivalenceGroup")]
     EquivalenceGroup {
         order_number: Option<i64>,
         notes: Option<String>,
         equivalence_group: Vec<EquivalenceGroup>,
     },
 
-    #[serde(
-        rename = "wildCardItem",
-        alias = "WildCardItem"
-    )]
+    #[serde(rename = "wildCardItem", alias = "WildCardItem")]
     WildCardItem {
         order_number: Option<i64>,
         notes: Option<String>,
@@ -133,21 +122,21 @@ pub enum ComponentPayloadLeaf {
     },
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct ComponentPayloadNode {
     pub header: Option<ComponentPayloadHeader>,
     pub body: Option<Vec<ComponentPayload>>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 #[serde(untagged)]
 pub enum ComponentPayload {
     Node(ComponentPayloadNode),
     Leaf(ComponentPayloadLeaf),
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Params {
     #[serde(rename = "type")]
@@ -156,14 +145,14 @@ pub struct Params {
     pub year: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Domestic {
     pub suspension: bool,
     pub available: bool,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Status {
     pub no_longer_offered: bool,
@@ -171,14 +160,14 @@ pub struct Status {
     pub domestic: Domestic,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct International {
     pub suspension: bool,
     pub available: bool,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct ApplicablePeriod {
     pub to_year: Option<String>,
@@ -187,7 +176,7 @@ pub struct ApplicablePeriod {
     pub from_term: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Component {
     pub internal_component_identifier: i64,
@@ -198,13 +187,13 @@ pub struct Component {
     pub r#type: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Payload {
     pub components: Vec<Component>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct ProgramRequirements {
     #[serde(rename = "coPDF")]
@@ -239,7 +228,7 @@ pub struct ProgramRequirements {
     pub template_version: i64,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Degree {
     pub title: String,
@@ -261,18 +250,13 @@ pub struct ProgramDetails {
     program_details: Vec<ProgramDetail>,
 }
 
-pub async fn test() -> impl IntoApiResponse {
-    let path =
-        Path::new("../backend/data/program_details.json");
+pub async fn test() -> impl IntoResponse {
+    let path = Path::new("../backend/data/program_details.json");
     let mut file = File::open(path).unwrap();
     let mut contents = String::new();
     file.read_to_string(&mut contents).unwrap();
-    let degree: ProgramDetails =
-        serde_json::from_str(&contents).unwrap();
+    let degree: ProgramDetails = serde_json::from_str(&contents).unwrap();
     info!(degree=?degree.program_details[0]);
 
-    (
-        StatusCode::OK,
-        Json(degree.program_details[0].clone()),
-    )
+    (StatusCode::OK, Json(degree.program_details[0].clone()))
 }

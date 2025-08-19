@@ -6,7 +6,6 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-aide = { version = "0.15.0", features = ["axum", "swagger"] }
 anyhow = "1.0.99"
 axum = "0.8.4"
 lalrpop = "0.22.2"
@@ -19,6 +18,8 @@ sqlx = { version = "0.8.0", features = ["postgres", "runtime-tokio", "uuid"] }
 tokio = { version = "1.47.1", features = ["macros", "rt-multi-thread"] }
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+utoipa = { version = "5.4.0", features = ["axum_extras", "uuid"] }
+utoipa-swagger-ui = { version = "9.0.2", features = ["axum"] }
 uuid = { version = "1.18.0", features = ["serde", "std", "v4"] }
 
 [profile.dev]
