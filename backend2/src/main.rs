@@ -1,18 +1,14 @@
+#![allow(dead_code)]
 mod verifier;
 
 use aide::{
-    IntoApi,
-    axum::{
-        ApiRouter, IntoApiResponse,
-        routing::{get, get_with, post},
-    },
+    axum::{ApiRouter, IntoApiResponse, routing::get},
     openapi::{Info, OpenApi},
     swagger::Swagger,
 };
 use axum::{
-    Extension, Json, ServiceExt,
-    http::StatusCode,
-    response::{Html, IntoResponse},
+    Extension, Json, ServiceExt, http::StatusCode,
+    response::IntoResponse,
 };
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -37,22 +33,30 @@ async fn main() {
         ..OpenApi::default()
     };
 
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
-        .await
-        .unwrap();
+    let listener =
+        tokio::net::TcpListener::bind("127.0.0.1:3000")
+            .await
+            .unwrap();
 
-    debug!("Listening on {}", listener.local_addr().unwrap());
+    debug!(
+        "Listening on {}",
+        listener.local_addr().unwrap()
+    );
     axum::serve(
         listener,
-        app.finish_api_with(&mut api, |api| api.default_response::<String>())
-            .layer(Extension(api))
-            .into_make_service(),
+        app.finish_api_with(&mut api, |api| {
+            api.default_response::<String>()
+        })
+        .layer(Extension(api))
+        .into_make_service(),
     )
     .await
     .unwrap();
 }
 
-async fn serve_api(Extension(api): Extension<OpenApi>) -> impl IntoResponse {
+async fn serve_api(
+    Extension(api): Extension<OpenApi>,
+) -> impl IntoResponse {
     Json::<OpenApi>(api)
 }
 
@@ -61,7 +65,10 @@ fn app() -> ApiRouter {
         .api_route("/", get(test))
         .api_route("/course", get(get_course))
         .route("/api.json", axum::routing::get(serve_api))
-        .route("/swagger", Swagger::new("/api.json").axum_route())
+        .route(
+            "/swagger",
+            Swagger::new("/api.json").axum_route(),
+        )
         .merge(verifier::router())
 }
 
@@ -69,6 +76,7 @@ fn app() -> ApiRouter {
 struct Response {
     magic: String,
 }
+
 #[derive(Serialize, Deserialize, Debug, JsonSchema)]
 enum CourseSemester {
     #[serde(rename = "Research Quarter 1")]

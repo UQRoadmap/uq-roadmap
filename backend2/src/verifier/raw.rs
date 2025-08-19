@@ -5,8 +5,10 @@ use aide::axum::IntoApiResponse;
 use axum::{Json, http::StatusCode};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use std::{collections::HashMap, fs::File, io::Read, path::Path};
-use tracing::{error, info};
+use std::{
+    collections::HashMap, fs::File, io::Read, path::Path,
+};
+use tracing::info;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -100,21 +102,30 @@ pub struct EquivalenceGroup {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", tag = "rowType")]
 pub enum ComponentPayloadLeaf {
-    #[serde(rename = "curriculumReference", alias = "CurriculumReference")]
+    #[serde(
+        rename = "curriculumReference",
+        alias = "CurriculumReference"
+    )]
     CurriculumReference {
         order_number: Option<i64>,
         notes: Option<String>,
         curriculum_reference: CurriculumReference,
     },
 
-    #[serde(rename = "equivalenceGroup", alias = "EquivalenceGroup")]
+    #[serde(
+        rename = "equivalenceGroup",
+        alias = "EquivalenceGroup"
+    )]
     EquivalenceGroup {
         order_number: Option<i64>,
         notes: Option<String>,
         equivalence_group: Vec<EquivalenceGroup>,
     },
 
-    #[serde(rename = "wildCardItem", alias = "WildCardItem")]
+    #[serde(
+        rename = "wildCardItem",
+        alias = "WildCardItem"
+    )]
     WildCardItem {
         order_number: Option<i64>,
         notes: Option<String>,
@@ -251,12 +262,17 @@ pub struct ProgramDetails {
 }
 
 pub async fn test() -> impl IntoApiResponse {
-    let path = Path::new("../backend/data/program_details.json");
+    let path =
+        Path::new("../backend/data/program_details.json");
     let mut file = File::open(path).unwrap();
     let mut contents = String::new();
-    file.read_to_string(&mut contents);
-    let degree: ProgramDetails = serde_json::from_str(&contents).unwrap();
+    file.read_to_string(&mut contents).unwrap();
+    let degree: ProgramDetails =
+        serde_json::from_str(&contents).unwrap();
     info!(degree=?degree.program_details[0]);
 
-    (StatusCode::OK, Json(degree.program_details[0].clone()))
+    (
+        StatusCode::OK,
+        Json(degree.program_details[0].clone()),
+    )
 }
