@@ -16,46 +16,46 @@ use uuid::Uuid;
 pub enum CourseSemester {
     #[serde(rename = "Research Quarter 1")]
     #[sqlx(rename = "Research Quarter 1")]
-    RQ1,
+    Rq1,
     #[serde(rename = "Research Quarter 2")]
     #[sqlx(rename = "Research Quarter 2")]
-    RQ2,
+    Rq2,
     #[serde(rename = "Research Quarter 3")]
     #[sqlx(rename = "Research Quarter 3")]
-    RQ3,
+    Rq3,
     #[serde(rename = "Research Quarter 4")]
     #[sqlx(rename = "Research Quarter 4")]
-    RQ4,
+    Rq4,
     #[serde(rename = "SFC Enrolment Year")]
     #[sqlx(rename = "SFC Enrolment Year")]
-    SFC,
+    Sfc,
     #[serde(rename = "Semester 1")]
     #[sqlx(rename = "Semester 1")]
-    SEM1,
+    Sem1,
     #[serde(rename = "Semester 2")]
     #[sqlx(rename = "Semester 2")]
-    SEM2,
+    Sem2,
     #[serde(rename = "Summer Semester")]
     #[sqlx(rename = "Summer Semester")]
-    SEMS,
+    Sems,
     #[serde(rename = "Trimester 1")]
     #[sqlx(rename = "Trimester 1")]
-    TRIM1,
+    Trim1,
     #[serde(rename = "Trimester 2")]
     #[sqlx(rename = "Trimester 2")]
-    TRIM2,
+    Trim2,
     #[serde(rename = "Trimester 3")]
     #[sqlx(rename = "Trimester 3")]
-    TRIM3,
+    Trim3,
     #[serde(rename = "UQ College Intake 1")]
     #[sqlx(rename = "UQ College Intake 1")]
-    COLLEGE1,
+    College1,
     #[serde(rename = "UQ College Intake 2")]
     #[sqlx(rename = "UQ College Intake 2")]
-    COLLEGE2,
+    College2,
     #[serde(rename = "Other")]
     #[sqlx(rename = "Other")]
-    OTHER,
+    Other,
 }
 
 #[derive(
@@ -80,13 +80,13 @@ pub enum CourseLevel {
     PostgraduateCoursework,
     #[serde(rename = "uq college")]
     #[sqlx(rename = "uq college")]
-    UQCollege,
+    UqCollege,
     #[serde(rename = "non-award")]
     #[sqlx(rename = "non-award")]
     NonAward,
     #[serde(rename = "other")]
     #[sqlx(rename = "other")]
-    OTHER,
+    Other,
 }
 
 #[derive(
