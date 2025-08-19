@@ -43,6 +43,7 @@
           RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
           DATABASE_URL = "postgres://admin:password@localhost:5432/uqroadmap";
           RUSTFLAGS = "-Zcodegen-backend=cranelift -Zshare-generics=off";
+          BACKEND_PORT = "8081";
         };
       }
     );

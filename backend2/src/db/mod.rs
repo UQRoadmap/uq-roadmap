@@ -1,6 +1,7 @@
 //! Minimal sqlx setup: pool init, migrations, and helpers.
 
 pub mod course;
+mod secat;
 pub mod seed;
 
 use anyhow::Context;

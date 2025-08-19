@@ -31,6 +31,7 @@ services:
       - DB_ACQUIRE_TIMEOUT_SECS=10
       - DB_IDLE_TIMEOUT_SECS=300
       - DB_MAX_LIFETIME_SECS=3600
+      - BACKEND_PORT=8080
   frontend:
     container_name: frontend
     build:

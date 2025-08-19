@@ -30,7 +30,10 @@ async fn main() -> anyhow::Result<()> {
 
     let app = app();
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();
+    let port = std::env::var("BACKEND_PORT")?;
+    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{port}"))
+        .await
+        .unwrap();
 
     debug!("Listening on {}", listener.local_addr().unwrap());
     axum::serve(listener, app.with_state(state)).await?;
