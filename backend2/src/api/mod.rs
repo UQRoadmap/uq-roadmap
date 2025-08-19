@@ -11,7 +11,6 @@ use axum::{
     extract::{Path, State},
     http::StatusCode,
 };
-use tracing::info;
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 

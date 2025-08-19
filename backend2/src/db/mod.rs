@@ -3,7 +3,7 @@
 pub mod course;
 
 use anyhow::Context;
-use sqlx::{PgPool, Postgres, Transaction, postgres::PgPoolOptions};
+use sqlx::{PgPool, postgres::PgPoolOptions};
 use std::time::Duration;
 
 /// Runs database migrations and returns a DbPool.
