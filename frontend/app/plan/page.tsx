@@ -74,6 +74,7 @@ export default function PlanPage() {
     };
 
     const calculateProgress = (plan: APIPlanRead) => {
+        if (plan.courses == undefined) return { scheduled: 0, total: 0, percent: 0}
         const totalCourses = plan.courses.length;
         const scheduledCourses = Object.values(plan.course_dates).flat().length;
         const completedPercentage = totalCourses > 0 ? Math.round((scheduledCourses / totalCourses) * 100) : 0;

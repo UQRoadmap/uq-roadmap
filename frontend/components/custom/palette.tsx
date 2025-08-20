@@ -7,7 +7,7 @@ import {
   DialogPanel,
   DialogBackdrop,
 } from '@headlessui/react'
-import { BigModal } from '@/components/custom/course-card'
+import OverviewModal from '@/components/custom/overview'
 import CourseCard from '@/components/custom/course-card'
 import { StarIcon, EyeIcon } from "@heroicons/react/20/solid"
 import {DragOverlay} from '@dnd-kit/core';
@@ -174,7 +174,7 @@ export default function CommandPalette({
       </DragOverlay>
 
       {modalCourse && (
-        <BigModal isModalOpen={isModalOpen}
+        <OverviewModal isModalOpen={isModalOpen}
           setIsModalOpen={setIsModalOpen}
           modalData={modalCourse}
         />
