@@ -1,5 +1,6 @@
+use anyhow::Context;
 use serde::{Deserialize, Serialize};
-use sqlx::{PgPool, prelude::FromRow, query_as};
+use sqlx::{PgPool, prelude::FromRow, query, query_as, query_scalar};
 use utoipa::ToSchema;
 use uuid::Uuid;
 
@@ -17,7 +18,8 @@ pub struct SecatQuestion {
 
 #[derive(Serialize, Deserialize, Debug, FromRow, Clone, ToSchema)]
 pub struct Secat {
-    secat_id: Uuid,
+    // Option just to make inserting a bit nicer
+    secat_id: Option<Uuid>,
     course_id: Uuid,
     num_enrolled: i32,
     num_responses: i32,
@@ -25,18 +27,8 @@ pub struct Secat {
     questions: Option<Vec<SecatQuestion>>,
 }
 
-impl SecatQuestion {
-    async fn load(db: &PgPool) -> Self {
-        todo!()
-    }
-
-    async fn store(self, db: &PgPool) {
-        todo!()
-    }
-}
-
 impl Secat {
-    async fn load_by_course_id(db: &PgPool, course_id: Uuid) -> Self {
+    async fn load_by_course_id(db: &PgPool, course_id: Uuid) -> anyhow::Result<Option<Self>> {
         query_as!(
             Secat,
             r#"
@@ -68,10 +60,48 @@ impl Secat {
             course_id
         )
         .fetch_optional(db)
-        .await.unwrap().unwrap()
+        .await.context("Failed to get secat")
     }
 
-    async fn store(&self, db: &PgPool) {
-        todo!()
+    async fn store(&self, db: &PgPool) -> anyhow::Result<()> {
+        let secat_id = query_scalar!(
+            r#"
+            INSERT INTO secats (course_id, num_enrolled, num_responses, response_rate)
+            VALUES ($1,$2,$3,$4)
+            RETURNING secats.secat_id
+            "#,
+            self.course_id,
+            self.num_enrolled,
+            self.num_responses,
+            self.response_rate
+        )
+        .fetch_one(db)
+        .await
+        .context("Failed to insert secat into DB")?;
+
+        let mut tx = db.begin().await?;
+        if let Some(questions) = &self.questions {
+            for secat_question in questions {
+                query!(
+                r#"
+                    INSERT INTO secat_questions (secat_id, name, strongly_agree, agree, middle, disagree, strongly_disagree)
+                    VALUES ($1,$2,$3,$4,$5,$6,$7)
+                "#,
+                secat_id,
+                secat_question.name,
+                secat_question.strongly_agree,
+                secat_question.agree,
+                secat_question.middle,
+                secat_question.disagree,
+                secat_question.strongly_disagree
+            )
+            .execute(&mut *tx)
+            .await
+            .context("")?;
+            }
+        }
+        tx.commit().await?;
+
+        Ok(())
     }
 }
