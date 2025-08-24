@@ -21,11 +21,11 @@ import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
 
 export default function CommandPalette({
   draggable, clickable, setActiveId, activeId, opened, sem,
-  setPaletteOpen, onSelectCourse, stateCourses, setDelete, courseReqs, courses
+  setPaletteOpen, onSelectCourse, setDelete, courseReqs, courses
 }: {
   draggable?: boolean, clickable?: boolean, setActiveId: (open: string) => void,
   activeId: string, opened: boolean, sem?: string, setPaletteOpen: (open: boolean) => void,
-  onSelectCourse: (course: Course, id: string) => void, stateCourses: Course[][],
+  onSelectCourse: (course: Course, id: string) => void,
   setDelete: (id: string, sem:string) => void, courseReqs:DegreeReq, courses: Course[]
 }) {
   const [query, setQuery] = useState('')
@@ -163,13 +163,6 @@ export default function CommandPalette({
         </div>
       </Dialog>
 
-      <DragOverlay className="z-50">
-        {activeId && (
-          <CourseCard {...stateCourses.flat().find(c => c.id === activeId)!}
-            deleteMeth={setDelete} degreeReq={courseReqs}
-          />
-        )}
-      </DragOverlay>
 
       {modalCourse && (
         <OverviewModal isModalOpen={isModalOpen}

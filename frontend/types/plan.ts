@@ -15,4 +15,7 @@ export interface PlannedCourses {
   }
 };
 
-export type CourseData = [string, number] // [courseCode, grid_pos]
+export interface CourseData {
+  code: string,
+  pos: number,
+}
