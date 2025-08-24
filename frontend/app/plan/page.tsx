@@ -73,6 +73,29 @@ export default function PlanPage() {
         fetchPlans();
     };
 
+    const calculateProgress = (plan: APIPlanRead) => {
+        if (plan.courses == undefined) return { scheduled: 0, total: 0, percent: 0}
+        const totalCourses = plan.courses.length;
+        const scheduledCourses = Object.values(plan.course_dates).flat().length;
+        const completedPercentage = totalCourses > 0 ? Math.round((scheduledCourses / totalCourses) * 100) : 0;
+        return {
+            scheduled: scheduledCourses,
+            total: totalCourses,
+            percentage: completedPercentage
+        };
+    };
+
+    const getEndYear = (plan: APIPlanRead) => {
+        if (plan.end_year) return plan.end_year;
+
+        // Calculate end year from course_dates if not explicitly set
+        const years = Object.keys(plan.course_dates)
+            .map(key => parseInt(key.split(',')[0]))
+            .filter(year => !isNaN(year));
+
+        return years.length > 0 ? Math.max(...years) : plan.start_year;
+    };
+
     if (loading) {
         return (
             <main className="max-w-7xl mx-auto px-8 mt-4">

@@ -3,7 +3,8 @@ import { DetailedCourse } from '@/types/course'
 import { MapToDetailedCourse }  from '../types';
 import { BACKEND_BASE_URL } from '../../common';
 
-export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(_: NextRequest, { params }:
+     { params: Promise<{ id: string }> }) {
     try {
         const { id } = await params
 
