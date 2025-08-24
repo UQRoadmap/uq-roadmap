@@ -1,18 +1,17 @@
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
+
 import { EllipsisVerticalIcon, StarIcon, PlusIcon } from "@heroicons/react/20/solid";
-import Droppable from "@/components/droppable"
-import Draggable from "@/components/draggable"
+
 import { Badge } from '@/components/badge'
 import { Checkbox, CheckboxField, CheckboxGroup } from '@/components/checkbox'
 import { Description, Fieldset, Label } from '@/components/fieldset'
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { CalendarIcon, BookOpenIcon, TagIcon, ClipboardDocumentListIcon } from "@heroicons/react/24/outline";
 
 import { Course, DegreeReq, Secat, AssessmentItem } from '@/types/course'
 import { ApiCourse, ApiCourse2 } from '@/app/api/course/types'
-import { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { CalendarIcon, BookOpenIcon, TagIcon, ClipboardDocumentListIcon } from "@heroicons/react/24/outline";
-export type CourseExtended = Course & {
-}
+
 
 export default function CourseCard({id, code, name, units, sems, sem, assessment, prereq, secat, secats, desc, degreeReq, completed, deleteMeth}: CourseExtended) {
     const [popupOpen, setPopupOpen] = useState<boolean>(false);
