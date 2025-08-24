@@ -494,7 +494,6 @@ export function PlanDetailClient({initialPlan, courses} : {initialPlan: JacksonP
             </div>
             <div className='max-w-7xl mx-auto px-4'>
                 <DndContext
-                    sensors={sensors}
                     onDragStart={({ active }) => setActiveId(active.id as string)}
                     onDragEnd={handleDragEnd}
                 >

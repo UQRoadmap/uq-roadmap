@@ -1,22 +1,30 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 
-import { EllipsisVerticalIcon, StarIcon, PlusIcon } from "@heroicons/react/20/solid";
+import { Draggable } from 'react-beautiful-dnd';
 
+import { EllipsisVerticalIcon, StarIcon, PlusIcon } from "@heroicons/react/20/solid";
 import { Badge } from '@/components/badge'
 import { Checkbox, CheckboxField, CheckboxGroup } from '@/components/checkbox'
 import { Description, Fieldset, Label } from '@/components/fieldset'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { CalendarIcon, BookOpenIcon, TagIcon, ClipboardDocumentListIcon } from "@heroicons/react/24/outline";
+import { CalendarIcon, BookOpenIcon,
+   TagIcon, ClipboardDocumentListIcon } from "@heroicons/react/24/outline";
 
-import { Course, DegreeReq, Secat, AssessmentItem } from '@/types/course'
-import { ApiCourse, ApiCourse2 } from '@/app/api/course/types'
+import { Course, Prereq, DetailedCourse,
+   DegreeReq, Secat, AssessmentItem } from '@/types/course'
 
+export type CourseExtended = Course & {
+    deleteMeth: (id: string, sem: string) => void,
+}
 
-export default function CourseCard({id, code, name, units, sems, sem, assessment, prereq, secat, secats, desc, degreeReq, completed, deleteMeth}: CourseExtended) {
+export default function CourseCard({id, code, name, units, sems, sem,
+   secats, desc, degreeReq, completed, deleteMeth}: CourseExtended) {
+
     const [popupOpen, setPopupOpen] = useState<boolean>(false);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-    const [modalData, setModalData] = useState<Course | null>(null); // store the course whose details you want
+    // store the course whose details you want
+    const [modalData, setModalData] = useState<Course | null>(null);
 
     const categories = getCourseCategories(code, degreeReq);
     function handleDelete() {
@@ -26,7 +34,9 @@ export default function CourseCard({id, code, name, units, sems, sem, assessment
     }
 
     function handleDets() {
-      setModalData({id, code, name, secat, prereq, units, sem, sems, secats, desc, degreeReq, assessment, completed});  // pass in the course whose details to show
+      setModalData({id, code, name, units, sem,
+         sems, secats, desc, degreeReq, completed});
+        // pass in the course whose details to show
       setPopupOpen(false);
       setIsModalOpen(true);
     }
@@ -35,62 +45,59 @@ export default function CourseCard({id, code, name, units, sems, sem, assessment
       <Draggable
         id={id}
         key={id}
-        data={{id, code, name, units, sem, sems, prereq, secat, secats, desc, degreeReq, assessment, completed}}
+        data={{id, code, name, units, sem, sems, secats, desc, degreeReq, completed}}
         disabled={false}
       >
-        <Droppable key={id} id={id} full>
-            <div
-            className="hover:cursor-grab bg-white box-border h-30 flex flex-col justify-between rounded-lg border border-gray-400 shadow-md overflow-hidden"
-            key={id}
-            >
-                <div className="bg-tertiary p-2 space-y-1 flex justify-between align-center h-9">
-                <div className="text-sm space-y-2 text-white">
-                  {categories.length > 0 ? (
-                    <h1 className="">{categories.join(", ")}</h1>
-                  ) : (
-                    <p>No categories</p>
-                  )}
-                </div>
-                <div className="relative">
-                  <EllipsisVerticalIcon
-                    className="h-4 text-white hover:cursor-pointer"
-                    data-no-dnd="true"
-                    onClick={(e) => { e.stopPropagation(); setPopupOpen((prev) => !prev);}}
-                  />
-                  {popupOpen && (
-                    <div className="absolute right-0 mt-2 w-24 bg-white border border-gray-300 rounded shadow-lg z-100">
-                      <button
-                        onClick={(e) => {e.stopPropagation(); handleDets();}}
-                        className="w-full text-left px-2 py-1 text-yellow-600 hover:bg-gray-100"
-                      >
-                        Details
-                      </button>
-                      <button
-                        onClick={(e) => {e.stopPropagation(); handleDelete();}}
-                        className="w-full text-left px-2 py-1 text-red-600 hover:bg-gray-100"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  )}
-                </div>
-                </div>
-                <BigModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} modalData={modalData}/>
-                <div className="text-xs font-medium truncate p-2" title={name}>
-                    {name}
-                </div>
-                <div className="text-xs flex items-center justify-between w-full p-2">
-                    <div className="truncate">{code}</div>
-                    <div>
-                        {units} Units
-                    </div>
-                    <div className="flex items-center space-x-1 text-yellow-400">
-                        <span>{secats}</span>
-                        <StarIcon className="w-3 h-3" />
-                    </div>
-                </div>
+        <div>
+          <div className="bg-tertiary p-2 space-y-1 flex justify-between align-center h-9">
+            <div className="text-sm space-y-2 text-white">
+              {categories.length > 0 ? (
+                <h1 className="">{categories.join(", ")}</h1>
+                ) : (
+                  <p>No categories</p>
+                )}
+              </div>
+              <div className="relative">
+                <EllipsisVerticalIcon
+                  className="h-4 text-white hover:cursor-pointer"
+                  data-no-dnd="true"
+                  onClick={(e) => { e.stopPropagation(); setPopupOpen((prev) => !prev);}}
+                />
+                {popupOpen && (
+                  <div className="absolute right-0 mt-2 w-24 bg-white border border-gray-300 rounded shadow-lg z-100">
+                    <button
+                      onClick={(e) => {e.stopPropagation(); handleDets();}}
+                      className="w-full text-left px-2 py-1 text-yellow-600 hover:bg-gray-100"
+                    >
+                      Details
+                    </button>
+                    <button
+                      onClick={(e) => {e.stopPropagation(); handleDelete();}}
+                      className="w-full text-left px-2 py-1 text-red-600 hover:bg-gray-100"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
-        </Droppable>
+            <BigModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} modalData={modalData}/>
+            <div className="text-xs font-medium truncate p-2" title={name}>
+              {name}
+            </div>
+            <div className="text-xs flex items-center justify-between w-full p-2">
+              <div className="truncate">
+                {code}
+              </div>
+              <div>
+                {units} Units
+              </div>
+              <div className="flex items-center space-x-1 text-yellow-400">
+                <span>{secats}</span>
+                <StarIcon className="w-3 h-3" />
+              </div>
+            </div>
+        </div>
       </Draggable>
     )
 }
@@ -167,7 +174,7 @@ export function PaletteCourseCard({id, code, name, units, sem, sems, secats, des
     )
 }
 
-export  function SecatGraph({ secat }: { secat: Secat | null }) {
+export  function SecatGraph({ secat }: { secat: Secat | null | undefined }) {
   if (!secat || !secat.questions?.length) return <p>No data available</p>;
 
   const data = secat.questions.map(q => ({
@@ -265,17 +272,6 @@ interface ModalProps {
   children: React.ReactNode;
 }
 
-export type CourseDetailed = Course & {
-}
-
-type Prereq =
-  | { kind: 'atomic'; value: string }
-  | { kind: 'or' | 'and'; value: Prereq[] };
-
-interface PrereqDisplayProps {
-  prereq: Prereq;
-  code: string,
-}
 
 function PrereqNode({ prereq, x = 0, y = 0 }: { prereq: Prereq; x?: number; y?: number }) {
   if (prereq.kind === 'atomic') {
@@ -324,7 +320,7 @@ function PrereqNode({ prereq, x = 0, y = 0 }: { prereq: Prereq; x?: number; y?: 
   );
 }
 
-export function PrereqDisplay({ prereq, code }: {prereq: Prereq | null, code: string}) {
+export function PrereqDisplay({ prereq, code }: {prereq: Prereq | null | undefined, code: string}) {
   if (!prereq) return <p>No prereq for this course</p>;
   return (
     <svg width="100%" height="300">
@@ -345,12 +341,12 @@ export function PrereqDisplay({ prereq, code }: {prereq: Prereq | null, code: st
 export function BigModal({ isModalOpen, setIsModalOpen, modalData }: {
   isModalOpen: boolean;
   setIsModalOpen: (val: boolean) => void;
-  modalData: CourseDetailed | null;
+  modalData: Course | null;
 }) {
   const [activeTab, setActiveTab] = useState<"general" | "prereqs" | "secats" | "assessment">("general");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [courseDatas, setCourseData] = useState<ApiCourse2 | null>(null);
+    const [courseDatas, setCourseData] = useState<DetailedCourse | null>(null);
 
     // Fetch plans on component mount
     useEffect(() => {
@@ -368,7 +364,7 @@ export function BigModal({ isModalOpen, setIsModalOpen, modalData }: {
                 throw new Error(errorData.error || 'Failed to fetch plans');
             }
 
-            const courseData: ApiCourse2 = await response.json();
+            const courseData: DetailedCourse = await response.json();
             console.log("dets",courseData)
             setCourseData(courseData);
         } catch (err) {
@@ -435,16 +431,16 @@ export function BigModal({ isModalOpen, setIsModalOpen, modalData }: {
             </div>
           )}
 
-          {activeTab === "secats" && (
-            <div> <SecatGraph secat={courseDatas?.secat}/> </div>
+          {activeTab === "secats" && courseDatas && (
+            <div> <SecatGraph secat={courseDatas.secat}/> </div>
           )}
 
-          {activeTab === "prereqs" && (
-            <PrereqDisplay prereq={courseDatas?.prereq} code={courseDatas?.code }/>
+          {activeTab === "prereqs" && courseDatas &&  (
+            <PrereqDisplay prereq={courseDatas.prereq} code={courseDatas.code }/>
           )}
 
-          {activeTab === "assessment" && (
-            <div><AssessmentList assessment={courseDatas?.assessment}/> </div>
+          {activeTab === "assessment" && courseDatas && (
+            <div><AssessmentList assessment={courseDatas.assessment}/> </div>
           )}
         </div>
       </div>
