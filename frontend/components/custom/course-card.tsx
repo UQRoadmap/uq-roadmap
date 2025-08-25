@@ -9,12 +9,17 @@ import OverviewModal from '@/components/custom/overview'
 
 import { Course, Prereq,  DegreeReq, Secat, AssessmentItem } from '@/types/course'
 
-export type CourseExtended = Course & {
+type CourseKey = Course & {
+    dragKey: string,
+}
+
+export type CourseExtended = CourseKey & {
     deleteMeth: (id: string, sem: string) => void,
+    pos: number,
 }
 
 export default function CourseCard({id, code, name, units, sems, sem,
-   secats, desc, degreeReq, completed, deleteMeth}: CourseExtended) {
+   secats, desc, degreeReq, completed, deleteMeth, pos, dragKey}: CourseExtended) {
 
     const [popupOpen, setPopupOpen] = useState<boolean>(false);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -37,62 +42,62 @@ export default function CourseCard({id, code, name, units, sems, sem,
     }
 
     return (
-      <Draggable
-        id={id}
-        key={id}
-        data={{id, code, name, units, sem, sems, secats, desc, degreeReq, completed}}
-        disabled={false}
-      >
-        <div>
-          <div className="bg-tertiary p-2 space-y-1 flex justify-between align-center h-9">
-            <div className="text-sm space-y-2 text-white">
-              {categories.length > 0 ? (
-                <h1 className="">{categories.join(", ")}</h1>
-                ) : (
-                  <p>No categories</p>
-                )}
-              </div>
-              <div className="relative">
-                <EllipsisVerticalIcon
-                  className="h-4 text-white hover:cursor-pointer"
-                  data-no-dnd="true"
-                  onClick={(e) => { e.stopPropagation(); setPopupOpen((prev) => !prev);}}
-                />
-                {popupOpen && (
-                  <div className="absolute right-0 mt-2 w-24 bg-white border border-gray-300 rounded shadow-lg z-100">
-                    <button
-                      onClick={(e) => {e.stopPropagation(); handleDets();}}
-                      className="w-full text-left px-2 py-1 text-yellow-600 hover:bg-gray-100"
-                    >
-                      Details
-                    </button>
-                    <button
-                      onClick={(e) => {e.stopPropagation(); handleDelete();}}
-                      className="w-full text-left px-2 py-1 text-red-600 hover:bg-gray-100"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                )}
+      <Draggable draggableId={dragKey} index={pos}>
+        {(provided, snapshot) => (
+          <div
+            ref={provided.innerRef}
+            {...provided.draggableProps} // container props
+            className="bg-tertiary p-2 space-y-1 rounded shadow"
+          >
+            {/* Drag handle only here */}
+            <div
+              className="flex justify-between align-center h-9 cursor-grab"
+            >
+              <div className="text-sm text-white">
+                {name} ({code})
               </div>
             </div>
-            <OverviewModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} modalData={modalData}/>
-            <div className="text-xs font-medium truncate p-2" title={name}>
-              {name}
+
+            {/* Action menu + modal NOT draggable */}
+            <div className="relative">
+              <EllipsisVerticalIcon
+                className="h-4 text-white hover:cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setPopupOpen((prev) => !prev);
+                }}
+              />
+              {popupOpen && (
+                <div className="absolute right-0 mt-2 w-24 bg-white border border-gray-300 rounded shadow-lg z-100">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDets();
+                    }}
+                    className="w-full text-left px-2 py-1 text-yellow-600 hover:bg-gray-100"
+                  >
+                    Details
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete();
+                    }}
+                    className="w-full text-left px-2 py-1 text-red-600 hover:bg-gray-100"
+                  >
+                    Delete
+                  </button>
+                </div>
+              )}
             </div>
-            <div className="text-xs flex items-center justify-between w-full p-2">
-              <div className="truncate">
-                {code}
-              </div>
-              <div>
-                {units} Units
-              </div>
-              <div className="flex items-center space-x-1 text-yellow-400">
-                <span>{secats}</span>
-                <StarIcon className="w-3 h-3" />
-              </div>
-            </div>
-        </div>
+
+            <OverviewModal
+              isModalOpen={isModalOpen}
+              setIsModalOpen={setIsModalOpen}
+              modalData={modalData}
+            />
+          </div>
+        )}
       </Draggable>
     )
 }

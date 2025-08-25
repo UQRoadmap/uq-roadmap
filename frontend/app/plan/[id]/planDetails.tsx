@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+
 import CourseCard, { EmptyCourseCard } from "@/components/custom/course-card";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/components/dropdown';
@@ -10,6 +12,11 @@ import { Course, DegreeReq } from '@/types/course';
 import ProgressCircle from '@/components/custom/progressCircle';
 import { PlannedCourses, Plan, CourseData } from '@/types/plan';
 
+type CourseKey = Course & {
+    dragKey: string,
+}
+
+
 function SemesterSection({
   semesterId,
   courses,
@@ -19,7 +26,7 @@ function SemesterSection({
   courseReqs
 }: {
   semesterId: string; // e.g. "2025-1"
-  courses: Course[];
+  courses: CourseKey[];
   setPaletteOpen: (open: boolean) => void,
   setActiveId: (id: string) => void,
   setDelete: (id: string, sem: string) => void,
@@ -31,6 +38,74 @@ function SemesterSection({
     const [year, sem] = semId.split("-");
     return `${year} Semester ${sem}`;
   };
+
+  const fakeCourses: Course[] = [
+    {
+      id: "CSE1001",
+      code: "CSE1001",
+      name: "Introduction to Programming",
+      units: 6,
+      sem: "S1",
+      sems: ["S1"],
+      secats: 4.2,
+      desc: "Covers the fundamentals of programming with Python including variables, control flow, functions, and data structures.",
+      degreeReq: {},
+      completed: false,
+    },
+    {
+      id: "MAT1100",
+      code: "MAT1100",
+      name: "Calculus I",
+      units: 6,
+      sem: "S1",
+      sems: ["S1", "S2"],
+      secats: 3.9,
+      desc: "An introduction to differential and integral calculus with applications to science and engineering.",
+      degreeReq: {},
+      completed: true,
+    },
+    {
+      id: "BIO1202",
+      code: "BIO1202",
+      name: "Molecular Biology",
+      units: 6,
+      sem: "S2",
+      sems: ["S2"],
+      secats: 4.5,
+      desc: "Examines the molecular basis of life with emphasis on DNA, RNA, proteins, and cellular processes.",
+      degreeReq: {},
+      completed: false,
+    },
+    {
+      id: "ENG2005",
+      code: "ENG2005",
+      name: "Software Engineering Principles",
+      units: 6,
+      sem: "S2",
+      sems: ["S1", "S2"],
+      secats: 4.0,
+      desc: "Covers design, testing, and maintenance of large-scale software systems, agile methods, and teamwork.",
+      degreeReq: {},
+      completed: false,
+    },
+    {
+      id: "HIS1301",
+      code: "HIS1301",
+      name: "Modern World History",
+      units: 6,
+      sem: "S1",
+      sems: ["S1"],
+      secats: 4.3,
+      desc: "Explores major events of the 20th century including world wars, decolonisation, and globalisation.",
+      degreeReq: {},
+      completed: true,
+    },
+  ];
+
+  const mappedFakeCourses: CourseKey[] = fakeCourses.map(c => ({
+    ...c,
+    dragKey: semesterId + c.id,
+  }));
 
   return (
     <div key={semesterId} className="flex flex-col gap-4 w-full p-4">
@@ -49,17 +124,14 @@ function SemesterSection({
               {...provided.droppableProps}
               className="grid grid-cols-8 w-full gap-2"
             >
-              {courses.map((course) => (
-                <div
-                  key={course.id}
-                  className={`col-span-${course.units ?? 2}`}
-                >
+              {mappedFakeCourses.map((course , i) => (
                   <CourseCard
+                    key={course.dragKey}
                     {...course}
                     deleteMeth={setDelete}
                     degreeReq={courseReqs}
+                    pos={i}
                   />
-                </div>
               ))}
               <EmptyCourseCard id={semesterId} setPaletteOpen={setPaletteOpen} setActiveId={setActiveId} />
               {provided.placeholder}
@@ -183,10 +255,17 @@ export function PlanDetailClient({
                 const semesterKey = `${year}-${semId}`; // create key like "2025-S1"
 
                 // Get courses for this semester if they exist
-                const semesterCourses: Course[] = (plan.courses[semesterKey]?.sem || [])
+                const semesterCourses: CourseKey[] = (plan.courses[semesterKey]?.sem || [])
                   .sort((a, b) => a.pos - b.pos)
-                  .map(cd => courses.find(c => c.id === cd.code))
-                  .filter((c): c is Course => c !== undefined);
+                  .map(cd => {
+                    const course = courses.find(c => c.id === cd.code);
+                    if (!course) return null;
+                    return {
+                      ...course,
+                      dragKey: uuidv4(),
+                    };
+                  })
+                  .filter((c): c is CourseKey => c !== null);
 
                 return (
                   <SemesterSection
