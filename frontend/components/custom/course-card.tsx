@@ -47,6 +47,7 @@ export default function CourseCard({id, code, name, units, sems, sem,
           <div
             ref={provided.innerRef}
             {...provided.draggableProps} // container props
+            {...provided.dragHandleProps}
             className="bg-tertiary p-2 space-y-1 rounded shadow"
           >
             {/* Drag handle only here */}
