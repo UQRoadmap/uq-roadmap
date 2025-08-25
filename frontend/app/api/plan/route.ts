@@ -44,7 +44,7 @@ export async function POST(req: Request) {
         }
 
         const plan: Plan = await res.json();
-        return plan
+        return NextResponse.json(plan)
     } catch (err) {
         console.error(err);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });

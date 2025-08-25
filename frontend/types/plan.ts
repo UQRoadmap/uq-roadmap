@@ -2,17 +2,14 @@ export interface Plan {
   name: string,
   id: string,
   degree: Degree,
-  
+
   percentage: number,
-  
-  start_year: number,
+
   start_sem: number
   end_year: number,
-  
+
   courses: PlannedCourses,
-  
-  course_dates: object,
-  course_reqs: object,
+
   specialisations: object,
 }
 
@@ -25,6 +22,7 @@ export interface PlannedCourses {
 export interface CourseData {
   code: string,
   pos: number,
+  part_id: string
 }
 
 export interface Degree {

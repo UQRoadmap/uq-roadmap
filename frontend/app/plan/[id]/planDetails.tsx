@@ -61,6 +61,7 @@ function SemesterSection({
                   />
                 </div>
               ))}
+              <EmptyCourseCard id={semesterId} setPaletteOpen={setPaletteOpen} setActiveId={setActiveId} />
               {provided.placeholder}
             </div>
           )}
@@ -134,7 +135,7 @@ export function PlanDetailClient({
 
   return (
     <div>
-      <div className="bg-secondary py-4 overflow-y-auto">
+      <div className="bg-secondary py-4">
         <div className="max-w-7xl px-8 mx-auto flex items-center justify-between w-full">
           <div>
             <div className='flex items-center gap-x-6 gap-y-2'>
@@ -175,25 +176,31 @@ export function PlanDetailClient({
             courses={courses}
           />
 
-          <div className="flex flex-col h-screen overflow-y-auto">
-            {Object.entries(plan.courses).map(([semesterId, data]) => {
-              const semesterCourses: Course[] = data.sem
-                .sort((a, b) => a.pos - b.pos)
-                .map(cd => courses.find(c => c.id === cd.code))
-                .filter((c): c is Course => c !== undefined);
+          <div className="flex flex-col">
+            {Array.from({ length: plan.end_year - plan.degree.year + 1 }, (_, i) => plan.degree.year + i).map(year => {
+              const semesters = ['1', '2']; // or however you define semester IDs
+              return semesters.map(semId => {
+                const semesterKey = `${year}-${semId}`; // create key like "2025-S1"
 
-              return (
-                <SemesterSection
-                  key={semesterId}
-                  semesterId={semesterId}
-                  courses={semesterCourses}
-                  setPaletteOpen={setPaletteOpen}
-                  setActiveId={setActiveId}
-                  setDelete={() => { }}
-                  courseReqs={courseReqs}
-                />
-              );
-            })}
+                // Get courses for this semester if they exist
+                const semesterCourses: Course[] = (plan.courses[semesterKey]?.sem || [])
+                  .sort((a, b) => a.pos - b.pos)
+                  .map(cd => courses.find(c => c.id === cd.code))
+                  .filter((c): c is Course => c !== undefined);
+
+                return (
+                  <SemesterSection
+                    key={semesterKey}
+                    semesterId={semesterKey}
+                    courses={semesterCourses}
+                    setPaletteOpen={setPaletteOpen}
+                    setActiveId={setActiveId}
+                    setDelete={() => {}}
+                    courseReqs={courseReqs}
+                  />
+                );
+              });
+            }).flat()}
           </div>
 
         </DragDropContext>
