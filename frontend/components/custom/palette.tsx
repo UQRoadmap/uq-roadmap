@@ -8,10 +8,7 @@ import {
   DialogBackdrop,
 } from '@headlessui/react'
 import OverviewModal from '@/components/custom/overview'
-import CourseCard from '@/components/custom/course-card'
 import { StarIcon, EyeIcon } from "@heroicons/react/20/solid"
-import {DragOverlay} from '@dnd-kit/core';
-import Draggable from '@/components/draggable'
 import { useState, useMemo } from 'react'
 import { Course, DegreeReq } from '@/types/course'
 import { MagnifyingGlassIcon } from '@heroicons/react/16/solid';
@@ -62,7 +59,6 @@ export default function CommandPalette({
     const course = filteredcourses[index];
     return (
       <div style={style}>
-        <Draggable id={course.id} key={course.id} data={course} disabled={!draggable}>
           <li
             className={`group ${clickable ? "cursor-pointer" : "cursor-grab"}
               rounded-md px-3 py-2 backdrop-blur-md bg-[#1f1f1f]
@@ -99,7 +95,6 @@ export default function CommandPalette({
               </div>
             </div>
           </li>
-        </Draggable>
       </div>
     )
   }

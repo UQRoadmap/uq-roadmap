@@ -10,8 +10,6 @@ import { Course, DegreeReq } from '@/types/course';
 import ProgressCircle from '@/components/custom/progressCircle';
 import { PlannedCourses, Plan, CourseData } from '@/types/plan';
 
-
-// -------- Semester Section -------- //
 function SemesterSection({
   semesterId,
   courses,
@@ -154,9 +152,9 @@ export function PlanDetailClient({
                 </Dropdown>
               </div>
             </div>
-            <div className='my-4 text-xl text-white'>{plan.degree}</div>
+            <div className='my-4 text-xl text-white'>{plan.degree.title}</div>
             <div className='flex text-white italic'>
-              Planned Completion Date: {plan.endYear} Semester {plan.startSem}
+              Planned Completion Date: {plan.end_year} Semester {plan.start_sem}
             </div>
           </div>
           <ProgressCircle percentage={plan.percentage ?? 0} />
@@ -183,7 +181,7 @@ export function PlanDetailClient({
                 .sort((a, b) => a.pos - b.pos)
                 .map(cd => courses.find(c => c.id === cd.code))
                 .filter((c): c is Course => c !== undefined);
-          
+
               return (
                 <SemesterSection
                   key={semesterId}

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Draggable } from 'react-beautiful-dnd';
+import { Draggable } from '@hello-pangea/dnd';
 
 import { EllipsisVerticalIcon, StarIcon, PlusIcon } from "@heroicons/react/20/solid";
 import { Badge } from '@/components/badge'

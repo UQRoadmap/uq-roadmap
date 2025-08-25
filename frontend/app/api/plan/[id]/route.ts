@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
-import { APIPlanCreateUpdate, LucasReadPlan, MaptoJacksonPlan } from "../types";
+import { APIPlanCreateUpdate } from "../types";
+import { Plan } from '@/types/plan'
 import { BACKEND_BASE_URL } from "../../common";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -18,10 +19,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
                 { status: res.status }
             );
         }
-        const plan: LucasReadPlan = await res.json();
-        const mapped = MaptoJacksonPlan(plan);
-        console.log(`Just got jackson plan: ${JSON.stringify(mapped)}`)
-        return NextResponse.json(mapped);
+        const plan: Plan = await res.json();
+        return NextResponse.json(plan);
     } catch (err) {
         console.error(err);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
@@ -50,10 +49,8 @@ export async function PUT(
             );
         }
 
-        const plan: LucasReadPlan = await res.json();
-        const mapped = MaptoJacksonPlan(plan);
-        console.log(`Just got jackson plan: ${JSON.stringify(mapped)}`)
-        return NextResponse.json(mapped);
+        const plan: Plan = await res.json();
+        return NextResponse.json(plan);
     } catch (err) {
         console.error(err);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
