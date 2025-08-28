@@ -11,11 +11,11 @@ import { Course, Prereq,  DegreeReq, Secat, AssessmentItem } from '@/types/cours
 
 type CourseKey = Course & {
     dragKey: string,
+    pos: number,
 }
 
 export type CourseExtended = CourseKey & {
     deleteMeth: (id: string, sem: string) => void,
-    pos: number,
 }
 
 export default function CourseCard({id, code, name, units, sems, sem,

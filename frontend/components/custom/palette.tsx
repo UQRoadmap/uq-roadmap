@@ -21,7 +21,7 @@ export default function CommandPalette({
   setPaletteOpen, onSelectCourse, setDelete, courseReqs, courses
 }: {
   draggable?: boolean, clickable?: boolean, setActiveId: (open: string) => void,
-  activeId: string, opened: boolean, sem?: string, setPaletteOpen: (open: boolean) => void,
+  activeId: string | undefined, opened: boolean, sem?: string, setPaletteOpen: (open: boolean) => void,
   onSelectCourse: (course: Course, id: string) => void,
   setDelete: (id: string, sem:string) => void, courseReqs:DegreeReq, courses: Course[]
 }) {

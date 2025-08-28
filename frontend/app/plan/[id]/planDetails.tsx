@@ -1,21 +1,26 @@
 "use client";
-import React, { useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import React, { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 import CourseCard, { EmptyCourseCard } from "@/components/custom/course-card";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/components/dropdown';
-import Pop from '@/components/custom/palette'
+import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from "@/components/dropdown";
+import Pop from "@/components/custom/palette";
 
 import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd";
-import { Course, DegreeReq } from '@/types/course';
-import ProgressCircle from '@/components/custom/progressCircle';
-import { PlannedCourses, Plan, CourseData } from '@/types/plan';
+import { Course, DegreeReq } from "@/types/course";
+import ProgressCircle from "@/components/custom/progressCircle";
+import { Plan, CourseData, PlannedCourses } from "@/types/plan";
+
+// Same as CourseData but stores the draggableId for swaps
+type LocalCourseData = CourseData & {
+  instanceId: string;
+};
 
 type CourseKey = Course & {
-    dragKey: string,
-}
-
+  dragKey: string;
+  pos: number;
+};
 
 function SemesterSection({
   semesterId,
@@ -23,14 +28,14 @@ function SemesterSection({
   setPaletteOpen,
   setActiveId,
   setDelete,
-  courseReqs
+  courseReqs,
 }: {
-  semesterId: string; // e.g. "2025-1"
+  semesterId: string;
   courses: CourseKey[];
-  setPaletteOpen: (open: boolean) => void,
-  setActiveId: (id: string) => void,
-  setDelete: (id: string, sem: string) => void,
-  courseReqs: DegreeReq
+  setPaletteOpen: (open: boolean) => void;
+  setActiveId: (id: string) => void;
+  setDelete: (id: string, sem: string) => void;
+  courseReqs: DegreeReq;
 }) {
   const [collapsed, setCollapsed] = useState(false);
 
@@ -39,83 +44,16 @@ function SemesterSection({
     return `${year} Semester ${sem}`;
   };
 
-  const fakeCourses: Course[] = [
-    {
-      id: "CSE1001",
-      code: "CSE1001",
-      name: "Introduction to Programming",
-      units: 6,
-      sem: "S1",
-      sems: ["S1"],
-      secats: 4.2,
-      desc: "Covers the fundamentals of programming with Python including variables, control flow, functions, and data structures.",
-      degreeReq: {},
-      completed: false,
-    },
-    {
-      id: "MAT1100",
-      code: "MAT1100",
-      name: "Calculus I",
-      units: 6,
-      sem: "S1",
-      sems: ["S1", "S2"],
-      secats: 3.9,
-      desc: "An introduction to differential and integral calculus with applications to science and engineering.",
-      degreeReq: {},
-      completed: true,
-    },
-    {
-      id: "BIO1202",
-      code: "BIO1202",
-      name: "Molecular Biology",
-      units: 6,
-      sem: "S2",
-      sems: ["S2"],
-      secats: 4.5,
-      desc: "Examines the molecular basis of life with emphasis on DNA, RNA, proteins, and cellular processes.",
-      degreeReq: {},
-      completed: false,
-    },
-    {
-      id: "ENG2005",
-      code: "ENG2005",
-      name: "Software Engineering Principles",
-      units: 6,
-      sem: "S2",
-      sems: ["S1", "S2"],
-      secats: 4.0,
-      desc: "Covers design, testing, and maintenance of large-scale software systems, agile methods, and teamwork.",
-      degreeReq: {},
-      completed: false,
-    },
-    {
-      id: "HIS1301",
-      code: "HIS1301",
-      name: "Modern World History",
-      units: 6,
-      sem: "S1",
-      sems: ["S1"],
-      secats: 4.3,
-      desc: "Explores major events of the 20th century including world wars, decolonisation, and globalisation.",
-      degreeReq: {},
-      completed: true,
-    },
-  ];
-
-  const mappedFakeCourses: CourseKey[] = fakeCourses.map(c => ({
-    ...c,
-    dragKey: semesterId + c.id,
-  }));
-
   return (
-    <div key={semesterId} className="flex flex-col gap-4 w-full p-4">
+    <div className="flex flex-col gap-4 w-full p-4">
       <div className="flex justify-between items-center cursor-pointer">
         <div>{getSemesterLabel(semesterId)}</div>
         <ChevronDownIcon
-          className={`w-5 h-5 transform transition-transform text-black hover:bg-gray-300 rounded-xl ${collapsed ? 'rotate-180' : ''}`}
-          onClick={() => setCollapsed(prev => !prev)}
+          className={`w-5 h-5 transform transition-transform ${collapsed ? "rotate-180" : ""}`}
+          onClick={() => setCollapsed((prev) => !prev)}
         />
       </div>
+
       {!collapsed && (
         <Droppable droppableId={semesterId} direction="horizontal">
           {(provided) => (
@@ -124,16 +62,22 @@ function SemesterSection({
               {...provided.droppableProps}
               className="grid grid-cols-8 w-full gap-2"
             >
-              {mappedFakeCourses.map((course , i) => (
-                  <CourseCard
-                    key={course.dragKey}
-                    {...course}
-                    deleteMeth={setDelete}
-                    degreeReq={courseReqs}
-                    pos={i}
-                  />
+              {courses.map((course, i) => (
+                <CourseCard
+                  key={course.dragKey}
+                  {...course}
+                  deleteMeth={setDelete}
+                  degreeReq={courseReqs}
+                  pos={i}
+                />
               ))}
-              <EmptyCourseCard id={semesterId} setPaletteOpen={setPaletteOpen} setActiveId={setActiveId} />
+
+              <EmptyCourseCard
+                id={semesterId}
+                setPaletteOpen={setPaletteOpen}
+                setActiveId={setActiveId}
+              />
+
               {provided.placeholder}
             </div>
           )}
@@ -143,66 +87,101 @@ function SemesterSection({
   );
 }
 
-
 export function PlanDetailClient({
   initialPlan,
-  courses
+  courses,
 }: {
-  initialPlan: Plan,
-  courses: Course[]
+  initialPlan: Plan;
+  courses: Course[];
 }) {
   const [plan, setPlan] = useState<Plan>(initialPlan);
   const [isPaletteOpen, setPaletteOpen] = useState(false);
-  const [activeId, setActiveId] = useState<string | undefined>();
-  const [sem, setSem] = useState<string | undefined>();
+  const [activeId, setActiveId] = useState<string>();
+  const [sem, setSem] = useState<string>();
 
   const courseReqs: DegreeReq = {
     core: ["csse2310", "csse2010", "CSSE6400"],
     electives: ["DATA2001", "CSSE6400"],
   };
 
+  const findCourse = (code: string) => courses.find((c) => c.id === code) || null;
+
+  const getSemList = (semesterId: string): LocalCourseData[] =>
+    ((plan.courses as PlannedCourses)[semesterId]?.sem || []) as LocalCourseData[];
+
+  const setSemList = (semesterId: string, list: LocalCourseData[]) => {
+    setPlan((prev) => ({
+      ...prev,
+      courses: {
+        ...prev.courses,
+        [semesterId]: { sem: list as unknown as CourseData[] },
+      },
+    }));
+  };
+
+  const addCourse = (course: Course, semesterId: string) => {
+    const list = getSemList(semesterId);
+    const newItem: LocalCourseData = {
+      code: course.id,
+      pos: list.length,
+      instanceId: uuidv4(),
+      part_id: "0", // TODO: Maybe change this
+    };
+    setSemList(semesterId, [...list, newItem]);
+  };
+
+  const removePlannedByInstance = (semesterId: string, instanceId: string) => {
+    const list = getSemList(semesterId).filter((x) => x.instanceId !== instanceId);
+    // reassign positions
+    const rePos = list.map((c, i) => ({ ...c, pos: i }));
+    setSemList(semesterId, rePos);
+  };
+
   const handleDragEnd = (result: DropResult) => {
     const { source, destination } = result;
     if (!destination) return;
 
-    const sourceSem = source.droppableId; // "2025-1"
+    const sourceSem = source.droppableId;
     const destSem = destination.droppableId;
 
-    // Same semester → reorder
+    const sourceList = [...getSemList(sourceSem)];
+    const destList = sourceSem === destSem ? sourceList : [...getSemList(destSem)];
+
+    // remove from source
+    const [moved] = sourceList.splice(source.index, 1);
+
+    if (!moved) return;
+
+    // insert into destination
+    destList.splice(destination.index, 0, moved);
+
     if (sourceSem === destSem) {
-      const updated = Array.from(plan.courses[sourceSem].sem);
-      const [moved] = updated.splice(source.index, 1);
-      updated.splice(destination.index, 0, moved);
-
-      // Reassign pos
-      const reordered = updated.map((c, i) => ({ ...c, pos: i }));
-      setPlan({
-        ...plan,
-        courses: {
-          ...plan.courses,
-          [sourceSem]: { sem: reordered },
-        },
-      });
+      // reorder within same semester
+      const rePos = destList.map((c, i) => ({ ...c, pos: i }));
+      setSemList(sourceSem, rePos);
     } else {
-      // Cross-semester move
-      const sourceList = Array.from(plan.courses[sourceSem].sem);
-      const destList = Array.from(plan.courses[destSem].sem);
-
-      const [moved] = sourceList.splice(source.index, 1);
-      destList.splice(destination.index, 0, { ...moved, pos: destination.index });
-
-      const reorderedSource = sourceList.map((c, i) => ({ ...c, pos: i }));
-      const reorderedDest = destList.map((c, i) => ({ ...c, pos: i }));
-
-      setPlan({
-        ...plan,
-        courses: {
-          ...plan.courses,
-          [sourceSem]: { sem: reorderedSource },
-          [destSem]: { sem: reorderedDest },
-        },
-      });
+      // move across semesters
+      const rePosSource = sourceList.map((c, i) => ({ ...c, pos: i }));
+      const rePosDest = destList.map((c, i) => ({ ...c, pos: i }));
+      setSemList(sourceSem, rePosSource);
+      setSemList(destSem, rePosDest);
     }
+  };
+
+  const hydrateSemester = (semesterId: string): CourseKey[] => {
+    return getSemList(semesterId)
+      .slice()
+      .sort((a, b) => a.pos - b.pos)
+      .map((cd) => {
+        const course = findCourse(cd.code);
+        if (!course) return null;
+        return {
+          ...course,
+          dragKey: cd.instanceId,
+          pos: cd.pos,
+        } as CourseKey;
+      })
+      .filter((x): x is CourseKey => x !== null);
   };
 
   return (
@@ -210,23 +189,25 @@ export function PlanDetailClient({
       <div className="bg-secondary py-4">
         <div className="max-w-7xl px-8 mx-auto flex items-center justify-between w-full">
           <div>
-            <div className='flex items-center gap-x-6 gap-y-2'>
-              <div className='text-white text-lg'>{plan.name}</div>
-              <div className='ml-2'>
-                <Dropdown>
-                  <DropdownButton accent>
-                    Options <ChevronDownIcon />
-                  </DropdownButton>
-                  <DropdownMenu>
-                    <DropdownItem onClick={() => setPlan(p => ({ ...p, reversed: !p.courses.reversed }))}>
-                      Reverse Sorting
-                    </DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              </div>
+            <div className="flex items-center gap-x-6">
+              <div className="text-white text-lg">{plan.name}</div>
+              <Dropdown>
+                <DropdownButton accent>
+                  Options <ChevronDownIcon />
+                </DropdownButton>
+                <DropdownMenu>
+                  <DropdownItem
+                    onClick={() =>
+                      setPlan((p) => ({ ...p, reversed: !p.courses.reversed }))
+                    }
+                  >
+                    Reverse Sorting
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
             </div>
-            <div className='my-4 text-xl text-white'>{plan.degree.title}</div>
-            <div className='flex text-white italic'>
+            <div className="my-4 text-xl text-white">{plan.degree.title}</div>
+            <div className="flex text-white italic">
               Planned Completion Date: {plan.end_year} Semester {plan.start_sem}
             </div>
           </div>
@@ -234,7 +215,7 @@ export function PlanDetailClient({
         </div>
       </div>
 
-      <div className='max-w-7xl mx-auto px-4'>
+      <div className="max-w-7xl mx-auto px-4">
         <DragDropContext onDragEnd={handleDragEnd}>
           <Pop
             clickable
@@ -243,45 +224,37 @@ export function PlanDetailClient({
             opened={isPaletteOpen}
             setPaletteOpen={setPaletteOpen}
             sem={sem}
-            setDelete={() => { }}
+            setDelete={() => {}}
             courseReqs={courseReqs}
             courses={courses}
+            onSelectCourse={addCourse}
           />
 
           <div className="flex flex-col">
-            {Array.from({ length: plan.end_year - plan.degree.year + 1 }, (_, i) => plan.degree.year + i).map(year => {
-              const semesters = ['1', '2']; // or however you define semester IDs
-              return semesters.map(semId => {
-                const semesterKey = `${year}-${semId}`; // create key like "2025-S1"
+            {Array.from(
+              { length: plan.end_year - plan.degree.year + 1 },
+              (_, i) => plan.degree.year + i
+            )
+              .map((year) =>
+                ["1", "2"].map((semId) => {
+                  const semesterKey = `${year}-${semId}`;
+                  const semesterCourses = hydrateSemester(semesterKey);
 
-                // Get courses for this semester if they exist
-                const semesterCourses: CourseKey[] = (plan.courses[semesterKey]?.sem || [])
-                  .sort((a, b) => a.pos - b.pos)
-                  .map(cd => {
-                    const course = courses.find(c => c.id === cd.code);
-                    if (!course) return null;
-                    return {
-                      ...course,
-                      dragKey: uuidv4(),
-                    };
-                  })
-                  .filter((c): c is CourseKey => c !== null);
-
-                return (
-                  <SemesterSection
-                    key={semesterKey}
-                    semesterId={semesterKey}
-                    courses={semesterCourses}
-                    setPaletteOpen={setPaletteOpen}
-                    setActiveId={setActiveId}
-                    setDelete={() => {}}
-                    courseReqs={courseReqs}
-                  />
-                );
-              });
-            }).flat()}
+                  return (
+                    <SemesterSection
+                      key={semesterKey}
+                      semesterId={semesterKey}
+                      courses={semesterCourses}
+                      setPaletteOpen={setPaletteOpen}
+                      setActiveId={setActiveId}
+                      setDelete={() => {}}
+                      courseReqs={courseReqs}
+                    />
+                  );
+                })
+              )
+              .flat()}
           </div>
-
         </DragDropContext>
       </div>
     </div>
