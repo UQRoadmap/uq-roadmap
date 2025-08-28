@@ -47,7 +47,7 @@ export default function CommandPalette({
     if (!clickable) return;
     course.sem = sem ?? "";
     setActiveId(course.id)
-    if (onSelectCourse) {
+    if (onSelectCourse && activeId) {
       onSelectCourse(course, activeId); // pass the course and the target slot id
     }
     setPaletteOpen(false);

@@ -7,7 +7,8 @@ import { Button } from '@/components/button'
 import { Textarea } from "@/components/textarea";
 import { APIDegreeRead, DegreeSummary } from "../api/degree/types";
 import BetterDropdown from "../../components/custom/Dropdown";
-import { APIPlanCreateUpdate, JacksonPlan, LucasReadPlan } from "../api/plan/types";
+import { APIPlanCreateUpdate } from "../api/plan/types";
+import { Plan } from '@/types/plan'
 import { useRouter } from "next/navigation";
 
 function buildArrayFrom(num: number, len: number = 8) {
@@ -110,10 +111,10 @@ export default function Home() {
                 return;
             }
 
-            const newPlan: JacksonPlan = await res.json();
+            const newPlan: Plan = await res.json();
 
             console.log("Plan created successfully:", newPlan);
-            router.push(`/plan/${newPlan.plan_id}`);
+            router.push(`/plan/${newPlan.id}`);
         } catch (err) {
             console.error(err);
             alert("An unexpected error occurred. Please try again.");
