@@ -20,6 +20,8 @@
       {
         devShells.default = pkgs.mkShell {
           packages = [
+            pkgs.typescript-language-server
+            pkgs.nodejs_24
           ];
         };
       }

@@ -1,469 +1,262 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import CourseCard, { EmptyCourseCard } from "@/components/custom/course-card";
-import { ArrowDownIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
-import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/components/dropdown';
-import Pop from '@/components/custom/palette'
-
-import { MouseSensor, KeyboardSensor } from '@/components/custom-sensors'
-
-import { DndContext, DragEndEvent, useSensor, useSensors } from '@dnd-kit/core';
-import { Course, DegreeReq } from '@/types/course';
+import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { Plan } from '@/types/plan';
-import PlanValidation from './planValidate';
 
+import CourseCard, { EmptyCourseCard } from "@/components/custom/course-card";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from "@/components/dropdown";
+import Pop from "@/components/custom/palette";
 
-function SemesterSection({ semester, courses, setPaletteOpen, setActiveId, setDelete, courseReqs }:
-    {
-        semester: number; courses?: Course[], setPaletteOpen: (open: boolean) => void,
-        setActiveId: (id: string) => void, setDelete: (id: string, sem: string) => void,
-        courseReqs: DegreeReq
-    }) {
-    const [collapsed, setCollapsed] = useState(false);
+import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd";
+import { Course, DegreeReq } from "@/types/course";
+import ProgressCircle from "@/components/custom/progressCircle";
+import { Plan, CourseData, PlannedCourses } from "@/types/plan";
 
-    const normalCourses: Course[] = [];
-    const overloadCourses: Course[] = [];
-    let usedUnits = 0;
+// Same as CourseData but stores the draggableId for swaps
+type LocalCourseData = CourseData & {
+  instanceId: string;
+};
 
-    if (courses && courses.length > 0) {
-        courses.forEach((course) => {
-            if (usedUnits + (course?.units ?? 0) <= 8) {
-                normalCourses.push(course);
-                usedUnits += course?.units ?? 0;
-            } else {
-                overloadCourses.push(course);
-            }
-        });
-    }
+type CourseKey = Course & {
+  dragKey: string;
+  pos: number;
+};
 
-    const getSemesterLabel = (sem: number) => {
-        const year = Math.floor(sem / 10);
-        const semesterNum = sem % 10;
-        return `${year} Semester ${semesterNum}`;
-    };
+function SemesterSection({
+  semesterId,
+  courses,
+  setPaletteOpen,
+  setActiveId,
+  setDelete,
+  courseReqs,
+}: {
+  semesterId: string;
+  courses: CourseKey[];
+  setPaletteOpen: (open: boolean) => void;
+  setActiveId: (id: string) => void;
+  setDelete: (id: string, sem: string) => void;
+  courseReqs: DegreeReq;
+}) {
+  const [collapsed, setCollapsed] = useState(false);
 
-    const getColSpanClass = (units: number) => {
-        switch (Math.floor(units)) {
-            case 8:
-                return 'col-span-8';
-            case 4:
-                return 'col-span-4';
-            case 2:
-                return 'col-span-2';
-            case 1:
-                return 'col-span-1';
-            default:
-                return 'col-span-1';
-        }
-    }
+  const getSemesterLabel = (semId: string) => {
+    const [year, sem] = semId.split("-");
+    return `${year} Semester ${sem}`;
+  };
 
-    return (
-        <div key={semester} className="flex flex-col items-stretch justify-start gap-4 w-full p-4">
+  return (
+    <div className="flex flex-col gap-4 w-full p-4">
+      <div className="flex justify-between items-center cursor-pointer">
+        <div>{getSemesterLabel(semesterId)}</div>
+        <ChevronDownIcon
+          className={`w-5 h-5 transform transition-transform ${collapsed ? "rotate-180" : ""}`}
+          onClick={() => setCollapsed((prev) => !prev)}
+        />
+      </div>
+
+      {!collapsed && (
+        <Droppable droppableId={semesterId} direction="horizontal">
+          {(provided) => (
             <div
-                className="flex justify-between items-center cursor-pointer"
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+              className="grid grid-cols-8 w-full gap-2"
             >
-                <div>{getSemesterLabel(semester)}</div>
-                <ChevronDownIcon
-                    className={`w-5 h-5 transform transition-transform text-black hover:bg-gray-300 rounded-xl ${collapsed ? 'rotate-180' : ''}`}
-                    onClick={() => setCollapsed(prev => !prev)}
+              {courses.map((course, i) => (
+                <CourseCard
+                  key={course.dragKey}
+                  {...course}
+                  deleteMeth={setDelete}
+                  degreeReq={courseReqs}
+                  pos={i}
                 />
+              ))}
+
+              <EmptyCourseCard
+                id={semesterId}
+                setPaletteOpen={setPaletteOpen}
+                setActiveId={setActiveId}
+              />
+
+              {provided.placeholder}
             </div>
-            {!collapsed && (
-                <>
-                    <div className="grid grid-cols-8 w-full gap-2">
-                        {Array.from({ length: 4 }).map((_, i) => {
-                            const course = normalCourses.find(c => {
-                                if (!c) return false;
-                                const [_, pos] = c.sem.split("-"); // "20251-2"
-                                return Number(pos) === i;
-                            });
-
-                            return (
-                                <div
-                                    key={`${course ? course.id : "empty"}-${semester}-${i}`}
-                                    className={getColSpanClass(course ? course.units : 2)} // default empty to 2 units
-                                >
-                                    {course ?
-                                        <CourseCard {...course} deleteMeth={setDelete} degreeReq={courseReqs} />
-                                        :
-                                        <EmptyCourseCard id={`${semester}-${i}`} setPaletteOpen={setPaletteOpen} setActiveId={setActiveId} />
-                                    }
-
-                                </div>
-                            );
-                        })}
-                    </div>
-
-                    {overloadCourses.length > 0 && (
-                        <div className="my-4 w-full rounded border-t-2 border-red-500 border-dotted">
-                            <div className="space-y-2 mt-4">
-                                <div className="flex items-center gap-1">
-                                    <div>Overloaded Courses</div>
-                                    <ArrowDownIcon className="h-3 ml-1" />
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </>
-            )}
-        </div>
-    );
+          )}
+        </Droppable>
+      )}
+    </div>
+  );
 }
 
-export function PlanDetailClient({ initialPlan, courses }: { initialPlan: Plan, courses: Course[] }) {
-    const [plan, setPlan] = useState<Plan>(initialPlan);
-    const [isPaletteOpen, setPaletteOpen] = useState(false);
-    const [sem, setSem] = useState(undefined);
-    const [isReversed, setIsReversed] = useState(false);
-    const courseReqs: DegreeReq = {
-        core: [
-            "csse2310",
-            "csse2010",
-            "CSSE6400"
-        ],
-        electives: [
-            "DATA2001",
-            "CSSE6400"
-        ],
-    }
+export function PlanDetailClient({
+  initialPlan,
+  courses,
+}: {
+  initialPlan: Plan;
+  courses: Course[];
+}) {
+  const [plan, setPlan] = useState<Plan>(initialPlan);
+  const [isPaletteOpen, setPaletteOpen] = useState(false);
+  const [activeId, setActiveId] = useState<string>();
+  const [sem, setSem] = useState<string>();
 
-    const sensors = useSensors(
-        useSensor(MouseSensor),
-        useSensor(KeyboardSensor)
-    );
+  const courseReqs: DegreeReq = {
+    core: ["csse2310", "csse2010", "CSSE6400"],
+    electives: ["DATA2001", "CSSE6400"],
+  };
 
+  const findCourse = (code: string) => courses.find((c) => c.id === code) || null;
 
-    function handleDragEnd(event: DragEndEvent) {
-        const { active, over } = event;
+  const getSemList = (semesterId: string): LocalCourseData[] =>
+    ((plan.courses as PlannedCourses)[semesterId]?.sem || []) as LocalCourseData[];
 
-        if (!over) return;
+  const setSemList = (semesterId: string, list: LocalCourseData[]) => {
+    setPlan((prev) => ({
+      ...prev,
+      courses: {
+        ...prev.courses,
+        [semesterId]: { sem: list as unknown as CourseData[] },
+      },
+    }));
+  };
 
-        const dragCourse = active.data.current as Course;
-        if (!dragCourse) return;
-
-        if (over.data?.current?.full) {
-            // Two course cards to swap
-            const targetCourseId = over.id.toString();
-
-            setCourses((prevCourses) => {
-                // Deep copy
-                const newCourses = prevCourses.map((sem) => [...sem]);
-
-                // Find both courses in the course array
-                let dragSemIndex = -1;
-                let dragCourseIndex = -1;
-                let targetSemIndex = -1;
-                let targetCourseIndex = -1;
-
-                // Find the dragged course
-                for (let i = 0; i < newCourses.length; i++) {
-                    const courseIndex = newCourses[i].findIndex(c => c && c.id === dragCourse.id);
-                    if (courseIndex !== -1) {
-                        dragSemIndex = i;
-                        dragCourseIndex = courseIndex;
-                        break;
-                    }
-                }
-
-                // Find the target course
-                for (let i = 0; i < newCourses.length; i++) {
-                    const courseIndex = newCourses[i].findIndex(c => c && c.id === targetCourseId);
-                    if (courseIndex !== -1) {
-                        targetSemIndex = i;
-                        targetCourseIndex = courseIndex;
-                        break;
-                    }
-                }
-
-                // If both courses were found, swap them
-                if (dragSemIndex !== -1 && targetSemIndex !== -1) {
-                    const draggedCourse = { ...newCourses[dragSemIndex][dragCourseIndex] };
-                    const targetCourse = { ...newCourses[targetSemIndex][targetCourseIndex] };
-
-                    // Parse the semester values correctly
-                    const [dragSemesterStr, dragPosStr] = draggedCourse.sem.split("-");
-                    const [targetSemesterStr, targetPosStr] = targetCourse.sem.split("-");
-
-                    // Create new sem values with swapped positions
-                    draggedCourse.sem = `${targetSemesterStr}-${targetPosStr}`;
-                    targetCourse.sem = `${dragSemesterStr}-${dragPosStr}`;
-
-                    // Swap positions
-                    newCourses[dragSemIndex][dragCourseIndex] = targetCourse;
-                    newCourses[targetSemIndex][targetCourseIndex] = draggedCourse;
-
-                    console.log("Swapped courses:", {
-                        draggedFrom: `${dragSemIndex}-${dragCourseIndex}`,
-                        draggedTo: `${targetSemIndex}-${targetCourseIndex}`,
-                        draggedCourseSem: draggedCourse.sem,
-                        targetCourseSem: targetCourse.sem
-                    });
-                }
-
-                return newCourses;
-            });
-
-            setActiveId("");
-            return;
-        }
-
-        const [targetSemIndexStr, targetIndexStr] = over.id.toString().split("-");
-
-        const year = Math.floor(Number(targetSemIndexStr) / 10);
-        const semNum = Number(targetSemIndexStr) % 10;
-
-        let targetSemIndex;
-        if (isReversed) {
-            const totalSemesters = (plan.endYear - plan.startYear + 1) * 2
-            targetSemIndex = totalSemesters - 1 - ((year - plan.startYear) * 2 + (semNum - 1));
-        } else {
-            targetSemIndex = (year - plan.startYear) * 2 + (semNum - 1);
-        }
-
-        const targetIndex = parseInt(targetIndexStr, 10);
-
-        setCourses((prevCourses) => {
-            // Deep copy
-            const newCourses = prevCourses.map((sem) => [...sem]);
-
-            // Check if course already exists in any semester
-            const currentSemIndex = newCourses.findIndex((sem) => sem &&
-                sem.some((c) => c.id === dragCourse.id)
-            );
-
-            // If it exists, remove from old semester
-            if (currentSemIndex !== -1) {
-                const courseIndex = newCourses[currentSemIndex].findIndex(
-                    (c) => c && c.id === dragCourse.id
-                );
-                newCourses[currentSemIndex].splice(courseIndex, 1);
-            }
-
-            // Update semester property (optional)
-            const updatedCourse = { ...dragCourse, sem: year.toString() + targetSemIndex.toString() + "-" + targetIndex };
-            // Insert at target position
-            newCourses[targetSemIndex].splice(targetIndex, 0, updatedCourse);
-            console.log("drag", newCourses)
-            return newCourses;
-        });
-        setActiveId("");
-    }
-
-    const handleInsertCourse = (course: Course, targetId: string) => {
-        const [targetSemStr, targetIndexStr] = targetId.split("-");
-        const year = Math.floor(Number(targetSemStr) / 10);
-        const semNum = Number(targetSemStr) % 10;
-
-        let targetSemIndex;
-        if (isReversed) {
-            const totalSemesters = (plan.endYear - plan.startYear + 1) * 2;
-            targetSemIndex = totalSemesters - 1 - ((year - plan.startYear) * 2 + (semNum - 1));
-        } else {
-            targetSemIndex = (year - plan.startYear) * 2 + (semNum - 1);
-        }
-
-        const targetIndex = parseInt(targetIndexStr, 10);
-        setCourses(prevCourses => {
-            const newCourses = prevCourses.map(sem => [...sem]);
-
-            const updatedCourse = { ...course, sem: targetId };
-            newCourses[targetSemIndex].splice(targetIndex, 0, updatedCourse); // replace empty card
-
-            console.log("insert", newCourses)
-            return newCourses;
-        });
-        setActiveId("");
+  const addCourse = (course: Course, semesterId: string) => {
+    const list = getSemList(semesterId);
+    const newItem: LocalCourseData = {
+      code: course.id,
+      pos: list.length,
+      instanceId: uuidv4(),
+      part_id: "0", // TODO: Maybe change this
     };
+    setSemList(semesterId, [...list, newItem]);
+  };
 
-    function handleDeleteCourse(courseId: string, targetId: string) {
-        const [targetSemStr] = targetId.split("-");
-        const year = Math.floor(Number(targetSemStr) / 10);
-        const semNum = Number(targetSemStr) % 10;
+  const removePlannedByInstance = (semesterId: string, instanceId: string) => {
+    const list = getSemList(semesterId).filter((x) => x.instanceId !== instanceId);
+    // reassign positions
+    const rePos = list.map((c, i) => ({ ...c, pos: i }));
+    setSemList(semesterId, rePos);
+  };
 
-        let targetSemIndex;
-        if (isReversed) {
-            const totalSemesters = (plan.endYear - plan.startYear + 1) * 2;
-            targetSemIndex = totalSemesters - 1 - ((year - plan.startYear) * 2 + (semNum - 1));
-        } else {
-            targetSemIndex = (year - plan.startYear) * 2 + (semNum - 1);
-        }
+  const handleDragEnd = (result: DropResult) => {
+    const { source, destination } = result;
+    if (!destination) return;
 
-        setCourses(prevCourses => {
-            const newCourses = prevCourses.map(sem => [...sem]);
+    const sourceSem = source.droppableId;
+    const destSem = destination.droppableId;
 
-            // filter out the course by ID
-            newCourses[targetSemIndex] = newCourses[targetSemIndex].filter(c => c.id !== courseId);
+    const sourceList = [...getSemList(sourceSem)];
+    const destList = sourceSem === destSem ? sourceList : [...getSemList(destSem)];
 
-            console.log("delete", newCourses);
-            return newCourses;
-        });
+    // remove from source
+    const [moved] = sourceList.splice(source.index, 1);
 
-        setActiveId("");
-    };
+    if (!moved) return;
 
-    const [activeId, setActiveId] = useState<string>("");
-    useEffect(() => {
-        console.log("id change: ", activeId);
-    });
-    const [semesters, setSemesters] = useState<number[]>([]);
-    const [stateCourses, setCourses] = useState<Course[][]>([]);
+    // insert into destination
+    destList.splice(destination.index, 0, moved);
 
-    useEffect(() => {
-        if (plan) {
-            const newSemesters: number[] = [];
-            const newCourses: Course[][] = [];
-            for (let year = plan.startYear; year <= plan.endYear; year++) {
-                newSemesters.push(Number(`${year}1`));
-                newSemesters.push(Number(`${year}2`));
-                newCourses.push([]);
-                newCourses.push([]);
-            }
-            setSemesters(newSemesters);
-            setCourses(newCourses);
-        }
-        console.log(semesters)
-    }, [plan]);
-
-    // async function DeletePlan() {
-    //     if (typeof window === "undefined" || !plan) return;
-    //     const possibleKeys = [
-    //         `plan-${plan.id}`,
-    //     ].filter(Boolean) as string[];
-
-    //     possibleKeys.forEach((k) => {
-    //         try {
-    //             localStorage.removeItem(k);
-    //         } catch (e) {
-    //             console.warn("Failed to remove localStorage key", k, e);
-    //         }
-    //     });
-
-    //     // Use Next.js client router to navigate back (ensure `const router = useRouter()` is declared in the component scope)
-    //     if (typeof window !== "undefined") {
-    //         router.push('/plan');
-    //     }
-    // }
-
-    function sort() {
-        setSemesters(prevSemesters => [...prevSemesters].reverse());
-        setCourses(prevCourses => [...prevCourses].reverse());
-        setIsReversed(prev => !prev);
+    if (sourceSem === destSem) {
+      // reorder within same semester
+      const rePos = destList.map((c, i) => ({ ...c, pos: i }));
+      setSemList(sourceSem, rePos);
+    } else {
+      // move across semesters
+      const rePosSource = sourceList.map((c, i) => ({ ...c, pos: i }));
+      const rePosDest = destList.map((c, i) => ({ ...c, pos: i }));
+      setSemList(sourceSem, rePosSource);
+      setSemList(destSem, rePosDest);
     }
+  };
 
-    useEffect(() => {
-        async function fetchDegrees() {
-            try {
-                const res = await fetch("/api/degree/summary");
-                if (!res.ok) {
-                    console.error(await res.text())
-                    throw new Error("Failed to fetch degrees");
-                }
-                // const data: DegreeSummary[] = await res.json();
-                // setDegreeSummaries(data);
-            } catch (err) {
-                console.error("Error fetching degrees:", err);
-            }
-        }
-        fetchDegrees()
-    }, [semesters]);
+  const hydrateSemester = (semesterId: string): CourseKey[] => {
+    return getSemList(semesterId)
+      .slice()
+      .sort((a, b) => a.pos - b.pos)
+      .map((cd) => {
+        const course = findCourse(cd.code);
+        if (!course) return null;
+        return {
+          ...course,
+          dragKey: cd.instanceId,
+          pos: cd.pos,
+        } as CourseKey;
+      })
+      .filter((x): x is CourseKey => x !== null);
+  };
 
-    return (
-        <div>
-            <div className="bg-secondary py-4 overflow-y-auto">
-                <div className="max-w-7xl px-8 mx-auto flex items-center justify-between w-full">
-                    {plan ? (
-                        <>
-                            <div>
-                                <div className='flex items-center gap-x-6 gap-y-2'>
-                                    <div className='text-white text-lg'>
-                                        {plan.name}
-                                    </div>
-                                    <div className='ml-2'>
-                                        <Dropdown>
-                                            <DropdownButton accent>
-                                                Options
-                                                <ChevronDownIcon />
-                                            </DropdownButton>
-                                            <DropdownMenu>
-                                                <DropdownItem className="hover:cursor-pointer" onClick={() => sort()}>Reverse Sorting</DropdownItem>
-                                            </DropdownMenu>
-                                        </Dropdown>
-                                    </div>
-                                </div>
-                                <div className='my-4 text-xl text-white'>
-                                    {plan.degree}
-                                </div>
-                                <div className='flex text-white italic'>
-                                    <div>
-                                        Planned Completion Date: {plan.endYear} Semester {plan.startSem}
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='flex flex-wrap items-center gap-x-6 gap-y-2'>
-                                <PlanValidation plan={plan}/>
-                            </div>
-                        </>
-                    ) : (
-                        // This skeleton loader is likely not needed anymore since the page
-                        // won't render until the plan is fetched, but keeping it just in case.
-                        <>
-                            <div className="flex-1">
-                                <div className="flex items-center gap-x-6 gap-y-2">
-                                    <div className="w-48 h-6 bg-gray-400/30 rounded-md animate-pulse" />
-                                    <div className="ml-2">
-                                        <div className="w-20 h-6 bg-gray-400/30 rounded-md animate-pulse" />
-                                    </div>
-                                </div>
-                                <div className="my-4">
-                                    <div className="w-128 h-5 bg-gray-400/30 rounded-md animate-pulse" />
-                                </div>
-                                <div className='flex text-white italic'>
-                                    <div className="w-64 h-4 bg-gray-400/30 rounded-md animate-pulse" />
-                                </div>
-                            </div>
-                            <div className='flex flex-wrap items-center gap-x-6 gap-y-2'>
-                                <div className="w-24 h-24 rounded-full bg-gray-400/30 animate-pulse" />
-                            </div>
-                        </>
-                    )}
-                </div>
+  return (
+    <div>
+      <div className="bg-secondary py-4">
+        <div className="max-w-7xl px-8 mx-auto flex items-center justify-between w-full">
+          <div>
+            <div className="flex items-center gap-x-6">
+              <div className="text-white text-lg">{plan.name}</div>
+              <Dropdown>
+                <DropdownButton accent>
+                  Options <ChevronDownIcon />
+                </DropdownButton>
+                <DropdownMenu>
+                  <DropdownItem
+                    onClick={() =>
+                      setPlan((p) => ({ ...p, reversed: !p.courses.reversed }))
+                    }
+                  >
+                    Reverse Sorting
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
             </div>
-            <div className='max-w-7xl mx-auto px-4'>
-                <DndContext
-                    sensors={sensors}
-                    onDragStart={({ active }) => setActiveId(active.id as string)}
-                    onDragEnd={handleDragEnd}
-                >
-                    <Pop
-                        clickable
-                        setActiveId={setActiveId}
-                        activeId={activeId}
-                        opened={isPaletteOpen}
-                        setPaletteOpen={setPaletteOpen}
-                        onSelectCourse={handleInsertCourse}
-                        sem={sem}
-                        stateCourses={stateCourses}
-                        setDelete={handleDeleteCourse}
-                        courseReqs={courseReqs}
-                        courses={courses}
-                    />
-
-                    <div className="flex flex-col h-screen overflow-y-auto">
-                        {semesters.map((semester, i) => (
-                            <SemesterSection
-                                key={semester}
-                                semester={semester}
-                                courses={stateCourses[i]}
-                                setPaletteOpen={setPaletteOpen}
-                                setActiveId={setActiveId}
-                                setDelete={handleDeleteCourse}
-                                courseReqs={courseReqs}
-                            />
-                        ))}
-                    </div>
-                </DndContext>
+            <div className="my-4 text-xl text-white">{plan.degree.title}</div>
+            <div className="flex text-white italic">
+              Planned Completion Date: {plan.end_year} Semester {plan.start_sem}
             </div>
+          </div>
+          <ProgressCircle percentage={plan.percentage ?? 0} />
         </div>
-    );
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4">
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Pop
+            clickable
+            setActiveId={setActiveId}
+            activeId={activeId}
+            opened={isPaletteOpen}
+            setPaletteOpen={setPaletteOpen}
+            sem={sem}
+            setDelete={() => {}}
+            courseReqs={courseReqs}
+            courses={courses}
+            onSelectCourse={addCourse}
+          />
+
+          <div className="flex flex-col">
+            {Array.from(
+              { length: plan.end_year - plan.degree.year + 1 },
+              (_, i) => plan.degree.year + i
+            )
+              .map((year) =>
+                ["1", "2"].map((semId) => {
+                  const semesterKey = `${year}-${semId}`;
+                  const semesterCourses = hydrateSemester(semesterKey);
+
+                  return (
+                    <SemesterSection
+                      key={semesterKey}
+                      semesterId={semesterKey}
+                      courses={semesterCourses}
+                      setPaletteOpen={setPaletteOpen}
+                      setActiveId={setActiveId}
+                      setDelete={() => {}}
+                      courseReqs={courseReqs}
+                    />
+                  );
+                })
+              )
+              .flat()}
+          </div>
+        </DragDropContext>
+      </div>
+    </div>
+  );
 }

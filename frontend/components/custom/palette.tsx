@@ -7,11 +7,8 @@ import {
   DialogPanel,
   DialogBackdrop,
 } from '@headlessui/react'
-import { BigModal } from '@/components/custom/course-card'
-import CourseCard from '@/components/custom/course-card'
+import OverviewModal from '@/components/custom/overview'
 import { StarIcon, EyeIcon } from "@heroicons/react/20/solid"
-import {DragOverlay} from '@dnd-kit/core';
-import Draggable from '@/components/draggable'
 import { useState, useMemo } from 'react'
 import { Course, DegreeReq } from '@/types/course'
 import { MagnifyingGlassIcon } from '@heroicons/react/16/solid';
@@ -21,18 +18,16 @@ import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
 
 export default function CommandPalette({
   draggable, clickable, setActiveId, activeId, opened, sem,
-  setPaletteOpen, onSelectCourse, stateCourses, setDelete, courseReqs, courses
+  setPaletteOpen, onSelectCourse, setDelete, courseReqs, courses
 }: {
   draggable?: boolean, clickable?: boolean, setActiveId: (open: string) => void,
-  activeId: string, opened: boolean, sem?: string, setPaletteOpen: (open: boolean) => void,
-  onSelectCourse: (course: Course, id: string) => void, stateCourses: Course[][],
+  activeId: string | undefined, opened: boolean, sem?: string, setPaletteOpen: (open: boolean) => void,
+  onSelectCourse: (course: Course, id: string) => void,
   setDelete: (id: string, sem:string) => void, courseReqs:DegreeReq, courses: Course[]
 }) {
   const [query, setQuery] = useState('')
   const [modalCourse, setModalCourse] = useState<Course | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
-
-  const activeCourse = courses.find(c => c.id === activeId) as Course;
 
   // memoize filtering to avoid re-runs
   const filteredcourses = useMemo(() => {
@@ -52,7 +47,7 @@ export default function CommandPalette({
     if (!clickable) return;
     course.sem = sem ?? "";
     setActiveId(course.id)
-    if (onSelectCourse) {
+    if (onSelectCourse && activeId) {
       onSelectCourse(course, activeId); // pass the course and the target slot id
     }
     setPaletteOpen(false);
@@ -64,7 +59,6 @@ export default function CommandPalette({
     const course = filteredcourses[index];
     return (
       <div style={style}>
-        <Draggable id={course.id} key={course.id} data={course} disabled={!draggable}>
           <li
             className={`group ${clickable ? "cursor-pointer" : "cursor-grab"}
               rounded-md px-3 py-2 backdrop-blur-md bg-[#1f1f1f]
@@ -101,7 +95,6 @@ export default function CommandPalette({
               </div>
             </div>
           </li>
-        </Draggable>
       </div>
     )
   }
@@ -165,16 +158,9 @@ export default function CommandPalette({
         </div>
       </Dialog>
 
-      <DragOverlay className="z-50">
-        {activeId && (
-          <CourseCard {...stateCourses.flat().find(c => c.id === activeId)!}
-            deleteMeth={setDelete} degreeReq={courseReqs}
-          />
-        )}
-      </DragOverlay>
 
       {modalCourse && (
-        <BigModal isModalOpen={isModalOpen}
+        <OverviewModal isModalOpen={isModalOpen}
           setIsModalOpen={setIsModalOpen}
           modalData={modalCourse}
         />

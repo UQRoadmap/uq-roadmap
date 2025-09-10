@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { PlanDetailClient } from './planDetails';
-import { Plan } from '@/types/plan';
 import { Course } from '@/types/course';
+import { Plan } from '@/types/plan';
 
 async function getPlan(id: string): Promise<Plan | null> {
     const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";

@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+from pprint import pprint
 from typing import TYPE_CHECKING
 from uuid import UUID
 
@@ -36,7 +37,8 @@ async def add_validation(session: DbSession, plan: PlanDBModel) -> PlanRead:
         name=plan.name,
         start_year=plan.start_year,
         start_sem=plan.start_sem,
-        course_dates=plan.course_dates,
+        end_year=plan.end_year,
+        course_dates_input=plan.course_dates_input,
         course_reqs=plan.course_reqs,
         specialisations=plan.specialisations,
         courses=plan.courses,
@@ -69,12 +71,19 @@ async def get(db: DbSession, plan_id: UUID) -> PlanRead:
             status_code=status.HTTP_404_NOT_FOUND, detail=f"Plan under id '{plan_id}' could not be found."
         )
 
-    return await add_validation(db, plan)
+    pprint(plan.to_dict())
+
+    result = await add_validation(db, plan)
+
+    pprint(result.model_dump(mode="python"))
+
+    return result
 
 
 @r.post("", response_model=PlanRead)
 async def create(db: DbSession, plan_in: PlanCreateUpdate) -> PlanDBModel:
     """Create a plan."""
+    pprint(plan_in.model_dump(mode="python"))
     degree = await get_degree_by_id(db, plan_in.degree_id)
     if degree is None:
         raise HTTPException(
@@ -82,12 +91,12 @@ async def create(db: DbSession, plan_in: PlanCreateUpdate) -> PlanDBModel:
             detail=f"The degree with the id '{plan_in.degree_id}' can not be found",
         )
 
-    try:
-        return await create_plan(db, degree, plan_in)
-    except ValueError as e:
+    if plan_in.start_year > plan_in.end_year:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="The provided start year is after the provided end year."
-        ) from e
+        )
+
+    return await create_plan(db, degree, plan_in)
 
 
 @r.put("/{plan_id}", response_model=PlanRead)

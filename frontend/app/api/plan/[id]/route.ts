@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
-import MapToPlan, { APIPlanCreateUpdate, APIPlanRead } from "../types";
+import { APIPlanCreateUpdate } from "../types";
+import { Plan } from '@/types/plan'
 import { BACKEND_BASE_URL } from "../../common";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -9,7 +10,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         const res = await fetch(`${BACKEND_BASE_URL}/plan/${id}`);
         if (res.status == 404) {
             console.debug(`Couldn't find plan under id: ${id}`)
-            return NextResponse.json({})
+            return NextResponse.json(null)
         }
         if (!res.ok) {
             const errorText = await res.text();
@@ -18,9 +19,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
                 { status: res.status }
             );
         }
-        const plan: APIPlanRead = await res.json();
-        
-        return NextResponse.json(MapToPlan(plan));
+        const plan: Plan = await res.json();
+        return NextResponse.json(plan);
     } catch (err) {
         console.error(err);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
@@ -49,8 +49,8 @@ export async function PUT(
             );
         }
 
-        const plan: APIPlanRead = await res.json();
-        return NextResponse.json(MapToPlan(plan));
+        const plan: Plan = await res.json();
+        return NextResponse.json(plan);
     } catch (err) {
         console.error(err);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
