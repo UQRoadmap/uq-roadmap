@@ -185,6 +185,29 @@ pub async fn get_by_category_code(
     .await
 }
 
+pub async fn get_all_by_category(
+    db: &PgPool,
+    category: &str,
+) -> Result<Vec<CourseDetails>, sqlx::Error> {
+    query_as!(
+        CourseDetails,
+        r#"
+        SELECT 
+          course_id, category, code, name, description,
+          level as "level: _",
+          num_units,
+          attendance_mode as "attendance_mode: _",
+          active,
+          semesters as "semesters: _"
+        FROM courses
+        WHERE category = $1
+          "#,
+        category
+    )
+    .fetch_all(db)
+    .await
+}
+
 #[sqlx::test(migrations = "./migrations")]
 async fn roundtrip_insert_and_get(pool: PgPool) {
     let course = crate::db::course_details::CourseDetails {

@@ -6,7 +6,7 @@ use utoipa::OpenApi;
 #[derive(OpenApi)]
 #[openapi(
     paths(
-        crate::api::get_course_by_pair
+        crate::api::course::get_course_by_pair
     ),
     components(
         schemas(

@@ -7,7 +7,7 @@ pub mod seed;
 use anyhow::Context;
 use sqlx::{PgPool, postgres::PgPoolOptions};
 use std::time::Duration;
-use tracing::{error, warn};
+use tracing::warn;
 
 /// Runs database migrations and returns a DbPool.
 /// Call this once at startup! Don't re-run it.
