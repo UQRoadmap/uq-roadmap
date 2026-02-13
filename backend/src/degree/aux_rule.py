@@ -6,15 +6,44 @@ from serde.json import from_dict
 from api.plan.plan import Plan
 from degree.params import CourseRef, ProgramRef
 from degree.validate_result import Status, ValidateResult
+from typing import Callable, Awaitable
+from api.course.models import CourseDBModel
+from api.degree.models import DegreeDBModel
+import asyncio
+from serde.json import from_dict
 
+
+def _run_async(coro):
+    """Helper function to run async code from sync context."""
+    try:
+        # Try to get the current event loop
+        asyncio.get_running_loop()
+    except RuntimeError:
+        # No event loop running, safe to use asyncio.run()
+        return asyncio.run(coro)
+    else:
+        # Event loop is running, need to use different approach
+        # This will create a new thread with its own event loop
+        import concurrent.futures
+        
+        def run_in_thread():
+            return asyncio.run(coro)
+        
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future = executor.submit(run_in_thread)
+            return future.result()
 
 @serde
 class AR:
     # Part, e.g. A or A.1
     part: str
 
-    def validate(self, plan: Plan) -> ValidateResult:
-        return ValidateResult(Status.ERROR, None, "Should not be seeing this - validating abstract AR", plan.courses)
+    def validate(self, plan: Plan,
+                 course_getter: Callable[[str], Awaitable[CourseDBModel | None]],
+                 degree_getter: Callable[[str, int], Awaitable[DegreeDBModel | None]]) -> ValidateResult:
+        return ValidateResult(
+            Status.ERROR, None, "Should not be seeing this - validating abstract AR", plan.courses, self.part
+        )
 
 
 @serde
@@ -26,25 +55,41 @@ class AR1(AR):
     or_higher: bool = True
     type: str = "AR1"
 
-    def validate(self, plan: Plan) -> ValidateResult:
-        count = 0
-        exceptionCourse = ""
-        try:
-            for course in plan.courses:
-                exceptionCourse = course
-                course_level = int(course[4])
-                if course_level == self.level or (course_level > self.level and self.or_higher):
-                    count += 2  # change to units (ask lucas)
-            if count >= self.n:
-                return ValidateResult(Status.OK, 100, "", [])
-            return ValidateResult(
-                Status.ERROR,
-                count / self.n * 100,
-                f"Expected at least {self.n} units at level {self.level}{' or higher' if self.or_higher else ''}, found {count}.",
-                plan.courses,
-            )
-        except ValueError:
-            return ValidateResult(Status.ERROR, None, "Invalid course level format", [exceptionCourse])
+    def validate(self, plan: Plan,
+                 course_getter: Callable[[str], Awaitable[CourseDBModel | None]],
+                 degree_getter: Callable[[str, int], Awaitable[DegreeDBModel | None]]) -> ValidateResult:
+        
+        async def _async_validate():
+            count = 0
+            validcourses = []
+            exceptionCourse = ""
+            try:
+                for course in plan.courses:
+                    exceptionCourse = course
+                    course_level = int(course[4])
+                    if course_level == self.level or (course_level > self.level and self.or_higher):
+                        course_model = await course_getter(course)
+                        count += course_model.num_units if course_model else 0
+                        validcourses.append(course)
+                return count, validcourses, exceptionCourse, None
+            except ValueError as e:
+                return None, None, exceptionCourse, str(e)
+        
+        # Run the async validation
+        result = _run_async(_async_validate())
+        count, validcourses, exceptionCourse, error = result
+        
+        if error:
+            return ValidateResult(Status.ERROR, None, "Invalid course level format", [exceptionCourse], self.part)
+        
+        if count >= self.n:
+            return ValidateResult(Status.OK, 100.0, "", [], self.part)
+        return ValidateResult(
+            Status.ERROR,
+            count / self.n * 100.0,
+            f"Expected at least {self.n} units at level {self.level}{' or higher' if self.or_higher else ''}, found {count}.",
+            validcourses, self.part
+        )
 
 
 @serde
@@ -55,27 +100,41 @@ class AR2(AR):
     level: int
     type: str = "AR2"
 
-    def validate(self, plan: Plan) -> ValidateResult:
-        count = 0
-        badcourses = []
-        exceptionCourse = ""
-        try:
-            for course in plan.courses:
-                exceptionCourse = course
-                course_level = int(course[4])
-                if course_level == self.level:
-                    count += 2  # change to units (ask lucas)
-                    badcourses.append(course)
-            if count < self.n:
-                return ValidateResult(Status.OK, 100, "", [])
-            return ValidateResult(
-                Status.ERROR,
-                count / self.n * 100,
-                f"Expected at most {self.n} units at level {self.level}, found {count}.",
-                badcourses,
-            )
-        except ValueError:
-            return ValidateResult(Status.ERROR, None, "Invalid course level format", [exceptionCourse])
+    def validate(self, plan: Plan,
+                 course_getter: Callable[[str], Awaitable[CourseDBModel | None]],
+                 degree_getter: Callable[[str, int], Awaitable[DegreeDBModel | None]]) -> ValidateResult:
+        
+        async def _async_validate():
+            count = 0
+            badcourses = []
+            exceptionCourse = ""
+            try:
+                for course in plan.courses:
+                    exceptionCourse = course
+                    course_level = int(course[4])
+                    if course_level == self.level:
+                        course_model = await course_getter(course)
+                        count += course_model.num_units if course_model else 0
+                        badcourses.append(course)
+                return count, badcourses, exceptionCourse, None
+            except ValueError as e:
+                return None, None, exceptionCourse, str(e)
+        
+        # Run the async validation
+        result = _run_async(_async_validate())
+        count, badcourses, exceptionCourse, error = result
+        
+        if error:
+            return ValidateResult(Status.ERROR, None, "Invalid course level format", [exceptionCourse], self.part)
+        
+        if count <= self.n:
+            return ValidateResult(Status.OK, 100.0, "", [], self.part)
+        return ValidateResult(
+            Status.ERROR,
+            count / self.n * 100.0,
+            f"Expected at most {self.n} units at level {self.level}, found {count}.",
+            badcourses, self.part
+        )
 
 
 @serde
@@ -87,27 +146,41 @@ class AR3(AR):
     or_higher: bool = True
     type: str = "AR3"
 
-    def validate(self, plan: Plan) -> ValidateResult:
-        count = 0
-        badcourses = []
-        exceptionCourse = ""
-        try:
-            for course in plan.courses:
-                exceptionCourse = course
-                course_level = int(course[4])
-                if course_level == self.level or (course_level > self.level and self.or_higher):
-                    count += 2  # change to units (ask lucas)
-                    badcourses.append(course)
-            if count == self.n:
-                return ValidateResult(Status.OK, 100, "", [])
-            return ValidateResult(
-                Status.ERROR,
-                count / self.n * 100,
-                f"Expected at most {self.n} units at level {self.level}, found {count}.",
-                badcourses,
-            )
-        except ValueError:
-            return ValidateResult(Status.ERROR, None, "Invalid course level format", [exceptionCourse])
+    def validate(self, plan: Plan,
+                 course_getter: Callable[[str], Awaitable[CourseDBModel | None]],
+                 degree_getter: Callable[[str, int], Awaitable[DegreeDBModel | None]]) -> ValidateResult:
+        
+        async def _async_validate():
+            count = 0
+            levelcourses = []
+            exceptionCourse = ""
+            try:
+                for course in plan.courses:
+                    exceptionCourse = course
+                    course_level = int(course[4])
+                    if course_level == self.level or (course_level > self.level and self.or_higher):
+                        course_model = await course_getter(course)
+                        count += course_model.num_units if course_model else 0
+                        levelcourses.append(course)
+                return count, levelcourses, exceptionCourse, None
+            except ValueError as e:
+                return None, None, exceptionCourse, str(e)
+        
+        # Run the async validation
+        result = _run_async(_async_validate())
+        count, levelcourses, exceptionCourse, error = result
+        
+        if error:
+            return ValidateResult(Status.ERROR, None, "Invalid course level format", [exceptionCourse]), self.part
+        
+        if count == self.n:
+            return ValidateResult(Status.OK, 100.0, "", [], self.part)
+        return ValidateResult(
+            Status.ERROR,
+            count / self.n * 100.0,
+            f"Expected exactly {self.n} units at level {self.level}, found {count}.",
+            levelcourses, self.part
+        )
 
 
 @serde
@@ -120,34 +193,48 @@ class AR4(AR):
     or_higher: bool = True
     type: str = "AR4"
 
-    def validate(self, plan: Plan) -> ValidateResult:
-        count = 0
-        badcourses = []
-        exceptionCourse = ""
-        try:
-            for course in plan.courses:
-                exceptionCourse = course
-                course_level = int(course[4])
-                if course_level == self.level or (course_level > self.level and self.or_higher):
-                    count += 2  # change to units (ask lucas)
-                    badcourses.append(course)
-            if count >= self.n and count <= self.m:
-                return ValidateResult(Status.OK, 100, "", [])
-            if count < self.n:
-                return ValidateResult(
-                    Status.ERROR,
-                    count / self.n * 100,
-                    f"Expected at least {self.n} units at level {self.level}, found {count}.",
-                    badcourses,
-                )
+    def validate(self, plan: Plan,
+                 course_getter: Callable[[str], Awaitable[CourseDBModel | None]],
+                 degree_getter: Callable[[str, int], Awaitable[DegreeDBModel | None]]) -> ValidateResult:
+        
+        async def _async_validate():
+            count = 0
+            levelcourses = []
+            exceptionCourse = ""
+            try:
+                for course in plan.courses:
+                    exceptionCourse = course
+                    course_level = int(course[4])
+                    if course_level == self.level or (course_level > self.level and self.or_higher):
+                        course_model = await course_getter(course)
+                        count += course_model.num_units if course_model else 0
+                        levelcourses.append(course)
+                return count, levelcourses, exceptionCourse, None
+            except ValueError as e:
+                return None, None, exceptionCourse, str(e)
+        
+        # Run the async validation
+        result = _run_async(_async_validate())
+        count, levelcourses, exceptionCourse, error = result
+        
+        if error:
+            return ValidateResult(Status.ERROR, None, "Invalid course level format", [exceptionCourse], self.part)
+        
+        if count >= self.n and count <= self.m:
+            return ValidateResult(Status.OK, 100.0, "", [], self.part)
+        if count < self.n:
             return ValidateResult(
                 Status.ERROR,
-                count / self.m * 100,
-                f"Expected at most {self.m} units at level {self.level}, found {count}.",
-                badcourses,
+                count / self.n * 100.0,
+                f"Expected at least {self.n} units at level {self.level}, found {count}.",
+                levelcourses, self.part
             )
-        except ValueError:
-            return ValidateResult(Status.ERROR, None, "Invalid course level format", [exceptionCourse])
+        return ValidateResult(
+            Status.ERROR,
+            count / self.m * 100.0,
+            f"Expected at most {self.m} units at level {self.level}, found {count}.",
+            levelcourses, self.part
+        )
 
 
 @serde
@@ -158,19 +245,35 @@ class AR5(AR):
     plan_list_2: list[ProgramRef]
     type: str = "AR5"
 
-    def validate(self, plan: Plan) -> ValidateResult:
+    def validate(self, plan: Plan,
+                 course_getter: Callable[[str], Awaitable[CourseDBModel | None]],
+                 degree_getter: Callable[[str, int], Awaitable[DegreeDBModel | None]]) -> ValidateResult:
+        matching_plans = []
+        required_plans = []
+        
         for plan_ref in self.plan_list_1:
-            if plan_ref.code in plan.specialisations[self.part]:
-                values = [item for sublist in plan.specialisations.values() for item in sublist]
-            if not set(self.plan_list_2) & set(values):
+            for specialisation in plan.specialisations.get(self.part, []):
+                if plan_ref.validate(specialisation):
+                    matching_plans.append(plan_ref.code)
+                    break
+        
+        if matching_plans:
+            # Check if any of plan_list_2 is present
+            values = [item for sublist in plan.specialisations.values() for item in sublist]
+            for plan_ref in self.plan_list_2:
+                if plan_ref.validate(values):
+                    required_plans.append(plan_ref.code)
+            
+            if not required_plans:
                 return ValidateResult(
                     Status.ERROR,
                     None,
-                    f"Expected {self.plan_list_1} to be with {self.plan_list_2}.",
-                    plan.specialisations[self.part],
+                    f"Expected {[str(p) for p in self.plan_list_1]} to be with {[str(p) for p in self.plan_list_2]}.",
+                    [str(p) for p in self.plan_list_2],
+                    self.part,
                 )
-            return ValidateResult(Status.OK, 100, "", [])
-        return ValidateResult(Status.ERROR, None, "Unreachable", [])
+            return ValidateResult(Status.OK, 100.0, "", [], self.part)
+        return ValidateResult(Status.OK, 100.0, "", [], self.part)
 
 
 @serde
@@ -181,19 +284,38 @@ class AR6(AR):
     plan_list_2: list[ProgramRef]
     type: str = "AR6"
 
-    def validate(self, plan: Plan) -> ValidateResult:
+    def validate(self, plan: Plan,
+                 course_getter: Callable[[str], Awaitable[CourseDBModel | None]],
+                 degree_getter: Callable[[str, int], Awaitable[DegreeDBModel | None]]) -> ValidateResult:
+        matching_plans = []
+        conflicting_plans = []
+        
         for plan_ref in self.plan_list_1:
-            if plan_ref.code in plan.specialisations[self.part]:
-                values = [item for sublist in plan.specialisations.values() for item in sublist]
-                if set(self.plan_list_2) & set(values):
-                    return ValidateResult(
-                        Status.ERROR,
-                        None,
-                        f"Expected {self.plan_list_1} to NOT be with {self.plan_list_2}.",
-                        plan.specialisations[self.part],
-                    )
-                return ValidateResult(Status.OK, 100, "", [])
-        return ValidateResult(Status.ERROR, None, "Unreachable", [])
+            for specialisation in plan.specialisations.get(self.part, []):
+                if plan_ref.validate(specialisation):
+                    matching_plans.append(plan_ref.code)
+                    break
+        
+        if matching_plans:
+            # Check if any of plan_list_2 is present (conflict)
+            values = [item for sublist in plan.specialisations.values()
+                      for item in sublist]
+            for plan_ref in self.plan_list_2:
+                for value in values:
+                    if plan_ref.validate(value):
+                        conflicting_plans.append(plan_ref.code)
+                        break
+            
+            if conflicting_plans:
+                return ValidateResult(
+                    Status.ERROR,
+                    None,
+                    f"Expected {[str(p) for p in self.plan_list_1]} to NOT be "
+                    f"with {[str(p) for p in self.plan_list_2]}.",
+                    conflicting_plans,
+                )
+            return ValidateResult(Status.OK, 100.0, "", [])
+        return ValidateResult(Status.OK, 100.0, "", [])
 
 
 @serde
@@ -203,21 +325,34 @@ class AR7(AR):
     n: int
     type: str = "AR7"
 
-    def validate(self, plan: Plan) -> ValidateResult:
-        discipline_count = {}
-        discipline_lists = {}
+    def validate(self, plan: Plan,
+                 course_getter: Callable[[str], Awaitable[CourseDBModel | None]],
+                 degree_getter: Callable[[str, int], Awaitable[DegreeDBModel | None]]) -> ValidateResult:
+        
+        async def _async_validate():
+            discipline_count = {}
+            discipline_lists = {}
+            for course in plan.courses:
+                discipline = course[:4]
+                course_model = await course_getter(course)
+                units = course_model.num_units if course_model else 0
+                discipline_count[discipline] = discipline_count.get(discipline, 0) + units
+                if discipline not in discipline_lists:
+                    discipline_lists[discipline] = []
+                discipline_lists[discipline].append(course)
+            return discipline_count, discipline_lists
+        
+        # Run the async validation
+        discipline_count, discipline_lists = _run_async(_async_validate())
+        
         badlist = []
         totalcount = 0
-        for course in plan.courses:
-            discipline = course[:4]
-            discipline_count[discipline] = discipline_count.get(discipline, 0) + 2  # REPLACE WITH UNITS
-            discipline_lists[discipline].append(course)
         if any(count > self.n for count in discipline_count.values()):
             greater_than_n = [d for d, count in discipline_count.items() if count > self.n]
             for discipline in greater_than_n:
                 badlist.extend(discipline_lists[discipline])
-            return ValidateResult(Status.ERROR, totalcount / self.n * 100, "", badlist)
-        return ValidateResult(Status.OK, 100, "", [])
+            return ValidateResult(Status.ERROR, totalcount / self.n * 100.0, "", badlist, self.part)
+        return ValidateResult(Status.OK, 100.0, "", [], self.part)
 
 
 @serde
@@ -227,14 +362,20 @@ class AR9(AR):
     course_list: list[CourseRef]
     type: str = "AR9"
 
-    def validate(self, plan: Plan) -> ValidateResult:
+    def validate(self, plan: Plan,
+                 course_getter: Callable[[str], Awaitable[CourseDBModel | None]],
+                 degree_getter: Callable[[str, int], Awaitable[DegreeDBModel | None]]) -> ValidateResult:
         badcourses = []
-        for course in plan.courses:
-            if course in self.course_list:
-                badcourses.append(course)
+        for course_ref in self.course_list:
+            for course in plan.courses:
+                if course_ref.validate(course):
+                    badcourses.append(course)
+        
         if badcourses:
-            return ValidateResult(Status.ERROR, None, f"No credit for {self.course_list}.", badcourses)
-        return ValidateResult(Status.OK, 100, "", [])
+            return ValidateResult(Status.ERROR, None,
+                                  f"No credit for {[str(c) for c in self.course_list]}.",
+                                  badcourses, self.part)
+        return ValidateResult(Status.OK, 100.0, "", [], self.part)
 
 
 @serde
@@ -245,19 +386,29 @@ class AR10(AR):
     plan_list: list[ProgramRef]
     type: str = "AR10"
 
-    def validate(self, plan: Plan) -> ValidateResult:
+    def validate(self, plan: Plan,
+                 course_getter: Callable[[str], Awaitable[CourseDBModel | None]],
+                 degree_getter: Callable[[str, int], Awaitable[DegreeDBModel | None]]) -> ValidateResult:
         for plan_ref in self.plan_list:
-            if plan_ref.code in plan.specialisations[self.part]:
-                overlap = set(self.course_list) & set(plan.courses)
-                if overlap:
-                    return ValidateResult(
-                        Status.ERROR,
-                        0,
-                        f"No credit for {overlap} for students completing {plan_ref}.",
-                        list(overlap),
+            for specialisation in plan.specialisations.get(self.part, []):
+                if plan_ref.validate(specialisation):
+                    overlap = []
+                    for course_ref in self.course_list:
+                        for course in plan.courses:
+                            if course_ref.validate(course):
+                                overlap.append(course)
+                    
+                    if overlap:
+                        return ValidateResult(
+                            Status.ERROR,
+                            0,
+                            f"No credit for {overlap} for students "
+                            f"completing {plan_ref}.",
+                            overlap,
+                            self.part,
                     )
-                return ValidateResult(Status.OK, 100, "", [])
-        return ValidateResult(Status.ERROR, None, "Unreachable", [])
+                    return ValidateResult(Status.OK, 100.0, "", [], self.part)
+        return ValidateResult(Status.OK, 100.0, "", [], self.part)
 
 
 @serde
@@ -268,18 +419,37 @@ class AR11(AR):
     plan_list: list[ProgramRef]
     type: str = "AR11"
 
-    def validate(self, plan: Plan) -> ValidateResult:
-        overlap = set(self.course_list) & set(plan.courses)
+    def validate(self, plan: Plan,
+                 course_getter: Callable[[str], Awaitable[CourseDBModel | None]],
+                 degree_getter: Callable[[str, int], Awaitable[DegreeDBModel | None]]) -> ValidateResult:
+        overlap = []
+        for course_ref in self.course_list:
+            for course in plan.courses:
+                if course_ref.validate(course):
+                    overlap.append(course)
+        
         if overlap:
-            if all(plan_ref.code not in plan.specialisations[self.part] for plan_ref in self.plan_list):
+            # Check if any plan from plan_list is present
+            has_required_plan = False
+            for plan_ref in self.plan_list:
+                for specialisation in plan.specialisations.get(self.part, []):
+                    if plan_ref.validate(specialisation):
+                        has_required_plan = True
+                        break
+                if has_required_plan:
+                    break
+            
+            if not has_required_plan:
                 return ValidateResult(
                     Status.ERROR,
                     0,
-                    f"No credit for {overlap} for students not completing {self.plan_list}.",
-                    list(overlap),
+                    f"No credit for {overlap} for students not "
+                    f"completing {[str(p) for p in self.plan_list]}.",
+                    overlap,
+                    self.part,
                 )
-            return ValidateResult(Status.OK, 100, "", [])
-        return ValidateResult(Status.ERROR, None, "Unreachable", [])
+            return ValidateResult(Status.OK, 100.0, "", [], self.part)
+        return ValidateResult(Status.OK, 100.0, "", [], self.part)
 
 
 @serde
@@ -300,18 +470,29 @@ class AR13(AR):
     Engineering are exempt from STAT2203 in the BA Major in Mathematics.
     """
 
-    def validate(self, plan: Plan) -> ValidateResult:
+    def validate(self, plan: Plan,
+                 course_getter: Callable[[str], Awaitable[CourseDBModel | None]],
+                 degree_getter: Callable[[str, int], Awaitable[DegreeDBModel | None]]) -> ValidateResult:
         for plan_ref in self.plan_list:
-            if plan_ref.code in plan.specialisations[self.part]:
-                overlap = set(self.course_list) & set(plan.courses)
-                if overlap:
-                    return ValidateResult(
-                        Status.ERROR,
-                        0,
-                        f"Students completing {plan_ref} are exempt from {overlap} in {self.program_plan_list}.",
-                        list(overlap),
+            for specialisation in plan.specialisations.get(self.part, []):
+                if plan_ref.validate(specialisation):
+                    overlap = []
+                    for course_ref in self.course_list:
+                        for course in plan.courses:
+                            if course_ref.validate(course):
+                                overlap.append(course)
+                    
+                    if overlap:
+                        return ValidateResult(
+                            Status.ERROR,
+                            0,
+                            f"Students completing {plan_ref} are exempt from "
+                            f"{overlap} in {[str(p) for p in self.program_plan_list]}.",
+                            overlap,
+                            self.part,
                     )
-                return ValidateResult(Status.OK, 100, "", [])
+                    return ValidateResult(Status.OK, 100.0, "", [], self.part)
+        return ValidateResult(Status.OK, 100.0, "", [], self.part)
 
 
 @serde
@@ -324,28 +505,40 @@ class AR15(AR):
     lists: list[str]  # reference names/ids to course lists
     type: str = "AR15"
 
-    def validate(self, plan: Plan) -> ValidateResult:
+    def validate(self, plan: Plan,
+                 course_getter: Callable[[str], Awaitable[CourseDBModel | None]],
+                 degree_getter: Callable[[str, int], Awaitable[DegreeDBModel | None]]) -> ValidateResult:
+        overlap = []
+        for course_ref in self.course_list:
+            for course in plan.courses:
+                if course_ref.validate(course):
+                    overlap.append(course)
+        
         if self.must:
-            # If it's a MUST, then we need to check that the course_list is in the program_plan_list
-            overlap = set(self.course_list) & set(plan.courses)
+            # If it's a MUST, then we need to check that the course_list is present
             if not overlap:
                 return ValidateResult(
                     Status.ERROR,
                     0,
-                    f"Expected {self.course_list} to be substituted in {self.program_plan_list} by a course from {self.lists}.",
-                    list(overlap),
+                    f"Expected {[str(c) for c in self.course_list]} to be "
+                    f"substituted in {[str(p) for p in self.program_plan_list]} "
+                    f"by a course from {self.lists}.",
+                    [str(c) for c in self.course_list],
+                    self.part,
                 )
-            return ValidateResult(Status.OK, 100, "", [])
+            return ValidateResult(Status.OK, 100.0, "", [], self.part)
         # If it's a MAY, we don't need to check anything
-        overlap = set(self.course_list) & set(plan.courses)
         if overlap:
             return ValidateResult(
                 Status.OK,
-                100,
-                f"{overlap} may be substituted in" + f"{self.program_plan_list} by a course from" + f"{self.lists}",
+                100.0,
+                f"{overlap} may be substituted in "
+                f"{[str(p) for p in self.program_plan_list]} by a course from "
+                f"{self.lists}",
                 overlap,
+                self.part,
             )
-        return ValidateResult(Status.OK, 100, "", [])
+        return ValidateResult(Status.OK, 100.0, "", [], self.part)
 
 
 @serde
@@ -359,29 +552,41 @@ class AR16(AR):
     program_plan_list: list[ProgramRef]
     type: str = "AR16"
 
-    def validate(self, plan: Plan) -> ValidateResult:
+    def validate(self, plan: Plan,
+                 course_getter: Callable[[str], Awaitable[CourseDBModel | None]],
+                 degree_getter: Callable[[str, int], Awaitable[DegreeDBModel | None]]) -> ValidateResult:
+        overlap = []
+        for course_ref in self.course_list_1:
+            for course in plan.courses:
+                if course_ref.validate(course):
+                    overlap.append(course)
+        
         if self.must:
-            overlap = set(self.course_list_1) & set(plan.courses)
             if not overlap:
                 return ValidateResult(
                     Status.ERROR,
                     0,
-                    f"Expected {self.course_list_1} to be substituted in {self.plan_list} by a course from {self.course_list_2} in {self.program_plan_list}.",
-                    list(overlap),
+                    f"Expected {[str(c) for c in self.course_list_1]} to be "
+                    f"substituted in {[str(p) for p in self.plan_list]} by a "
+                    f"course from {[str(c) for c in self.course_list_2]} in "
+                    f"{[str(p) for p in self.program_plan_list]}.",
+                    [str(c) for c in self.course_list_1],
+                    self.part,
                 )
-            return ValidateResult(Status.OK, 100, "", [])
+            return ValidateResult(Status.OK, 100.0, "", [], self.part)
         # If it's a MAY, we don't need to check anything
-        overlap = set(self.course_list_1) & set(plan.courses)
         if overlap:
             return ValidateResult(
                 Status.OK,
-                100,
-                f"{overlap} may be substituted in"
-                f"{self.plan_list} by a course from"
-                f"{self.course_list_2} in {self.program_plan_list}",
+                100.0,
+                f"{overlap} may be substituted in "
+                f"{[str(p) for p in self.plan_list]} by a course from "
+                f"{[str(c) for c in self.course_list_2]} in "
+                f"{[str(p) for p in self.program_plan_list]}",
                 overlap,
+                self.part,
             )
-        return ValidateResult(Status.OK, 100, "", [])
+        return ValidateResult(Status.OK, 100.0, "", [], self.part)
 
 
 @serde
@@ -395,29 +600,40 @@ class AR17(AR):
     lists: list[str]
     type: str = "AR17"
 
-    def validate(self, plan: Plan) -> ValidateResult:
+    def validate(self, plan: Plan,
+                 course_getter: Callable[[str], Awaitable[CourseDBModel | None]],
+                 degree_getter: Callable[[str, int], Awaitable[DegreeDBModel | None]]) -> ValidateResult:
+        overlap = []
+        for course_ref in self.course_list:
+            for course in plan.courses:
+                if course_ref.validate(course):
+                    overlap.append(course)
+        
         if self.must:
-            overlap = set(self.course_list) & set(plan.courses)
             if not overlap:
                 return ValidateResult(
                     Status.ERROR,
                     0,
-                    f"Expected {self.course_list} to be substituted in {self.plan_list} by a course from {self.lists} in {self.program_plan_list}.",
-                    list(overlap),
+                    f"Expected {[str(c) for c in self.course_list]} to be "
+                    f"substituted in {[str(p) for p in self.plan_list]} by a "
+                    f"course from {self.lists} in "
+                    f"{[str(p) for p in self.program_plan_list]}.",
+                    [str(c) for c in self.course_list],
+                    self.part,
                 )
-            return ValidateResult(Status.OK, 100, "", [])
+            return ValidateResult(Status.OK, 100.0, "", [], self.part)
         # If it's a MAY, we don't need to check anything
-        overlap = set(self.course_list) & set(plan.courses)
         if overlap:
             return ValidateResult(
                 Status.OK,
-                100,
-                f"{overlap} may be substituted in"
-                f"{self.plan_list} by a course from"
-                f"{self.lists} in {self.program_plan_list}",
+                100.0,
+                f"{overlap} may be substituted in "
+                f"{[str(p) for p in self.plan_list]} by a course from "
+                f"{self.lists} in {[str(p) for p in self.program_plan_list]}",
                 overlap,
+                self.part,
             )
-        return ValidateResult(Status.OK, 100, "", [])
+        return ValidateResult(Status.OK, 100.0, "", [], self.part)
 
 
 @serde
@@ -428,17 +644,23 @@ class AR18(AR):
     program: ProgramRef
     type: str = "AR18"
 
-    def validate(self, plan: Plan) -> ValidateResult:
-        for course in plan.courses:
-            if course in self.course_list:
-                if self.program.code not in plan.specialisations[self.part]:
-                    return ValidateResult(
-                        Status.ERROR,
-                        0,
-                        f"{course} can only be counted towards the {self.program.name} component of a dual.",
-                        [course],
+    def validate(self, plan: Plan,
+                 course_getter: Callable[[str], Awaitable[CourseDBModel | None]],
+                 degree_getter: Callable[[str, int], Awaitable[DegreeDBModel | None]]) -> ValidateResult:
+        for course_ref in self.course_list:
+            for course in plan.courses:
+                if course_ref.validate(course):
+                    for specialisation in plan.specialisations.get(self.part, []):
+                        if not self.program.validate(specialisation):
+                            return ValidateResult(
+                                Status.ERROR,
+                                0,
+                                f"{course} can only be counted towards the "
+                                f"{self.program.name} component of a dual.",
+                                [course],
+                                self.part,
                     )
-        return ValidateResult(Status.OK, 100, "", [])
+        return ValidateResult(Status.OK, 100.0, "", [], self.part)
 
 
 @serde
@@ -450,20 +672,32 @@ class AR19(AR):
     program: ProgramRef
     type: str = "AR19"
 
-    def validate(self, plan: Plan) -> ValidateResult:
+    def validate(self, plan: Plan,
+                 course_getter: Callable[[str], Awaitable[CourseDBModel | None]],
+                 degree_getter: Callable[[str, int], Awaitable[DegreeDBModel | None]]) -> ValidateResult:
         for plan_ref in self.plan_list:
-            if plan_ref.code == plan.degree:
-                for course in plan.courses:
-                    if course in self.course_list:
-                        if self.program.code not in plan.specialisations[self.part]:
-                            return ValidateResult(
-                                Status.ERROR,
-                                0,
-                                f"{course} only counts towards the {self.program.name} component for students completing {plan_ref}",
-                                [course],
+            if plan_ref.validate(plan.degree):
+                for course_ref in self.course_list:
+                    for course in plan.courses:
+                        if course_ref.validate(course):
+                            has_required_program = False
+                            for specialisation in plan.specialisations.get(self.part, []):
+                                if self.program.validate(specialisation):
+                                    has_required_program = True
+                                    break
+                            
+                            if not has_required_program:
+                                return ValidateResult(
+                                    Status.ERROR,
+                                    0,
+                                    f"{course} only counts towards the "
+                                    f"{self.program.name} component for students "
+                                    f"completing {plan_ref}",
+                                    [course],
+                                    self.part,
                             )
 
-        return ValidateResult(Status.OK, 100, "", [])
+        return ValidateResult(Status.OK, 100.0, "", [], self.part)
 
 
 @serde
@@ -476,21 +710,38 @@ class AR20(AR):
     plan_list_2: list[ProgramRef]
     type: str = "AR20"
 
-    def validate(self, plan: Plan) -> ValidateResult:
-        if plan.degree == self.plan_1.code:
+    def validate(self, plan: Plan,
+                 course_getter: Callable[[str], Awaitable[CourseDBModel | None]],
+                 degree_getter: Callable[[str, int], Awaitable[DegreeDBModel | None]]) -> ValidateResult:
+        if self.plan_1.validate(plan.degree):
             for plan_ref in self.plan_list_1:
-                if plan_ref.code in plan.specialisations[self.part]:
-                    for course in plan.courses:
-                        if course in self.course_list:
-                            if plan.specialisations[self.part] not in self.plan_list_2:
-                                return ValidateResult(
-                                    Status.ERROR,
-                                    0,
-                                    f"{course} only counts towards {self.plan_list_2} for students completing {plan_ref}.",
-                                    [course],
+                for specialisation in plan.specialisations.get(self.part, []):
+                    if plan_ref.validate(specialisation):
+                        for course_ref in self.course_list:
+                            for course in plan.courses:
+                                if course_ref.validate(course):
+                                    # Check if course only counts towards plan_list_2
+                                    valid_for_plan_list_2 = False
+                                    for target_plan in self.plan_list_2:
+                                        for spec in plan.specialisations.get(self.part, []):
+                                            if target_plan.validate(spec):
+                                                valid_for_plan_list_2 = True
+                                                break
+                                        if valid_for_plan_list_2:
+                                            break
+                                    
+                                    if not valid_for_plan_list_2:
+                                        return ValidateResult(
+                                            Status.ERROR,
+                                            0,
+                                            f"{course} only counts towards "
+                                            f"{[str(p) for p in self.plan_list_2]} "
+                                            f"for students completing {plan_ref}.",
+                                            [course],
+                                            self.part,
                                 )
 
-        return ValidateResult(Status.OK, 100, "", [])
+        return ValidateResult(Status.OK, 100.0, "", [], self.part)
 
 
 @serde
@@ -504,6 +755,7 @@ class ARUnknown(AR):
 def create_ar_from_dict(data: dict) -> AR:
     """Factory function to create correct AR subclass from dict."""
     ar_type = data.get("type", "AR")
+
 
     type_map = {
         "AR1": AR1,
@@ -528,4 +780,5 @@ def create_ar_from_dict(data: dict) -> AR:
 
     if ar_type in type_map:
         return from_dict(type_map[ar_type], data)
-    return from_dict(AR, data)
+    else:
+        return from_dict(AR, data)

@@ -10,29 +10,33 @@ from common.schemas import UQRoadmapBase
 
 log = logging.getLogger(__name__)
 
-GRAMMAR = """
+GRAMMAR = r"""
     ?start: expr
 
     ?expr: term
-         | expr OR term   -> or_expr
+         | expr OR term          -> or_expr
 
     ?term: factor
-         | term AND factor -> and_expr
-         | course_list -> and_expr
+         | term AND factor       -> and_expr
+         | course_list           -> and_expr
 
-    ?factor: identifier         -> identifier
-           | "(" expr ")"   -> parentheses
+    ?factor: identifier          -> identifier
+           | "(" expr ")"        -> parentheses
 
     identifier: PART_PATTERN
               | COURSE_CODE
+
     course_list: COURSE_CODE ("," COURSE_CODE)+
 
-    PART_PATTERN: "Part" WS LETTER
-    COURSE_CODE: /[a-zA-Z0-9]+/
-    LETTER: /[a-zA-Z]/
-
+    // Keywords first (avoid tie with COURSE_CODE)
     OR: /or/i
     AND: /and/i
+
+    // Accept "Part B", "Part B.1", "Part B.3.1", etc.
+    PART_PATTERN: /Part\s+[A-Za-z](?:\.\d+)*/
+
+    // Avoid swallowing "or"/"and" as course codes
+    COURSE_CODE: /(?!or\b)(?!and\b)[A-Za-z0-9]+/i
 
     %import common.WS
     %ignore WS

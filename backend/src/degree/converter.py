@@ -29,7 +29,7 @@ from degree.aux_rule import (
     ARUnknown,
 )
 from degree.degree import Degree as FlatDegree
-from degree.params import CourseRef, ProgramRef
+from degree.params import CourseRef, ProgramRef, EquivalenceGroup
 from degree.sr_rule import (
     SR,
     SR1,
@@ -48,6 +48,7 @@ from scraper.degree import (
     ComponentPayload,
     ComponentPayloadLeaf,
     CurriculumReference,
+    EquivalenceGroup as ScraperEquivalenceGroup,
 )
 from scraper.degree import (
     Degree as ParsedDegree,
@@ -415,13 +416,15 @@ def process_sr(parsed_sr: ParsedSelectionRule, rows: list[ComponentPayloadLeaf],
             abbreviation=d.get("abbreviation") or "",
         )
 
-    def _collect_options() -> tuple[list[CourseRef], list[ProgramRef]]:
+    def _collect_options() -> tuple[
+        list[CourseRef | EquivalenceGroup], list[ProgramRef]
+    ]:
         # Gather options from the sibling leaves of this SR node.
-        courses: list[CourseRef] = []
+        course_options: list[CourseRef | EquivalenceGroup] = []
         programs: list[ProgramRef] = []
 
         if not rows:
-            return courses, programs
+            return course_options, programs
 
         for r in rows:
             # curriculumReference directly on the leaf?
@@ -430,12 +433,15 @@ def process_sr(parsed_sr: ParsedSelectionRule, rows: list[ComponentPayloadLeaf],
                 cr_d = cr if isinstance(cr, dict) else cr.__dict__
                 t = cr_d.get("type")
                 if t == "Course":
-                    courses.append(_to_course_ref(cr_d))
+                    course_options.append(_to_course_ref(cr_d))
                 elif t in {"Program Rqt", "ProgramRqt", "Program"}:
                     programs.append(_to_program_ref(cr_d))
 
-            # inside equivalenceGroup?
+            # inside equivalenceGroup? Create EquivalenceGroup instance
             if r.equivalenceGroup is not None:
+                equiv_courses: list[CourseRef] = []
+                equiv_programs: list[ProgramRef] = []
+                
                 for eg in r.equivalenceGroup:
                     cr = eg.get("curriculumReference") if isinstance(eg, dict) else eg.curriculumReference
                     if cr is None:
@@ -443,17 +449,36 @@ def process_sr(parsed_sr: ParsedSelectionRule, rows: list[ComponentPayloadLeaf],
                     cr_d = cr if isinstance(cr, dict) else cr.__dict__
                     t = cr_d.get("type")
                     if t == "Course":
-                        courses.append(_to_course_ref(cr_d))
+                        equiv_courses.append(_to_course_ref(cr_d))
                     elif t in {"Program Rqt", "ProgramRqt", "Program"}:
-                        programs.append(_to_program_ref(cr_d))
+                        equiv_programs.append(_to_program_ref(cr_d))
+                
+                # Create EquivalenceGroup if we have courses
+                if equiv_courses:
+                    equivalence_group = EquivalenceGroup(
+                        courses=equiv_courses,
+                        notes=getattr(r, 'notes', None)
+                    )
+                    course_options.append(equivalence_group)
+                
+                # Add any programs from equivalence group to programs list
+                programs.extend(equiv_programs)
 
-        # de-dupe by code
-        seen_c: set[str] = set()
-        dedup_courses: list[CourseRef] = []
-        for c in courses:
-            if c.code not in seen_c:
-                seen_c.add(c.code)
-                dedup_courses.append(c)
+        # de-dupe by code for individual courses, but keep EquivalenceGroups as-is
+        seen_codes: set[str] = set()
+        dedup_course_options: list[CourseRef | EquivalenceGroup] = []
+        
+        for option in course_options:
+            if isinstance(option, CourseRef):
+                if option.code not in seen_codes:
+                    seen_codes.add(option.code)
+                    dedup_course_options.append(option)
+            else:  # EquivalenceGroup
+                # For EquivalenceGroups, check if any course in the group is already seen
+                group_codes = {c.code for c in option.courses}
+                if not group_codes.intersection(seen_codes):
+                    seen_codes.update(group_codes)
+                    dedup_course_options.append(option)
 
         seen_p: set[str] = set()
         dedup_programs: list[ProgramRef] = []
@@ -462,32 +487,34 @@ def process_sr(parsed_sr: ParsedSelectionRule, rows: list[ComponentPayloadLeaf],
                 seen_p.add(p.code)
                 dedup_programs.append(p)
 
-        return dedup_courses, dedup_programs
+        return dedup_course_options, dedup_programs
 
     # index params by name for convenience
     params = {p.name: p for p in (parsed_sr.params or [])}
     get = lambda key, default=None: (params.get(key).value if key in params else default)
 
     # gather options once (from the sibling leaves given to us)
-    course_opts, program_opts = _collect_options()
+    course_options, program_opts = _collect_options()
 
     code = parsed_sr.code
 
     # ---- SR mappings --------------------------------------------------------
     if code == "SR1":  # Complete [N] units for ALL of the following
-        return SR1(part=part, n=_num(get("N", 0)), options=course_opts)
+        return SR1(part=part, n=_num(get("N", 0)), options=course_options)
 
     if code == "SR2":  # Complete [N] to [M] units for ALL of the following
-        return SR2(part=part, n=_num(get("N", 0)), m=_num(get("M", 0)), options=course_opts)
+        return SR2(part=part, n=_num(get("N", 0)), m=_num(get("M", 0)),
+                   options=course_options)
 
     if code == "SR3":  # Complete at least [N] units from the following
-        return SR3(part=part, n=_num(get("N", 0)), options=course_opts)
+        return SR3(part=part, n=_num(get("N", 0)), options=course_options)
 
     if code == "SR4":  # Complete [N] to [M] units from the following
-        return SR4(part=part, n=_num(get("N", 0)), m=_num(get("M", 0)), options=course_opts)
+        return SR4(part=part, n=_num(get("N", 0)), m=_num(get("M", 0)),
+                   options=course_options)
 
     if code == "SR5":  # Complete exactly [N] units from the following
-        return SR5(part=part, n=_num(get("N", 0)), options=course_opts)
+        return SR5(part=part, n=_num(get("N", 0)), options=course_options)
 
     if code == "SR6":  # Complete one [PLANTYPE] from the following
         plan_type = get("PLANTYPE", get("PLANTYPE_SINGULAR", ""))
@@ -542,6 +569,7 @@ def convert_degree(parsed_degree: ParsedDegree, raw_json: dict = None) -> FlatDe
                 # Check if this is a header with our target part
                 if obj.get("header", {}).get("partReference") == target_part and "body" in obj:
                     for body_item in obj.get("body", []):
+                        # Handle CurriculumReference
                         if body_item.get("rowType") == "CurriculumReference" and "curriculumReference" in body_item:
                             cr_data = body_item["curriculumReference"]
 
@@ -573,6 +601,50 @@ def convert_degree(parsed_degree: ParsedDegree, raw_json: dict = None) -> FlatDe
                             )
 
                             leaves.append(leaf)
+                        
+                        # Handle EquivalenceGroup
+                        elif body_item.get("rowType") == "EquivalenceGroup" and "equivalenceGroup" in body_item:
+                            equiv_group_data = body_item["equivalenceGroup"]
+                            
+                            # Process equivalence group items
+                            equiv_group = []
+                            for eg_item in equiv_group_data:
+                                if "curriculumReference" in eg_item:
+                                    cr_data = eg_item["curriculumReference"]
+                                    curriculum_ref = CurriculumReference(
+                                        unitsMaximum=cr_data.get("unitsMaximum"),
+                                        code=cr_data.get("code", ""),
+                                        orgName=cr_data.get("orgName", ""),
+                                        type=cr_data.get("type", "Course"),
+                                        version=cr_data.get("version"),
+                                        subtype=cr_data.get("subtype"),
+                                        fromYear=cr_data.get("fromYear"),
+                                        latestVersion=cr_data.get("latestVersion"),
+                                        unitsMinimum=cr_data.get("unitsMinimum"),
+                                        orgCode=cr_data.get("orgCode", ""),
+                                        name=cr_data.get("name", ""),
+                                        fromTerm=cr_data.get("fromTerm"),
+                                        state=cr_data.get("state"),
+                                    )
+                                    # Create proper ScraperEquivalenceGroup object
+                                    equiv_group.append(ScraperEquivalenceGroup(
+                                        orderNumber=eg_item.get("orderNumber", 0),
+                                        notes=eg_item.get("notes"),
+                                        curriculumReference=curriculum_ref
+                                    ))
+                            
+                            # Create ComponentPayloadLeaf with equivalenceGroup
+                            leaf = ComponentPayloadLeaf(
+                                rowType=body_item.get("rowType"),
+                                orderNumber=body_item.get("orderNumber"),
+                                notes=body_item.get("notes"),
+                                curriculumReference=None,
+                                equivalenceGroup=equiv_group,
+                                wildCardItem=None,
+                            )
+
+                            leaves.append(leaf)
+                
                 # Recurse through all values
                 for value in obj.values():
                     find_part_in_json(value, target_part)
